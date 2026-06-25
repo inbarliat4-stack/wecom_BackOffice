@@ -3,257 +3,1276 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>wecom. | מאגר ידע</title>
-<link rel="stylesheet" href="shared.css">
+<title>wecom | מאגר ידע – תצוגת תבנית</title>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  .hero {
-    background: var(--navy);
-    padding: 52px 28px 40px;
-    text-align: center;
-  }
-  .hero-logo { font-size: 36px; font-weight: 700; color: var(--red); letter-spacing: -1px; margin-bottom: 8px; }
-  .hero-title { font-size: 20px; font-weight: 500; color: rgba(255,255,255,0.85); margin-bottom: 6px; }
-  .hero-sub { font-size: 14px; color: rgba(255,255,255,0.45); }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  .search-bar {
-    max-width: 520px;
-    margin: 24px auto 0;
+  :root {
+    --red: #FF3D00;
+    --red-light: #FFF0EB;
+    --red-mid: #FFB596;
+    --navy: #1F2E3B;
+    --navy-mid: #2E4255;
+    --gray: #A6ABB0;
+    --gray-light: #F5F5F5;
+    --gray-border: #E2E4E6;
+    --white: #FFFFFF;
+    --text: #1F2E3B;
+    --text-muted: #6B7280;
+    --success: #1A7A4A;
+    --success-bg: #EDFAF3;
+    --warning-bg: #FFF8EE;
+    --warning: #B86A00;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  body {
+    font-family: 'Rubik', sans-serif;
+    background: #F0F2F4;
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.65;
+    min-height: 100vh;
+  }
+
+  /* ─── TOP NAV ─── */
+  .topnav {
+    background: var(--navy);
+    height: 52px;
+    display: flex;
+    align-items: center;
+    padding: 0 28px;
+    gap: 20px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .topnav-logo {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--red);
+    letter-spacing: -0.5px;
+    flex-shrink: 0;
+  }
+  .topnav-logo span { color: var(--red); }
+  .topnav-sep { width: 1px; height: 22px; background: rgba(255,255,255,0.15); }
+  .topnav-label {
+    font-size: 13px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.55);
+  }
+  .topnav-search {
+    margin-inline-start: auto;
     display: flex;
     align-items: center;
     background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 10px;
-    padding: 0 16px;
-    gap: 10px;
-    height: 44px;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px;
+    padding: 0 12px;
+    gap: 8px;
+    height: 34px;
+    min-width: 220px;
+    cursor: pointer;
   }
-  .search-bar input {
-    flex: 1;
-    background: transparent;
-    border: none;
-    outline: none;
-    font-family: 'Rubik', sans-serif;
-    font-size: 14px;
-    color: var(--white);
-    direction: rtl;
+  .topnav-search span {
+    font-size: 13px;
+    color: rgba(255,255,255,0.4);
   }
-  .search-bar input::placeholder { color: rgba(255,255,255,0.35); }
 
-  .main-content {
-    max-width: 900px;
+  /* ─── LAYOUT ─── */
+  .page-wrap {
+    max-width: 960px;
     margin: 0 auto;
-    padding: 36px 24px 80px;
+    padding: 32px 24px 80px;
+    display: grid;
+    grid-template-columns: 1fr 260px;
+    gap: 28px;
+    align-items: start;
   }
 
-  .section-title {
+  /* ─── MAIN ARTICLE ─── */
+  .article {
+    background: var(--white);
+    border-radius: 14px;
+    border: 1px solid var(--gray-border);
+    overflow: hidden;
+  }
+
+  .article-header {
+    padding: 28px 32px 24px;
+    border-bottom: 1px solid var(--gray-border);
+  }
+  .doc-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11.5px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+  .badge-tech {
+    background: #EBF1FF;
+    color: #1D45B4;
+  }
+  .badge-retain {
+    background: #FFF0EB;
+    color: #C02800;
+  }
+  .badge-updated {
+    background: var(--gray-light);
+    color: var(--text-muted);
+  }
+  .badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.7;
+  }
+
+  .article-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--navy);
+    line-height: 1.3;
+    margin-bottom: 8px;
+  }
+  .article-subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+
+  .article-body {
+    padding: 28px 32px;
+  }
+
+  /* ─── PHASE HEADER ─── */
+  .phase {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 20px;
+  }
+  .phase + .step-card { }
+  .phase-label {
     font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 1px;
     color: var(--text-muted);
+  }
+  .phase-line {
+    flex: 1;
+    height: 1px;
+    background: var(--gray-border);
+  }
+
+  /* ─── STEP CARDS ─── */
+  .step-card {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .step-card:not(:last-of-type)::after {
+    content: '';
+    position: absolute;
+    top: 44px;
+    right: 19px;
+    width: 2px;
+    height: calc(100% - 20px);
+    background: var(--gray-border);
+    border-radius: 2px;
+  }
+  .step-num {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--red);
+    color: var(--white);
+    font-weight: 700;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+  }
+  .step-num.sub {
+    background: var(--navy);
+    width: 32px;
+    height: 32px;
+    font-size: 13px;
+  }
+
+  .step-content {
+    flex: 1;
+    background: var(--gray-light);
+    border: 1px solid var(--gray-border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    margin-top: 4px;
+  }
+  .step-content.branch {
+    border-color: transparent;
+    background: transparent;
+    padding: 0;
+    padding-top: 8px;
+  }
+
+  .step-title {
+    font-weight: 600;
+    font-size: 14.5px;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+  .step-desc {
+    font-size: 13.5px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* ─── ACTION LIST ─── */
+  .action-list {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .action-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 13.5px;
+    color: var(--text);
+    background: var(--white);
+    border: 1px solid var(--gray-border);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    line-height: 1.55;
+  }
+  .action-item .ai-icon {
+    color: var(--navy);
+    opacity: 0.5;
+    flex-shrink: 0;
+    margin-top: 2px;
+    font-size: 13px;
+  }
+
+  /* ─── OUTCOME PILLS ─── */
+  .outcomes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .outcome {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    font-weight: 500;
+    padding: 5px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    border: 1px solid;
+  }
+  .outcome:hover { opacity: 0.85; }
+  .outcome.ok {
+    background: var(--success-bg);
+    color: var(--success);
+    border-color: #B7E8CE;
+  }
+  .outcome.next {
+    background: var(--warning-bg);
+    color: var(--warning);
+    border-color: #F5D8A5;
+  }
+  .outcome.alert {
+    background: #FFF0EB;
+    color: var(--red);
+    border-color: #FFB596;
+  }
+
+  /* ─── BRANCH BLOCK ─── */
+  .branch-block {
+    margin-top: 12px;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--gray-border);
+  }
+  .branch-header {
+    background: var(--navy);
+    color: var(--white);
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .branch-header .bh-icon {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--red);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .branch-option {
+    padding: 12px 14px;
+    font-size: 13.5px;
+    border-top: 1px solid var(--gray-border);
+    background: var(--white);
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .branch-option:first-of-type { border-top: none; }
+  .bo-label {
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 12px;
+    white-space: nowrap;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+  .bo-label.if { color: var(--navy); }
+  .bo-label.then { color: var(--red); }
+
+  /* ─── SCRIPT QUOTE ─── */
+  .script-block {
+    margin-top: 10px;
+    background: #F8F9FB;
+    border-right: 3px solid var(--red);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 12px 16px;
+    font-size: 13.5px;
+    color: var(--navy-mid);
+    font-style: italic;
+    line-height: 1.7;
+  }
+
+  /* ─── SCENARIO CARDS (נטישה) ─── */
+  .scenario-card {
+    border-radius: var(--radius);
+    border: 1px solid var(--gray-border);
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .scenario-header {
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--navy);
+    color: var(--white);
+  }
+  .scenario-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--red);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .scenario-title {
+    font-size: 15.5px;
+    font-weight: 600;
+  }
+  .scenario-subtitle {
+    font-size: 12.5px;
+    color: rgba(255,255,255,0.55);
+    margin-top: 2px;
+  }
+  .scenario-body {
+    padding: 20px;
+    background: var(--white);
+  }
+
+  .signal-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
     margin-bottom: 16px;
+  }
+  .signal-pill {
+    background: #FFF0EB;
+    color: #C02800;
+    border: 1px solid #FFB596;
+    border-radius: 20px;
+    font-size: 12.5px;
+    font-weight: 500;
+    padding: 4px 12px;
+  }
+
+  .stage-row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .stage-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+
+  /* ─── OBJECTION BLOCK ─── */
+  .objection-block {
+    margin-top: 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--gray-border);
+    overflow: hidden;
+  }
+  .objection-q {
+    background: #F8F9FB;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .oq-tag {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--white);
+    background: var(--text-muted);
+    border-radius: 4px;
+    padding: 1px 7px;
+    flex-shrink: 0;
+  }
+  .objection-a {
+    padding: 10px 14px;
+    font-size: 13.5px;
+    color: var(--navy);
+    line-height: 1.65;
+    font-style: italic;
+    border-top: 1px solid var(--gray-border);
+  }
+  .oq-tag.rep { background: var(--red); }
+
+  /* ─── PRINCIPLES BOX ─── */
+  .principles-box {
+    background: var(--navy);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-top: 24px;
+    color: var(--white);
+  }
+  .pb-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--red-mid);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 14px;
+  }
+  .pb-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .pb-item {
+    display: flex;
+    gap: 10px;
+    font-size: 13.5px;
+    color: rgba(255,255,255,0.85);
+  }
+  .pb-num {
+    color: var(--red);
+    font-weight: 700;
+    font-size: 13px;
+    flex-shrink: 0;
+    width: 18px;
+  }
+
+  /* ─── SIDEBAR ─── */
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: sticky;
+    top: 72px;
+  }
+  .sidebar-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    border: 1px solid var(--gray-border);
+    overflow: hidden;
+  }
+  .sc-head {
+    font-size: 11.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--gray-border);
+  }
+  .sc-body { padding: 14px 16px; }
+  .toc-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 6px 0;
+    font-size: 13px;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-radius: 4px;
+    transition: color 0.1s;
+  }
+  .toc-item:hover { color: var(--navy); }
+  .toc-item.active { color: var(--red); font-weight: 500; }
+  .toc-num {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--gray-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10.5px;
+    font-weight: 600;
+    flex-shrink: 0;
+    color: var(--text-muted);
+  }
+  .toc-item.active .toc-num { background: var(--red); color: var(--white); }
+
+  .related-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    font-size: 13px;
+    color: var(--navy);
+    cursor: pointer;
+    border-bottom: 1px solid var(--gray-border);
+    transition: color 0.12s;
+  }
+  .related-item:last-child { border-bottom: none; }
+  .related-item:hover { color: var(--red); }
+  .ri-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-sm);
+    background: var(--gray-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+
+  /* ─── PAGE SECTION TITLES ─── */
+  .section-sep {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 36px 0 12px;
     padding-bottom: 10px;
     border-bottom: 2px solid var(--red);
     display: inline-block;
   }
 
-  .doc-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 16px;
-    margin-bottom: 40px;
-  }
-
-  .doc-card {
-    background: var(--white);
-    border: 1px solid var(--gray-border);
-    border-radius: 12px;
-    padding: 20px;
-    text-decoration: none;
-    color: inherit;
+  /* ─── DOC SWITCHER ─── */
+  .doc-tabs {
     display: flex;
-    flex-direction: column;
-    gap: 10px;
-    transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
-    position: relative;
-    overflow: hidden;
-  }
-  .doc-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 3px;
-    height: 100%;
-    background: var(--red);
-    opacity: 0;
-    transition: opacity 0.15s;
-  }
-  .doc-card:hover { border-color: var(--red); transform: translateY(-2px); }
-  .doc-card:hover::before { opacity: 1; }
-
-  .dc-icon {
-    width: 44px; height: 44px;
-    border-radius: 10px;
-    background: var(--navy);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 20px;
-  }
-  .dc-title { font-size: 15px; font-weight: 600; color: var(--navy); line-height: 1.35; }
-  .dc-desc { font-size: 13px; color: var(--text-muted); line-height: 1.55; flex: 1; }
-  .dc-meta {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 4px;
-    font-size: 12px;
-    color: var(--text-muted);
-  }
-  .dc-arrow {
-    margin-inline-start: auto;
-    color: var(--red);
-    font-size: 18px;
-    opacity: 0;
-    transition: opacity 0.15s;
-  }
-  .doc-card:hover .dc-arrow { opacity: 1; }
-
-  /* coming soon card */
-  .doc-card.coming-soon {
-    opacity: 0.55;
-    pointer-events: none;
+    gap: 0;
+    border-bottom: 1px solid var(--gray-border);
+    padding: 0 32px;
     background: var(--gray-light);
   }
-  .coming-soon-tag {
-    font-size: 11px;
-    font-weight: 600;
-    background: var(--gray-border);
+  .doc-tab {
+    padding: 12px 18px;
+    font-size: 13.5px;
+    font-weight: 500;
     color: var(--text-muted);
-    border-radius: 4px;
-    padding: 2px 8px;
+    cursor: pointer;
+    border-bottom: 2.5px solid transparent;
+    transition: all 0.15s;
+    margin-bottom: -1px;
   }
-
-  .stats-row {
-    display: flex;
-    gap: 16px;
-    margin-bottom: 36px;
-    flex-wrap: wrap;
-  }
-  .stat-box {
+  .doc-tab.active {
+    color: var(--red);
+    border-bottom-color: var(--red);
     background: var(--white);
-    border: 1px solid var(--gray-border);
-    border-radius: 10px;
-    padding: 14px 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 120px;
   }
-  .stat-num { font-size: 24px; font-weight: 700; color: var(--navy); }
-  .stat-label { font-size: 12px; color: var(--text-muted); }
+  .doc-tab:hover:not(.active) { color: var(--navy); }
+
+  .doc-panel { display: none; }
+  .doc-panel.active { display: block; }
+
+  hr.divider {
+    border: none;
+    border-top: 1px solid var(--gray-border);
+    margin: 24px 0;
+  }
 </style>
 </head>
 <body>
 
+<!-- TOP NAV -->
 <nav class="topnav">
-  <a href="index.html" class="topnav-logo">wecom.</a>
+  <div class="topnav-logo">wecom<span>.</span></div>
   <div class="topnav-sep"></div>
-  <div class="topnav-label">מאגר ידע פנימי – נציגי שירות ותמיכה</div>
+  <div class="topnav-label">מאגר ידע פנימי</div>
   <div class="topnav-search">
     <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="rgba(255,255,255,0.4)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-    <span>חיפוש…</span>
+    <span>חיפוש מסמכים…</span>
   </div>
 </nav>
 
-<div class="hero">
-  <div class="hero-logo">wecom.</div>
-  <div class="hero-title">מאגר ידע פנימי</div>
-  <div class="hero-sub">נהלי תפעול, דיבאג, ושימור לקוחות – עדכני ונגיש לכל הנציגים</div>
-  <div class="search-bar">
-    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="rgba(255,255,255,0.4)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-    <input type="text" placeholder="חפש נוהל, תקלה, תסריט שיחה…" />
-  </div>
+<div class="page-wrap">
+
+  <!-- MAIN ARTICLE -->
+  <main class="article">
+
+    <!-- TABS -->
+    <div class="doc-tabs">
+      <div class="doc-tab active" onclick="switchTab('tech')">📡 איטיות / חוסר גלישה</div>
+      <div class="doc-tab" onclick="switchTab('retain')">🛡 דיבאג נטישה</div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
+         DOC 1: BROWSING ISSUES
+    ═══════════════════════════════════════════════ -->
+    <div id="panel-tech" class="doc-panel active">
+      <div class="article-header">
+        <div class="doc-meta">
+          <span class="badge badge-tech"><span class="badge-dot"></span>תפעולי – טכני</span>
+          <span class="badge badge-updated">עודכן: יוני 2025</span>
+          <span class="badge badge-updated">📄 9 שלבים</span>
+        </div>
+        <h1 class="article-title">איטיות גלישה / חוסר גלישה</h1>
+        <p class="article-subtitle">נוהל דיבאג מלא – משלב מסנן ראשוני עד טיפול עמוק במסלולי מקום ספציפי / בכל מקום</p>
+      </div>
+
+      <div class="article-body">
+
+        <!-- PHASE 1 -->
+        <div class="phase">
+          <span class="phase-label">שלב 1 – מסנן</span>
+          <div class="phase-line"></div>
+          <span class="badge badge-tech" style="font-size:11px; padding:2px 8px;">ללא מעורבות לקוח</span>
+        </div>
+
+        <!-- Step 1 -->
+        <div class="step-card" id="s1">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-title">בדיקת חסימת גלישה בארץ</div>
+            <div class="action-list">
+              <div class="action-item"><span class="ai-icon">›</span>פתח CRM ↗ שדה <strong>"גלישה בארץ"</strong></div>
+              <div class="action-item"><span class="ai-icon">›</span>אם <strong>"חסום"</strong> → כנס לאזור האישי ↗ ביצוע פעולות ↗ גלישה ותוכן → הדלק את המתג</div>
+            </div>
+            <div class="outcomes">
+              <div class="outcome ok">✓ לא חסום – המשך לשלב 2</div>
+              <div class="outcome alert">⚑ חסום – הפעל מתג גלישה</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step-card" id="s2">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-title">בדיקת סיום חבילת גלישה</div>
+            <div class="action-list">
+              <div class="action-item"><span class="ai-icon">›</span>אזור אישי ↗ <strong>"השימושים שלי"</strong></div>
+            </div>
+            <div class="branch-block">
+              <div class="branch-header"><span class="bh-icon">?</span> מה מוצג?</div>
+              <div class="branch-option">
+                <span class="bo-label if">ניצל 100%</span>
+                <span>הסבר ללקוח שהחבילה הסתיימה. הצע חבילה חדשה ↗ "רכישת נפח מתחדש". אם ירצה להפסיק חידוש חודשי – לעלות לקו.</span>
+              </div>
+              <div class="branch-option">
+                <span class="bo-label then">חבילה פעילה</span>
+                <span>המשך לשלב 3</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="step-card" id="s3">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <div class="step-title">בדיקות במכשיר הלקוח</div>
+            <div class="step-desc">עבור עם הלקוח על ההגדרות הבאות:</div>
+            <div class="action-list" style="margin-top:10px">
+              <div class="action-item"><span class="ai-icon">›</span><strong>נתונים סלולריים</strong> – אם כבוי → להדליק</div>
+              <div class="action-item"><span class="ai-icon">›</span><strong>Wi-Fi</strong> – אם דולק → לכבות</div>
+              <div class="action-item"><span class="ai-icon">›</span><strong>נקודת גישה אישית</strong> – אם דולקת → לכבות</div>
+              <div class="action-item"><span class="ai-icon">›</span><strong>הגבלת צריכה / חוסך נתונים</strong> – אם פעיל → לכבות</div>
+              <div class="action-item"><span class="ai-icon">›</span><strong>VPN</strong> – אם דולק → לכבות</div>
+              <div class="action-item"><span class="ai-icon">›</span><strong>אפליקציות סינון</strong> – אם קיימות → להסיר</div>
+              <div class="action-item"><span class="ai-icon">›</span><strong>קו מנוהל</strong> (מעסיק/חברה) → להפנות לחברה המנהלת</div>
+            </div>
+            <div class="outcomes">
+              <div class="outcome ok">✓ הסתדר – סיום השיחה</div>
+              <div class="outcome next">→ לא הסתדר – המשך לשלב 2</div>
+            </div>
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- PHASE 2 -->
+        <div class="phase">
+          <span class="phase-label">שלב 2 – מברר</span>
+          <div class="phase-line"></div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="step-card" id="s4">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <div class="step-title">סיווג סוג התקלה</div>
+            <div class="script-block">"אתה לא גולש בכלל, או שהגלישה איטית?"<br>"זה קורה בכל מקום או רק במקום מסוים?"</div>
+            <div class="branch-block" style="margin-top:12px">
+              <div class="branch-header"><span class="bh-icon">?</span> לאיזה מסלול?</div>
+              <div class="branch-option">
+                <span class="bo-label if">מקום ספציפי</span>
+                <span>→ <strong>מסלול 1</strong> (שלב 4א)</span>
+              </div>
+              <div class="branch-option">
+                <span class="bo-label then">בכל מקום</span>
+                <span>→ <strong>מסלול 2</strong> (שלב 4ב)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Route 1 label -->
+        <div class="phase" style="margin-top:8px">
+          <span class="phase-label" style="color:#1D45B4">📍 מסלול 1 – מקום ספציפי</span>
+          <div class="phase-line"></div>
+        </div>
+
+        <div class="step-card">
+          <div class="step-num sub">1א</div>
+          <div class="step-content">
+            <div class="step-title">אימות המיקום</div>
+            <div class="step-desc">בירור: מחסן / ממ"ד / חדר תת-קרקעי / חדר ספציפי?</div>
+            <div class="branch-block" style="margin-top:10px">
+              <div class="branch-header"><span class="bh-icon">?</span> סוג מיקום?</div>
+              <div class="branch-option">
+                <span class="bo-label if">מיקום נקודתי</span>
+                <span>הסבר על כיסוי רשת → סיום שיחה</span>
+              </div>
+              <div class="branch-option">
+                <span class="bo-label then">אחר</span>
+                <span>המשך לבדיקת אנטנות</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-card">
+          <div class="step-num sub">1ב</div>
+          <div class="step-content">
+            <div class="step-title">בדיקת אנטנות בסביבה</div>
+            <div class="branch-block" style="margin-top:8px">
+              <div class="branch-header"><span class="bh-icon">?</span> מצב אנטנות?</div>
+              <div class="branch-option">
+                <span class="bo-label if">אין אנטנות</span>
+                <span>תסריט פריסת רשת → הורדת לקוח מהקו</span>
+              </div>
+              <div class="branch-option">
+                <span class="bo-label then">יש אנטנות</span>
+                <span>בדוק אם עוד לקוחות מדווחים: אם כן → פתח טופס רדיו + GNETRUCK (עדכון עד 3 שעות). אם לא → עבור למסלול 2 מסעיף 2.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Route 2 label -->
+        <div class="phase" style="margin-top:20px">
+          <span class="phase-label" style="color:#1D45B4">🌐 מסלול 2 – בכל מקום</span>
+          <div class="phase-line"></div>
+        </div>
+
+        <div class="step-card" id="s5">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <div class="step-title">בדיקת CRM – Prepaid / הונאה</div>
+            <div class="branch-block" style="margin-top:8px">
+              <div class="branch-header"><span class="bh-icon">?</span> מצב הלקוח?</div>
+              <div class="branch-option">
+                <span class="bo-label if">נוייד Prepaid / הונאה</span>
+                <span>פתח פנייה ל-IT → המתן לעדכון → חזור ללקוח</span>
+              </div>
+              <div class="branch-option">
+                <span class="bo-label then">תקין</span>
+                <span>המשך לבדיקת סימון רשת</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-card" id="s6">
+          <div class="step-num">6</div>
+          <div class="step-content">
+            <div class="step-title">בדיקת סימון רשת</div>
+            <div class="script-block">"איזה סימון מופיע ליד פסי הקליטה? (H+ / 3G / LTE / 5G)"</div>
+            <div class="branch-block" style="margin-top:10px">
+              <div class="branch-header"><span class="bh-icon">?</span> סימון שמוצג?</div>
+              <div class="branch-option">
+                <span class="bo-label if">3G / H+ בלבד</span>
+                <span>הנחה לשנות הגדרת רשת → <strong>4G/5G אוטומטי</strong>. הסתדר? סיום. אחרת: המשך.</span>
+              </div>
+              <div class="branch-option">
+                <span class="bo-label then">5G / 4G / LTE</span>
+                <span>המשך לבדיקת APN</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-card" id="s7">
+          <div class="step-num">7</div>
+          <div class="step-content">
+            <div class="step-title">בדיקת APN</div>
+            <div class="action-list">
+              <div class="action-item"><span class="ai-icon">›</span>ודא שה-APN מוגדר ל-<strong>WE</strong></div>
+              <div class="action-item"><span class="ai-icon">›</span>אם לא מוגדר → הגדר</div>
+            </div>
+            <div class="outcomes">
+              <div class="outcome ok">✓ הסתדר – סיום</div>
+              <div class="outcome next">→ לא הסתדר – שלב 8</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-card" id="s8">
+          <div class="step-num">8</div>
+          <div class="step-content">
+            <div class="step-title">בדיקת מהירות גלישה <span style="font-weight:400;font-size:12.5px;color:var(--text-muted)">(רק אם מדובר באיטיות)</span></div>
+            <div class="action-list">
+              <div class="action-item"><span class="ai-icon">›</span>בקש מהלקוח להריץ <strong>Speedtest</strong></div>
+            </div>
+            <div class="branch-block" style="margin-top:10px">
+              <div class="branch-header"><span class="bh-icon">?</span> תוצאה?</div>
+              <div class="branch-option">
+                <span class="bo-label if">מעל 6 מגה</span>
+                <span>עדכן לקוח – תקין → סיום שיחה</span>
+              </div>
+              <div class="branch-option">
+                <span class="bo-label then">מתחת ל-6 מגה</span>
+                <span>המשך לריענון גלישה</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-card" id="s9">
+          <div class="step-num">9</div>
+          <div class="step-content">
+            <div class="step-title">ריענון גלישה במערכת</div>
+            <div class="action-list">
+              <div class="action-item"><span class="ai-icon">›</span>לחץ על מתג <strong>"גלישה בארץ"</strong> ← כבה ← הפעל מחדש</div>
+              <div class="action-item"><span class="ai-icon">›</span>בקש מלקוח לאתחל מכשיר</div>
+            </div>
+            <div class="outcomes">
+              <div class="outcome ok">✓ הסתדר – סיום</div>
+              <div class="outcome next">→ לא הסתדר – איפוס הגדרות רשת</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-card" id="s10">
+          <div class="step-num" style="background:var(--navy)">10</div>
+          <div class="step-content">
+            <div class="step-title">איפוס הגדרות רשת</div>
+            <div class="action-list">
+              <div class="action-item"><span class="ai-icon">›</span>הנחה לקוח לבצע <strong>איפוס הגדרות רשת</strong> במכשיר</div>
+              <div class="action-item"><span class="ai-icon">›</span>הגדר APN מחדש לאחר האיפוס</div>
+            </div>
+            <div class="outcomes">
+              <div class="outcome ok">✓ הסתדר – סיום</div>
+              <div class="outcome next">→ לא הסתדר – ריענון SIM</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-card" id="s11">
+          <div class="step-num" style="background:var(--navy)">11</div>
+          <div class="step-content">
+            <div class="step-title">ריענון SIM</div>
+            <div class="action-list">
+              <div class="action-item"><span class="ai-icon">›</span>CRM ← מצב עריכה על המספר ← <strong>sim block lbl</strong> ← שמור</div>
+              <div class="action-item"><span class="ai-icon">›</span>שוב עריכה ← <strong>sim allow lbl</strong> ← שמור</div>
+              <div class="action-item"><span class="ai-icon">›</span>בקש מלקוח לאתחל מכשיר</div>
+            </div>
+            <div class="outcomes">
+              <div class="outcome ok">✓ הסתדר – סיום</div>
+              <div class="outcome next">→ לא הסתדר – SIM במכשיר אחר</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-card" id="s12">
+          <div class="step-num" style="background:var(--navy)">12</div>
+          <div class="step-content">
+            <div class="step-title">SIM במכשיר אחר</div>
+            <div class="branch-block" style="margin-top:8px">
+              <div class="branch-header"><span class="bh-icon">?</span> תוצאה?</div>
+              <div class="branch-option">
+                <span class="bo-label if">עבד במכשיר אחר</span>
+                <span>בעיה במכשיר → הפנה למעבדה → הורד מהקו</span>
+              </div>
+              <div class="branch-option">
+                <span class="bo-label then">לא עבד</span>
+                <span>יתכן ה-SIM פגום → החלפת SIM / eSIM</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step-card" style="margin-bottom:0">
+          <div class="step-num" style="background:#C8430A">13</div>
+          <div class="step-content" style="background:#FFF8F5; border-color:#FFB596">
+            <div class="step-title" style="color:var(--red)">החלפת SIM / eSIM</div>
+            <div class="action-list">
+              <div class="action-item"><span class="ai-icon">›</span><strong>eSIM</strong> – עדיפות ראשונה: בצע בדיגיטל</div>
+              <div class="action-item"><span class="ai-icon">›</span><strong>SIM פיזי</strong> – שלח ללקוח להום סנטר</div>
+            </div>
+            <div class="outcomes">
+              <div class="outcome ok">✓ הסתדר – סיום</div>
+              <div class="outcome alert">⚑ לא הסתדר – פנייה למומחי תמיכה</div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /article-body -->
+    </div><!-- /panel-tech -->
+
+
+    <!-- ═══════════════════════════════════════════════
+         DOC 2: CHURN RETENTION
+    ═══════════════════════════════════════════════ -->
+    <div id="panel-retain" class="doc-panel">
+      <div class="article-header">
+        <div class="doc-meta">
+          <span class="badge badge-retain"><span class="badge-dot"></span>שימור לקוחות</span>
+          <span class="badge badge-updated">עודכן: יוני 2025</span>
+          <span class="badge badge-updated">📄 3 מסלולים</span>
+        </div>
+        <h1 class="article-title">דיבאג נטישה</h1>
+        <p class="article-subtitle">מדריך לנציגים לזיהוי לקוח המאותת נטישה, פתיחת שיחה נכונה, וטיפול בשלוש הסיבות העיקריות לעזיבה</p>
+      </div>
+
+      <div class="article-body">
+
+        <!-- RECOGNITION SIGNALS -->
+        <div class="phase">
+          <span class="phase-label">שלב 0 – זיהוי סימני אזהרה</span>
+          <div class="phase-line"></div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px">
+          <div style="background:var(--gray-light);border:1px solid var(--gray-border);border-radius:var(--radius);padding:16px">
+            <div class="stage-label">סימנים מילוליים ישירים</div>
+            <div class="signal-list">
+              <span class="signal-pill">"לא משתלם לי להישאר"</span>
+              <span class="signal-pill">"אני שוקל לעבור"</span>
+              <span class="signal-pill">"נמאס לי"</span>
+              <span class="signal-pill">"תבטלו כבר"</span>
+            </div>
+          </div>
+          <div style="background:var(--gray-light);border:1px solid var(--gray-border);border-radius:var(--radius);padding:16px">
+            <div class="stage-label">סימנים עקיפים / רמיזות</div>
+            <div class="signal-list">
+              <span class="signal-pill" style="background:#EBF1FF;color:#1D45B4;border-color:#B5D4F4">בודק חשבוניות</span>
+              <span class="signal-pill" style="background:#EBF1FF;color:#1D45B4;border-color:#B5D4F4">שואל על קנס יציאה</span>
+              <span class="signal-pill" style="background:#EBF1FF;color:#1D45B4;border-color:#B5D4F4">שואל על ניוד מספר</span>
+              <span class="signal-pill" style="background:#EBF1FF;color:#1D45B4;border-color:#B5D4F4">מבקש סיכום במייל</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- OPENING APPROACH -->
+        <div class="phase">
+          <span class="phase-label">פתיחת שיחה מומלצת</span>
+          <div class="phase-line"></div>
+        </div>
+
+        <div class="script-block" style="margin-bottom:20px;font-size:14px">
+          "אני מבינה את ההרגשה, ומתנצלת על החוויה עד עכשיו. עברתי על הרישומים במערכת — אני כאן איתך ודואגת שתקבל טיפול מלא לשביעות רצונך. אעשה עבורך סדר וסגירה מקצה לקצה כבר בשיחה הזו."
+        </div>
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px">
+          <div style="background:var(--success-bg);border:1px solid #B7E8CE;border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;flex:1;min-width:140px">
+            <strong style="color:var(--success);display:block;margin-bottom:3px">ידיעה</strong>
+            <span style="color:var(--text-muted)">"עברתי על הרישומים"</span>
+          </div>
+          <div style="background:var(--warning-bg);border:1px solid #F5D8A5;border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;flex:1;min-width:140px">
+            <strong style="color:var(--warning);display:block;margin-bottom:3px">בעלות</strong>
+            <span style="color:var(--text-muted)">"אני כאן איתך"</span>
+          </div>
+          <div style="background:#FFF0EB;border:1px solid #FFB596;border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;flex:1;min-width:140px">
+            <strong style="color:var(--red);display:block;margin-bottom:3px">תוצאה</strong>
+            <span style="color:var(--text-muted)">"סגירה כבר בשיחה הזו"</span>
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- REASON 1 -->
+        <div class="scenario-card">
+          <div class="scenario-header">
+            <div class="scenario-icon">📡</div>
+            <div>
+              <div class="scenario-title">סיבה 1 – בעיות טכניות / קליטה</div>
+              <div class="scenario-subtitle">"אין קליטה / ניתוקים / אינטרנט איטי – עובר חברה"</div>
+            </div>
+          </div>
+          <div class="scenario-body">
+
+            <div class="stage-row">
+              <div>
+                <div class="stage-label">שלב 1 – אמפתיה + בעלות</div>
+                <div class="script-block">"אני מבינה לגמרי את התחושה ומתנצלת על כך. אני רואה שבשיחות הקודמות כבר ניסו לסייע, אז חשוב לי שהפעם אנחנו באמת סוגרים את זה. אני כאן איתך עד שתקבל פתרון לשביעות רצונך."</div>
+              </div>
+              <div>
+                <div class="stage-label">שלב 2 – בדיקות טכניות</div>
+                <div class="action-list">
+                  <div class="action-item"><span class="ai-icon">›</span>פעל לפי <strong>דיבאג קליטה</strong> – התייחס לתיעודים קודמים ואשר מול הלקוח</div>
+                </div>
+                <div class="script-block" style="margin-top:8px">"בדקתי את פרטי הקו והאזור שלך. יש לי כמה פתרונות כדי שתוכל להישאר יציב ומחובר בלי להתאמץ."</div>
+              </div>
+              <div>
+                <div class="stage-label">שלב 3 – פתרונות להציע</div>
+                <div class="action-list">
+                  <div class="action-item"><span class="ai-icon">›</span><strong>Wi-Fi Calling</strong> – כפתרון בית / משרד</div>
+                  <div class="action-item"><span class="ai-icon">›</span>בדיקת אזור / תשתית / מכשיר / החלפת SIM לפי הצורך</div>
+                  <div class="action-item"><span class="ai-icon">›</span>במידת הצורך – העמקה הנדסית ומעקב יזום עד מענה</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="objection-block">
+              <div class="objection-q">
+                <span class="oq-tag">לקוח</span>
+                "ניסיתי הכול, זה לא יעזור."
+              </div>
+              <div class="objection-a">
+                "מבינה לגמרי למה זה נשמע לך ככה, אבל ההבדל עכשיו הוא שאני רואה את כל מה שנעשה עד היום ומרכזת עבורך את הטיפול מקצה לקצה. אני מפעילה עכשיו בדיקה ממוקדת באזור שלך ודואגת לוודא שWi-Fi Calling פעיל ומוגדר נכון. אם לא תרגיש שיפור – אני זו שאחזור אליך עם חלופה."
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- REASON 2 -->
+        <div class="scenario-card">
+          <div class="scenario-header">
+            <div class="scenario-icon">💰</div>
+            <div>
+              <div class="scenario-title">סיבה 2 – מחיר / עלויות</div>
+              <div class="scenario-subtitle">"יקר" / "קיבלתי הצעה זולה יותר" / "חיוב לא ברור"</div>
+            </div>
+          </div>
+          <div class="scenario-body">
+
+            <div class="script-block" style="margin-bottom:14px">"אני עושה לך עכשיו סדר בחיובים ובחבילה, ומוודאת שאתה מקבל את המקסימום שמתאים לשימוש שלך – בלי לשלם על מה שלא צריך."</div>
+
+            <div class="stage-label" style="margin-bottom:8px">מה מציעים</div>
+            <div class="action-list" style="margin-bottom:14px">
+              <div class="action-item"><span class="ai-icon">›</span>בדיקת שימוש ↔ התאמת חבילה אמיתית (לא "להוזיל בכל מחיר")</div>
+              <div class="action-item"><span class="ai-icon">›</span>בירור / תיקון חיוב לא ברור + זיכוי לפי מדיניות</div>
+              <div class="action-item"><span class="ai-icon">›</span>הטבה נקודתית – כחלק מפתרון כולל, לא "פלסטר"</div>
+            </div>
+
+            <div class="stage-label" style="margin-bottom:8px">יתרונות wecom – תסריט שיחה</div>
+            <div class="script-block" style="margin-bottom:14px">"אנחנו גם אטרקטיביים במחיר, גם עם שירות אנושי זמין ופריסה טכנית מתקדמת (5G, פתרונות ביתיים), וגם שקופים וחדשניים: אתה יודע בדיוק מה יש לך, ואנחנו מתאימים את החבילה לשימוש שלך כדי שלא תשלם סתם."</div>
+
+            <div class="objection-block">
+              <div class="objection-q">
+                <span class="oq-tag">לקוח</span>
+                "קיבלתי 10 ש״ח פחות אצל המתחרה."
+              </div>
+              <div class="objection-a">
+                <span class="oq-tag rep" style="display:inline;margin-left:6px">נציג</span>
+                "אפשר להוריד מחיר בכל מקום – אבל חשוב שלא תאבד מהירות / כיסוי / שירות אנושי כשצריך. אני מתאימה לך עכשיו חבילה שתשמור על הערכים האלה ועדיין תהיה משתלמת."
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- REASON 3 -->
+        <div class="scenario-card">
+          <div class="scenario-header">
+            <div class="scenario-icon">😤</div>
+            <div>
+              <div class="scenario-title">סיבה 3 – שירות / חוויה / טרטור</div>
+              <div class="scenario-subtitle">"אי אפשר להשיג אתכם" / "הבטיחו וחזרו בהם" / "עברתי נציגים"</div>
+            </div>
+          </div>
+          <div class="scenario-body">
+
+            <div class="script-block" style="margin-bottom:14px">"אני מצטערת על החוויה. זמני המתנה חריגים אינם הסטנדרט אצלנו. מעכשיו אני אחראית לטיפול מקצה לקצה – כדי שלא תצטרך לחזור שוב."</div>
+
+            <div class="stage-label" style="margin-bottom:8px">לקוח שעבר כמה ידיים</div>
+            <div class="script-block" style="margin-bottom:14px">"ראיתי שעברת כבר כמה ידיים ושזה עדיין לא נפתר. מעכשיו אני מטפלת בזה אישית ודואגת לסגור הכול מול הגורמים הרלוונטיים עד שתקבל מענה ברור וסופי."</div>
+
+            <div class="stage-label" style="margin-bottom:8px">הבטחות שלא קוימו</div>
+            <div class="script-block" style="margin-bottom:14px">"אני רואה לפי התיעוד במערכת בדיוק מה הובטח לך, ואני אדאג שזה יקרה בפועל. מעכשיו אני מטפלת בזה אישית ומעדכנת אותך עד שזה נסגר."</div>
+
+            <div class="objection-block">
+              <div class="objection-q">
+                <span class="oq-tag">לקוח</span>
+                "לא מאמין, אמרו לי כבר."
+              </div>
+              <div class="objection-a">
+                <span class="oq-tag rep" style="display:inline;margin-left:6px">נציג</span>
+                "אני מבינה אותך, וזה נשמע באמת לא פשוט. תן לי הזדמנות להראות לך שהשירות שלנו הרבה יותר טוב ממה שחווית עד עכשיו. אני כאן כדי לטפל בזה כמו שצריך – עד שזה נפתר!"
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- CLOSING -->
+        <div class="phase" style="margin-top:8px">
+          <span class="phase-label">סגירת שיחה</span>
+          <div class="phase-line"></div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px">
+          <div style="background:var(--gray-light);border:1px solid var(--gray-border);border-radius:var(--radius);padding:16px">
+            <div class="stage-label" style="margin-bottom:8px">טרם מיצינו פתרונות</div>
+            <div class="script-block" style="background:white;font-size:13px">"קבענו: אני עושה בדיקה / התאמה, חוזרת אליך עד ___ ב___. אם משהו מתעכב – אני יוצרת קשר."</div>
+          </div>
+          <div style="background:var(--gray-light);border:1px solid var(--gray-border);border-radius:var(--radius);padding:16px">
+            <div class="stage-label" style="margin-bottom:8px">מיצינו / לקוח לא מעוניין</div>
+            <div style="font-size:13.5px;color:var(--text-muted);line-height:1.6">מכבדים את רצון הלקוח ומשאירים גשר חיובי לחזרה. לא לכפות.</div>
+          </div>
+        </div>
+
+        <!-- PRINCIPLES -->
+        <div class="principles-box">
+          <div class="pb-title">עקרונות-על לשיחה טובה</div>
+          <div class="pb-list">
+            <div class="pb-item"><span class="pb-num">1.</span>בעלות אחת ברורה – הלקוח יודע מי אחראי ומה הצעד הבא</div>
+            <div class="pb-item"><span class="pb-num">2.</span>ידיעה, לא חקירה – "עברתי על הרישומים שלך" מקל ומרגיע</div>
+            <div class="pb-item"><span class="pb-num">3.</span>ערך + טכנולוגיה + שקיפות – לא "מחיר או שירות" אלא גם וגם וגם</div>
+            <div class="pb-item"><span class="pb-num">4.</span>שקט תפעולי – Wi-Fi Calling, התאמות חבילה, מעקב יזום</div>
+            <div class="pb-item"><span class="pb-num">5.</span>מדד הצלחה: הלקוח יצא עם בעל בית + צעד הבא מתוארך + תחושת שליטה</div>
+            <div class="pb-item"><span class="pb-num">6.</span>כבוד לרצון הלקוח – מתעקש לא לדבר? מכבדים ומשאירים גשר חיובי</div>
+          </div>
+        </div>
+
+      </div><!-- /article-body -->
+    </div><!-- /panel-retain -->
+
+  </main>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <!-- TOC -->
+    <div class="sidebar-card" id="toc-card-tech">
+      <div class="sc-head">תוכן עניינים</div>
+      <div class="sc-body">
+        <div class="toc-item active" onclick="scrollTo('s1')"><span class="toc-num">1</span>חסימת גלישה בארץ</div>
+        <div class="toc-item" onclick="scrollTo('s2')"><span class="toc-num">2</span>סיום חבילה</div>
+        <div class="toc-item" onclick="scrollTo('s3')"><span class="toc-num">3</span>בדיקות מכשיר</div>
+        <div class="toc-item" onclick="scrollTo('s4')"><span class="toc-num">4</span>סיווג תקלה</div>
+        <div class="toc-item" onclick="scrollTo('s5')"><span class="toc-num">5</span>CRM – Prepaid</div>
+        <div class="toc-item" onclick="scrollTo('s6')"><span class="toc-num">6</span>סימון רשת</div>
+        <div class="toc-item" onclick="scrollTo('s7')"><span class="toc-num">7</span>בדיקת APN</div>
+        <div class="toc-item" onclick="scrollTo('s8')"><span class="toc-num">8</span>מהירות גלישה</div>
+        <div class="toc-item" onclick="scrollTo('s9')"><span class="toc-num">9</span>ריענון גלישה</div>
+        <div class="toc-item" onclick="scrollTo('s10')"><span class="toc-num">10</span>איפוס הגדרות רשת</div>
+        <div class="toc-item" onclick="scrollTo('s11')"><span class="toc-num">11</span>ריענון SIM</div>
+        <div class="toc-item" onclick="scrollTo('s12')"><span class="toc-num">12</span>SIM במכשיר אחר</div>
+      </div>
+    </div>
+
+    <div class="sidebar-card" id="toc-card-retain" style="display:none">
+      <div class="sc-head">תוכן עניינים</div>
+      <div class="sc-body">
+        <div class="toc-item active">🔍 זיהוי סימני אזהרה</div>
+        <div class="toc-item">💬 פתיחת שיחה</div>
+        <div class="toc-item">📡 סיבה 1 – טכנית / קליטה</div>
+        <div class="toc-item">💰 סיבה 2 – מחיר</div>
+        <div class="toc-item">😤 סיבה 3 – שירות</div>
+        <div class="toc-item">🏁 סגירת שיחה</div>
+        <div class="toc-item">⭐ עקרונות-על</div>
+      </div>
+    </div>
+
+    <!-- Related -->
+    <div class="sidebar-card">
+      <div class="sc-head">מסמכים קשורים</div>
+      <div class="sc-body">
+        <div class="related-item">
+          <div class="ri-icon">📶</div>
+          <span>דיבאג קליטה – SIM לא רשום ברשת</span>
+        </div>
+        <div class="related-item">
+          <div class="ri-icon">📞</div>
+          <span>Wi-Fi Calling – הגדרה ופתרון תקלות</span>
+        </div>
+        <div class="related-item">
+          <div class="ri-icon">📋</div>
+          <span>טופס רדיו + GNETRUCK</span>
+        </div>
+        <div class="related-item">
+          <div class="ri-icon">💳</div>
+          <span>מדיניות זיכויים והטבות</span>
+        </div>
+      </div>
+    </div>
+
+  </aside>
+
 </div>
 
-<div class="main-content">
-
-  <div class="stats-row">
-    <div class="stat-box">
-      <span class="stat-num" id="doc-count">2</span>
-      <span class="stat-label">מסמכים פעילים</span>
-    </div>
-    <div class="stat-box">
-      <span class="stat-num">2</span>
-      <span class="stat-label">קטגוריות</span>
-    </div>
-    <div class="stat-box">
-      <span class="stat-num">יוני 25</span>
-      <span class="stat-label">עדכון אחרון</span>
-    </div>
-  </div>
-
-  <!-- CATEGORY: TECHNICAL -->
-  <div class="section-title">📡 תפעולי – טכני</div>
-  <div class="doc-grid">
-
-    <a href="docs/browsing-issues.html" class="doc-card">
-      <div class="dc-icon">🌐</div>
-      <div class="dc-title">איטיות גלישה / חוסר גלישה</div>
-      <div class="dc-desc">נוהל דיבאג מלא – מסנן ראשוני, מסלול מקום ספציפי, מסלול בכל מקום, עד החלפת SIM.</div>
-      <div class="dc-meta">
-        <span class="badge badge-tech" style="font-size:11px;padding:2px 8px;">טכני</span>
-        <span>13 שלבים</span>
-        <span class="dc-arrow">←</span>
-      </div>
-    </a>
-
-    <div class="doc-card coming-soon">
-      <div class="dc-icon">📶</div>
-      <div class="dc-title">SIM לא רשום ברשת</div>
-      <div class="dc-desc">תקלות רישום SIM, STK, בדיקות אנטנה ועוד.</div>
-      <div class="dc-meta">
-        <span class="coming-soon-tag">בקרוב</span>
-      </div>
-    </div>
-
-    <div class="doc-card coming-soon">
-      <div class="dc-icon">📞</div>
-      <div class="dc-title">Wi-Fi Calling – הגדרה ותקלות</div>
-      <div class="dc-desc">הגדרת שיחות דרך Wi-Fi ופתרון בעיות נפוצות.</div>
-      <div class="dc-meta">
-        <span class="coming-soon-tag">בקרוב</span>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- CATEGORY: RETENTION -->
-  <div class="section-title">🛡 שימור לקוחות</div>
-  <div class="doc-grid">
-
-    <a href="docs/churn-retention.html" class="doc-card">
-      <div class="dc-icon">💬</div>
-      <div class="dc-title">דיבאג נטישה</div>
-      <div class="dc-desc">זיהוי לקוח מאותת נטישה, פתיחת שיחה, טיפול ב-3 הסיבות העיקריות לעזיבה.</div>
-      <div class="dc-meta">
-        <span class="badge badge-retain" style="font-size:11px;padding:2px 8px;">שימור</span>
-        <span>3 מסלולים</span>
-        <span class="dc-arrow">←</span>
-      </div>
-    </a>
-
-    <div class="doc-card coming-soon">
-      <div class="dc-icon">🎁</div>
-      <div class="dc-title">מדיניות זיכויים והטבות</div>
-      <div class="dc-desc">טבלת הטבות מאושרות לפי תרחיש ונהלי אסקלציה.</div>
-      <div class="dc-meta">
-        <span class="coming-soon-tag">בקרוב</span>
-      </div>
-    </div>
-
-  </div>
-
-</div>
-
+<script>
+  function switchTab(id) {
+    document.querySelectorAll('.doc-tab').forEach((t,i)=> t.classList.toggle('active', (i===0&&id==='tech')||(i===1&&id==='retain')));
+    document.getElementById('panel-tech').classList.toggle('active', id==='tech');
+    document.getElementById('panel-retain').classList.toggle('active', id==='retain');
+    document.getElementById('toc-card-tech').style.display = id==='tech' ? '' : 'none';
+    document.getElementById('toc-card-retain').style.display = id==='retain' ? '' : 'none';
+  }
+  function scrollTo(id) {
+    document.getElementById(id)?.scrollIntoView({behavior:'smooth', block:'start'});
+    document.querySelectorAll('.toc-item').forEach(el => el.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+  }
+</script>
 </body>
 </html>
