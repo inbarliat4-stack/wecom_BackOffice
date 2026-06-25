@@ -635,6 +635,160 @@
     border-top: 1px solid var(--gray-border);
     margin: 24px 0;
   }
+
+  /* ─── MOBILE BOTTOM NAV ─── */
+  .mobile-tabnav {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    background: var(--navy);
+    border-top: 1px solid rgba(255,255,255,0.1);
+    z-index: 200;
+    padding: 0 0 env(safe-area-inset-bottom);
+  }
+  .mobile-tabnav-inner {
+    display: flex;
+    height: 56px;
+  }
+  .mob-tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.45);
+    cursor: pointer;
+    transition: color 0.15s;
+    border: none;
+    background: none;
+    padding: 0;
+  }
+  .mob-tab.active { color: var(--red); }
+  .mob-tab-icon { font-size: 18px; line-height: 1; }
+
+  /* ─── MOBILE TOC DRAWER ─── */
+  .toc-drawer-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 300;
+  }
+  .toc-drawer {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    background: var(--white);
+    border-radius: 20px 20px 0 0;
+    padding: 20px 20px calc(20px + env(safe-area-inset-bottom));
+    z-index: 301;
+    max-height: 70vh;
+    overflow-y: auto;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+  }
+  .toc-drawer.open { transform: translateY(0); }
+  .toc-drawer-handle {
+    width: 36px;
+    height: 4px;
+    background: var(--gray-border);
+    border-radius: 2px;
+    margin: 0 auto 16px;
+  }
+  .toc-drawer-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 14px;
+  }
+  .toc-drawer .toc-item {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--gray-border);
+    font-size: 14px;
+  }
+  .toc-drawer .toc-item:last-child { border-bottom: none; }
+
+  /* ─── RESPONSIVE BREAKPOINTS ─── */
+  @media (max-width: 768px) {
+    /* Nav */
+    .topnav { padding: 0 16px; height: 48px; }
+    .topnav-sep, .topnav-label { display: none; }
+    .topnav-search { min-width: 0; flex: 1; margin-inline-start: 12px; }
+
+    /* Layout: stack sidebar below on mobile — but we hide it, use drawer instead */
+    .page-wrap {
+      grid-template-columns: 1fr;
+      padding: 16px 12px 80px;
+      gap: 0;
+    }
+    .sidebar { display: none; }
+
+    /* Article */
+    .article { border-radius: 10px; }
+    .article-header { padding: 18px 16px 16px; }
+    .article-title { font-size: 18px; }
+    .article-body { padding: 16px; }
+
+    /* Tabs */
+    .doc-tabs { padding: 0 16px; }
+    .doc-tab { padding: 10px 12px; font-size: 13px; }
+
+    /* Step cards — tighter on mobile */
+    .step-card { gap: 10px; }
+    .step-num { width: 32px; height: 32px; font-size: 13px; }
+    .step-num.sub { width: 26px; height: 26px; font-size: 11px; }
+    .step-card:not(:last-of-type)::after { right: 15px; top: 36px; }
+    .step-content { padding: 10px 12px; }
+    .step-title { font-size: 13.5px; }
+    .action-item { font-size: 13px; padding: 7px 10px; }
+
+    /* Branch blocks */
+    .branch-option { flex-direction: column; gap: 4px; }
+    .bo-label { white-space: normal; }
+
+    /* Script block */
+    .script-block { font-size: 13px; padding: 10px 12px; }
+
+    /* Scenario cards */
+    .scenario-header { padding: 12px 14px; }
+    .scenario-title { font-size: 14px; }
+    .scenario-body { padding: 14px; }
+
+    /* Grids → stack */
+    div[style*="grid-template-columns:1fr 1fr"] {
+      display: flex !important;
+      flex-direction: column !important;
+    }
+    div[style*="grid-template-columns:1fr 1fr 1fr"] {
+      display: flex !important;
+      flex-direction: column !important;
+    }
+
+    /* Phase labels */
+    .phase-label { font-size: 10px; letter-spacing: 0.5px; }
+
+    /* Principles */
+    .principles-box { padding: 16px; }
+    .pb-item { font-size: 13px; }
+
+    /* Show mobile nav */
+    .mobile-tabnav { display: block; }
+    .toc-drawer-overlay { display: block; }
+  }
+
+  @media (max-width: 400px) {
+    .article-title { font-size: 16px; }
+    .doc-tab { padding: 10px 8px; font-size: 12px; }
+    .topnav-logo { font-size: 18px; }
+  }
 </style>
 </head>
 <body>
@@ -1260,18 +1414,104 @@
 
 </div>
 
+<!-- MOBILE BOTTOM NAV -->
+<nav class="mobile-tabnav">
+  <div class="mobile-tabnav-inner">
+    <button class="mob-tab active" id="mob-tab-tech" onclick="switchTab('tech')">
+      <span class="mob-tab-icon">📡</span>
+      <span>גלישה</span>
+    </button>
+    <button class="mob-tab" id="mob-tab-retain" onclick="switchTab('retain')">
+      <span class="mob-tab-icon">🛡</span>
+      <span>נטישה</span>
+    </button>
+    <button class="mob-tab" onclick="openToc()">
+      <span class="mob-tab-icon">☰</span>
+      <span>תוכן</span>
+    </button>
+    <button class="mob-tab" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+      <span class="mob-tab-icon">↑</span>
+      <span>למעלה</span>
+    </button>
+  </div>
+</nav>
+
+<!-- TOC DRAWER (mobile) -->
+<div class="toc-drawer-overlay" id="toc-overlay" onclick="closeToc()" style="opacity:0;pointer-events:none;transition:opacity 0.3s"></div>
+<div class="toc-drawer" id="toc-drawer">
+  <div class="toc-drawer-handle"></div>
+  <div class="toc-drawer-title" id="drawer-title">תוכן עניינים</div>
+  <div id="drawer-tech-items">
+    <div class="toc-item" onclick="drawerScrollTo('s1');closeToc()"><span class="toc-num">1</span>חסימת גלישה בארץ</div>
+    <div class="toc-item" onclick="drawerScrollTo('s2');closeToc()"><span class="toc-num">2</span>סיום חבילה</div>
+    <div class="toc-item" onclick="drawerScrollTo('s3');closeToc()"><span class="toc-num">3</span>בדיקות מכשיר</div>
+    <div class="toc-item" onclick="drawerScrollTo('s4');closeToc()"><span class="toc-num">4</span>סיווג תקלה</div>
+    <div class="toc-item" onclick="drawerScrollTo('s5');closeToc()"><span class="toc-num">5</span>CRM – Prepaid</div>
+    <div class="toc-item" onclick="drawerScrollTo('s6');closeToc()"><span class="toc-num">6</span>סימון רשת</div>
+    <div class="toc-item" onclick="drawerScrollTo('s7');closeToc()"><span class="toc-num">7</span>בדיקת APN</div>
+    <div class="toc-item" onclick="drawerScrollTo('s8');closeToc()"><span class="toc-num">8</span>מהירות גלישה</div>
+    <div class="toc-item" onclick="drawerScrollTo('s9');closeToc()"><span class="toc-num">9</span>ריענון גלישה</div>
+    <div class="toc-item" onclick="drawerScrollTo('s10');closeToc()"><span class="toc-num">10</span>איפוס הגדרות רשת</div>
+    <div class="toc-item" onclick="drawerScrollTo('s11');closeToc()"><span class="toc-num">11</span>ריענון SIM</div>
+    <div class="toc-item" onclick="drawerScrollTo('s12');closeToc()"><span class="toc-num">12</span>SIM במכשיר אחר</div>
+  </div>
+  <div id="drawer-retain-items" style="display:none">
+    <div class="toc-item" onclick="closeToc()">🔍 זיהוי סימני אזהרה</div>
+    <div class="toc-item" onclick="closeToc()">💬 פתיחת שיחה</div>
+    <div class="toc-item" onclick="closeToc()">📡 סיבה 1 – טכנית / קליטה</div>
+    <div class="toc-item" onclick="closeToc()">💰 סיבה 2 – מחיר</div>
+    <div class="toc-item" onclick="closeToc()">😤 סיבה 3 – שירות</div>
+    <div class="toc-item" onclick="closeToc()">🏁 סגירת שיחה</div>
+    <div class="toc-item" onclick="closeToc()">⭐ עקרונות-על</div>
+  </div>
+</div>
+
 <script>
+  var currentTab = 'tech';
+
   function switchTab(id) {
+    currentTab = id;
+    // Desktop tabs
     document.querySelectorAll('.doc-tab').forEach((t,i)=> t.classList.toggle('active', (i===0&&id==='tech')||(i===1&&id==='retain')));
     document.getElementById('panel-tech').classList.toggle('active', id==='tech');
     document.getElementById('panel-retain').classList.toggle('active', id==='retain');
     document.getElementById('toc-card-tech').style.display = id==='tech' ? '' : 'none';
     document.getElementById('toc-card-retain').style.display = id==='retain' ? '' : 'none';
+    // Mobile tabs
+    document.getElementById('mob-tab-tech').classList.toggle('active', id==='tech');
+    document.getElementById('mob-tab-retain').classList.toggle('active', id==='retain');
+    // Drawer content
+    document.getElementById('drawer-tech-items').style.display = id==='tech' ? '' : 'none';
+    document.getElementById('drawer-retain-items').style.display = id==='retain' ? '' : 'none';
+    window.scrollTo({top:0, behavior:'smooth'});
   }
+
   function scrollTo(id) {
     document.getElementById(id)?.scrollIntoView({behavior:'smooth', block:'start'});
     document.querySelectorAll('.toc-item').forEach(el => el.classList.remove('active'));
     event.currentTarget.classList.add('active');
+  }
+
+  function drawerScrollTo(id) {
+    document.getElementById(id)?.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
+  function openToc() {
+    var overlay = document.getElementById('toc-overlay');
+    var drawer = document.getElementById('toc-drawer');
+    overlay.style.opacity = '1';
+    overlay.style.pointerEvents = 'auto';
+    drawer.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeToc() {
+    var overlay = document.getElementById('toc-overlay');
+    var drawer = document.getElementById('toc-drawer');
+    overlay.style.opacity = '0';
+    overlay.style.pointerEvents = 'none';
+    drawer.classList.remove('open');
+    document.body.style.overflow = '';
   }
 </script>
 </body>
