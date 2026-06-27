@@ -850,6 +850,130 @@
     .doc-tab { padding: 10px 8px; font-size: 12px; }
     .topnav-logo { font-size: 18px; }
   }
+  /* ─── NEW BRIEFING FORMAT STYLES ─── */
+  #panel-new .wrap-inner { padding: 20px; }
+  .format-intro {
+    background: var(--navy); border-radius: 12px; padding: 24px 28px;
+    color: #fff; margin-bottom: 20px;
+  }
+  .format-intro h2 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .format-intro p { font-size: 13px; color: rgba(255,255,255,0.6); line-height: 1.6; max-width: 560px; }
+  .fi-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px; }
+  .fi-tag { font-size: 11.5px; font-weight: 500; padding: 3px 10px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.7); }
+  .fi-tag.red { background: var(--red); border-color: var(--red); color: #fff; }
+
+  .fmt-key { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; padding: 14px 18px; background: var(--white); border: 1px solid var(--gray-border); border-radius: var(--radius); }
+  .fk-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted); }
+
+  .fmt-section { background: var(--white); border: 1px solid var(--gray-border); border-radius: var(--radius); overflow: hidden; margin-bottom: 12px; }
+  .fmt-head {
+    display: flex; align-items: center; gap: 12px; padding: 14px 18px;
+    border-bottom: 1px solid var(--gray-border); background: var(--gray-light);
+    cursor: pointer; user-select: none;
+  }
+  .fmt-head:hover { background: #ECEEF0; }
+  .fmt-num {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--navy); color: #fff;
+    font-weight: 700; font-size: 13px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .fmt-num.red { background: var(--red); }
+  .fmt-num.opt { background: var(--text-muted); }
+  .fmt-title { font-size: 14.5px; font-weight: 600; color: var(--navy); flex: 1; }
+  .fmt-sub { font-size: 12px; color: var(--text-muted); }
+  .fmt-badges { display: flex; gap: 6px; align-items: center; margin-inline-start: auto; }
+  .fmt-chevron { font-size: 11px; color: var(--text-muted); transition: transform 0.2s; }
+  .fmt-section.open .fmt-chevron { transform: rotate(180deg); }
+
+  .fmt-body { padding: 18px; display: none; }
+  .fmt-section.open .fmt-body { display: block; }
+
+  .fmt-field { margin-bottom: 14px; }
+  .fmt-field:last-child { margin-bottom: 0; }
+  .fmt-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 6px; }
+  .fmt-hint { font-size: 12.5px; color: var(--text-muted); margin-bottom: 7px; line-height: 1.5; }
+
+  .fmt-input {
+    width: 100%; border: 1.5px solid var(--gray-border); border-radius: var(--radius-sm);
+    padding: 9px 13px; font-family: 'Rubik', sans-serif; font-size: 13.5px;
+    color: var(--text); background: #FAFAFA; outline: none; resize: vertical; min-height: 56px;
+    transition: border-color 0.15s;
+  }
+  .fmt-input:focus { border-color: var(--navy); background: #fff; }
+  .fmt-input.single { min-height: unset; height: 40px; resize: none; }
+
+  .fmt-checks { display: flex; flex-direction: column; gap: 5px; }
+  .fmt-check {
+    display: flex; align-items: flex-start; gap: 9px;
+    background: var(--gray-light); border: 1px solid var(--gray-border);
+    border-radius: var(--radius-sm); padding: 9px 11px; cursor: pointer; transition: border-color 0.15s;
+  }
+  .fmt-check:hover { border-color: var(--navy); }
+  .fmt-check.checked { background: var(--success-bg); border-color: #B7E8CE; }
+  .fmt-check input[type=checkbox] { flex-shrink: 0; width: 15px; height: 15px; margin-top: 2px; accent-color: var(--success); }
+  .fmt-check-text { font-size: 13px; color: var(--text); line-height: 1.5; }
+  .fmt-check-hint { font-size: 11.5px; color: var(--text-muted); margin-top: 2px; }
+
+  .fmt-radios { display: flex; flex-direction: column; gap: 6px; }
+  .fmt-radio {
+    display: flex; align-items: flex-start; gap: 10px;
+    border: 1.5px solid var(--gray-border); border-radius: var(--radius-sm);
+    padding: 10px 13px; cursor: pointer; background: #fff; transition: border-color 0.15s, background 0.15s;
+  }
+  .fmt-radio:hover { border-color: var(--navy); }
+  .fmt-radio.selected { border-color: var(--red); background: #FFF8F6; }
+  .fmt-radio input[type=radio] { flex-shrink: 0; width: 15px; height: 15px; margin-top: 3px; accent-color: var(--red); }
+  .fmt-radio-label { font-size: 13.5px; font-weight: 500; color: var(--text); }
+  .fmt-radio-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+  .fmt-script {
+    background: #F8F9FB; border-right: 3px solid var(--red);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 11px 15px; font-size: 13px; color: var(--navy-mid); font-style: italic; line-height: 1.7;
+    margin-top: 8px;
+  }
+  .fmt-outcomes { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 9px; }
+  .fmt-outcome {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 12px; font-weight: 500; padding: 5px 12px; border-radius: 20px;
+    border: 1.5px solid; font-family: 'Rubik', sans-serif;
+  }
+  .fmt-outcome.ok { background: var(--success-bg); color: var(--success); border-color: #B7E8CE; }
+  .fmt-outcome.next { background: var(--warning-bg); color: var(--warning); border-color: #F5D8A5; }
+  .fmt-outcome.alert { background: #FFF0EB; color: var(--red); border-color: #FFB596; }
+
+  .fmt-esc-card { background: var(--warning-bg); border: 1px solid #F5D8A5; border-radius: var(--radius-sm); padding: 14px 16px; }
+  .fmt-esc-title { font-size: 13px; font-weight: 600; color: var(--warning); margin-bottom: 9px; }
+  .fmt-esc-items { display: flex; flex-wrap: wrap; gap: 7px; }
+  .fmt-esc-item {
+    display: flex; align-items: center; gap: 7px;
+    background: #fff; border: 1px solid #F5D8A5; border-radius: var(--radius-sm);
+    padding: 7px 12px; font-size: 13px; color: var(--text);
+  }
+
+  .fmt-info {
+    background: var(--warning-bg); border: 1px solid #F5D8A5;
+    border-radius: var(--radius-sm); padding: 9px 13px;
+    font-size: 12.5px; color: var(--warning); line-height: 1.55;
+    display: flex; gap: 7px; align-items: flex-start; margin-bottom: 12px;
+  }
+
+  .fmt-divider-label {
+    display: flex; align-items: center; gap: 10px;
+    margin: 20px 0 10px; font-size: 10.5px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted);
+  }
+  .fmt-divider-label::before, .fmt-divider-label::after { content: ''; flex: 1; height: 1px; background: var(--gray-border); }
+
+  .type-badge { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 20px; border: 1px solid; white-space: nowrap; }
+  .type-system  { background: #EBF1FF; color: #1D45B4; border-color: #B5D4F4; }
+  .type-customer{ background: #FFF0EB; color: #C02800; border-color: #FFB596; }
+  .type-service { background: var(--success-bg); color: var(--success); border-color: #B7E8CE; }
+  .type-optional{ background: var(--gray-light); color: var(--text-muted); border-color: var(--gray-border); }
+  .type-escalate{ background: var(--warning-bg); color: var(--warning); border-color: #F5D8A5; }
+  .type-required{ background: #FFE8E8; color: #C02800; border-color: #FFB596; }
+
 </style>
 </head>
 <body>
@@ -890,6 +1014,7 @@
     <div class="doc-tabs">
       <div class="doc-tab active" onclick="switchTab('tech')">📡 איטיות / חוסר גלישה</div>
       <div class="doc-tab" onclick="switchTab('retain')">🛡 דיבאג נטישה</div>
+      <div class="doc-tab" onclick="switchTab('new')">✏️ תדריך חדש</div>
     </div>
 
     <!-- ═══════════════════════════════════════════════
@@ -1425,7 +1550,330 @@
         </div>
 
       </div><!-- /article-body -->
+
     </div><!-- /panel-retain -->
+
+    <!-- ══════════════════════════════
+         PANEL: NEW BRIEFING FORMAT
+    ══════════════════════════════ -->
+    <div id="panel-new" class="doc-panel">
+      <div class="article-header">
+        <div class="doc-meta">
+          <span class="badge badge-tech"><span class="badge-dot"></span>פורמט סטנדרטי</span>
+          <span class="badge badge-updated">v1.0</span>
+          <span class="badge badge-updated">📄 8 סקציות</span>
+        </div>
+        <h1 class="article-title">יצירת תדריך חדש</h1>
+        <p class="article-subtitle">פורמט אחיד לכל מסמכי הידע — מבוסס על ניתוח תדריכי גלישה ונטישה</p>
+      </div>
+
+      <div class="article-body" style="padding:20px">
+
+        <div class="format-intro">
+          <h2>📋 פורמט סטנדרטי – תדריך נציג שירות</h2>
+          <p>8 סקציות מובנות. סקציות 1–3 חובה לכל תדריך. סקציות 4–8 לפי סוג התדריך.</p>
+          <div class="fi-tags">
+            <span class="fi-tag red">8 סקציות</span>
+            <span class="fi-tag">3 חובה</span>
+            <span class="fi-tag">5 לפי סוג</span>
+            <span class="fi-tag">תואם טכני + שימור</span>
+          </div>
+        </div>
+
+        <div class="fmt-key">
+          <div class="fk-item"><span class="type-badge type-system">מערכת</span> בדיקות ללא לקוח</div>
+          <div class="fk-item"><span class="type-badge type-customer">לקוח</span> פעולות שהלקוח מבצע</div>
+          <div class="fk-item"><span class="type-badge type-service">שירות</span> תסריטי שיחה וסגירה</div>
+          <div class="fk-item"><span class="type-badge type-escalate">אסקלציה</span> הפניה לגורם אחר</div>
+          <div class="fk-item"><span class="type-badge type-optional">אופציונלי</span> לפי סוג</div>
+        </div>
+
+        <div class="fmt-divider-label">חובה לכל תדריך</div>
+
+        <!-- S1: IDENTITY -->
+        <div class="fmt-section open">
+          <div class="fmt-head" onclick="fmtToggle(this)">
+            <div class="fmt-num red">1</div>
+            <div><div class="fmt-title">זיהוי ותיאור התדריך</div><div class="fmt-sub">נושא, מטרה, מתי להשתמש</div></div>
+            <div class="fmt-badges"><span class="type-badge type-required">חובה</span><span class="fmt-chevron">▼</span></div>
+          </div>
+          <div class="fmt-body">
+            <div class="fmt-field">
+              <div class="fmt-label">נושא התדריך</div>
+              <div class="fmt-hint">שם קצר וברור — יופיע בכותרת ובחיפוש</div>
+              <textarea class="fmt-input single" placeholder="לדוגמה: איטיות גלישה / חוסר גלישה"></textarea>
+            </div>
+            <div class="fmt-field">
+              <div class="fmt-label">תיאור התדריך</div>
+              <div class="fmt-hint">במה עוסק, מה הוא פותר, מתי נציג צריך אותו</div>
+              <textarea class="fmt-input" placeholder="לדוגמה: נוהל דיבאג מלא לטיפול בלקוח שמדווח על גלישה איטית או היעדר גלישה..."></textarea>
+            </div>
+            <div class="fmt-field">
+              <div class="fmt-label">סוג התדריך</div>
+              <div class="fmt-radios">
+                <label class="fmt-radio selected" onclick="fmtSelectRadio(this)">
+                  <input type="radio" name="doc-type" checked>
+                  <div><div class="fmt-radio-label">תדריך טכני – דיבאג / תפעול</div><div class="fmt-radio-sub">בדיקות, שלבי תפעול, הסתעפויות טכניות</div></div>
+                </label>
+                <label class="fmt-radio" onclick="fmtSelectRadio(this)">
+                  <input type="radio" name="doc-type">
+                  <div><div class="fmt-radio-label">תדריך שירות – שימור / מכירה</div><div class="fmt-radio-sub">תסריטי שיחה, התנגדויות, סגירת שיחה</div></div>
+                </label>
+                <label class="fmt-radio" onclick="fmtSelectRadio(this)">
+                  <input type="radio" name="doc-type">
+                  <div><div class="fmt-radio-label">תדריך משולב</div><div class="fmt-radio-sub">שילוב טכני + שירותי (לדוגמה: נטישה בעקבות תקלה)</div></div>
+                </label>
+              </div>
+            </div>
+            <div class="fmt-field">
+              <div class="fmt-label">תגיות לחיפוש</div>
+              <textarea class="fmt-input single" placeholder="לדוגמה: גלישה, SIM, APN, מהירות, Speedtest"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- S2: CLARIFICATION -->
+        <div class="fmt-section open">
+          <div class="fmt-head" onclick="fmtToggle(this)">
+            <div class="fmt-num red">2</div>
+            <div><div class="fmt-title">שאלות בירור ראשוניות</div><div class="fmt-sub">מהות הבעיה, משך, מיקום — לפני כל פעולה</div></div>
+            <div class="fmt-badges"><span class="type-badge type-required">חובה</span><span class="fmt-chevron">▼</span></div>
+          </div>
+          <div class="fmt-body">
+            <div class="fmt-field">
+              <div class="fmt-label">שאלות מהות הבעיה</div>
+              <div class="fmt-checks">
+                <label class="fmt-check" onclick="this.classList.toggle('checked')">
+                  <input type="checkbox">
+                  <div><div class="fmt-check-text">"אתה לא גולש בכלל, או שהגלישה איטית?"</div><div class="fmt-check-hint">→ מכווין למסלול: חוסר גלישה vs איטיות</div></div>
+                </label>
+                <label class="fmt-check" onclick="this.classList.toggle('checked')">
+                  <input type="checkbox">
+                  <div><div class="fmt-check-text">"מתי זה התחיל — היום בלבד, או כבר כמה ימים?"</div><div class="fmt-check-hint">→ בעיה נקודתית vs מתמשכת</div></div>
+                </label>
+              </div>
+            </div>
+            <div class="fmt-field">
+              <div class="fmt-label">שאלות מיקום וזמן</div>
+              <div class="fmt-checks">
+                <label class="fmt-check" onclick="this.classList.toggle('checked')">
+                  <input type="checkbox">
+                  <div><div class="fmt-check-text">"זה קורה בכל מקום, או רק במקום מסוים?"</div><div class="fmt-check-hint">→ מסלול "מקום ספציפי" vs "בכל מקום"</div></div>
+                </label>
+                <label class="fmt-check" onclick="this.classList.toggle('checked')">
+                  <input type="checkbox">
+                  <div><div class="fmt-check-text">אם מקום ספציפי: "מחסן / ממ"ד / חדר תת-קרקעי?"</div><div class="fmt-check-hint">→ אם כן: הסבר כיסוי רשת וסגור</div></div>
+                </label>
+              </div>
+            </div>
+            <div class="fmt-field">
+              <div class="fmt-label">הוסף שאלת בירור</div>
+              <textarea class="fmt-input single" placeholder='לדוגמה: "איזה סוג מכשיר?"'></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- S3: SYSTEM CHECKS -->
+        <div class="fmt-section open">
+          <div class="fmt-head" onclick="fmtToggle(this)">
+            <div class="fmt-num red">3</div>
+            <div><div class="fmt-title">בדיקות מערכות פנימיות</div><div class="fmt-sub">ללא מעורבות לקוח — CRM, חבילה, אנטנות</div></div>
+            <div class="fmt-badges"><span class="type-badge type-required">חובה</span><span class="type-badge type-system">מערכת</span><span class="fmt-chevron">▼</span></div>
+          </div>
+          <div class="fmt-body">
+            <div class="fmt-info">⚡ שלב זה מבוצע <strong>לפני</strong> שפונים ללקוח — חוסך זמן שיחה</div>
+            <div class="fmt-field">
+              <div class="fmt-label">בדיקות CRM</div>
+              <div class="fmt-checks">
+                <label class="fmt-check" onclick="this.classList.toggle('checked')">
+                  <input type="checkbox">
+                  <div><div class="fmt-check-text">בדיקת שדה "גלישה בארץ" — חסום / פעיל</div><div class="fmt-check-hint">CRM ← שדה גלישה בארץ</div></div>
+                </label>
+                <label class="fmt-check" onclick="this.classList.toggle('checked')">
+                  <input type="checkbox">
+                  <div><div class="fmt-check-text">בדיקת ניצול חבילת גלישה — האם הגיע ל-100%</div><div class="fmt-check-hint">אזור אישי ← השימושים שלי</div></div>
+                </label>
+                <label class="fmt-check" onclick="this.classList.toggle('checked')">
+                  <input type="checkbox">
+                  <div><div class="fmt-check-text">בדיקת ניוד Prepaid / חשד הונאה</div><div class="fmt-check-hint">אם כן → פנייה ל-IT</div></div>
+                </label>
+              </div>
+            </div>
+            <div class="fmt-field">
+              <div class="fmt-label">בדיקות רשת ואנטנות</div>
+              <div class="fmt-checks">
+                <label class="fmt-check" onclick="this.classList.toggle('checked')">
+                  <input type="checkbox">
+                  <div><div class="fmt-check-text">כיסוי אנטנות באזור הלקוח</div><div class="fmt-check-hint">אם אין → תסריט פריסת רשת</div></div>
+                </label>
+                <label class="fmt-check" onclick="this.classList.toggle('checked')">
+                  <input type="checkbox">
+                  <div><div class="fmt-check-text">תלונות אזוריות — האם עוד לקוחות מדווחים</div><div class="fmt-check-hint">אם כן → טופס רדיו + GNETRUCK</div></div>
+                </label>
+              </div>
+            </div>
+            <div class="fmt-field">
+              <div class="fmt-label">הוסף בדיקה פנימית</div>
+              <textarea class="fmt-input single" placeholder="לדוגמה: בדיקת סטטוס SIM במערכת"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="fmt-divider-label">לפי סוג התדריך</div>
+
+        <!-- S4: DEVICE ACTIONS -->
+        <div class="fmt-section">
+          <div class="fmt-head" onclick="fmtToggle(this)">
+            <div class="fmt-num opt">4</div>
+            <div><div class="fmt-title">פעולות בטלפון / מכשיר הלקוח</div><div class="fmt-sub">הגדרות שהלקוח מבצע בהנחיית הנציג</div></div>
+            <div class="fmt-badges"><span class="type-badge type-customer">לקוח</span><span class="type-badge type-optional">אופציונלי</span><span class="fmt-chevron">▼</span></div>
+          </div>
+          <div class="fmt-body">
+            <div class="fmt-field">
+              <div class="fmt-label">הגדרות גלישה ונתונים</div>
+              <div class="fmt-checks">
+                <label class="fmt-check" onclick="this.classList.toggle('checked')"><input type="checkbox"><div><div class="fmt-check-text">נתונים סלולריים — אם כבוי → להדליק</div></div></label>
+                <label class="fmt-check" onclick="this.classList.toggle('checked')"><input type="checkbox"><div><div class="fmt-check-text">Wi-Fi — אם דולק → לכבות</div></div></label>
+                <label class="fmt-check" onclick="this.classList.toggle('checked')"><input type="checkbox"><div><div class="fmt-check-text">נקודת גישה אישית — אם דולקת → לכבות</div></div></label>
+                <label class="fmt-check" onclick="this.classList.toggle('checked')"><input type="checkbox"><div><div class="fmt-check-text">חוסך נתונים / הגבלת צריכה — אם פעיל → לכבות</div></div></label>
+                <label class="fmt-check" onclick="this.classList.toggle('checked')"><input type="checkbox"><div><div class="fmt-check-text">VPN — אם דולק → לכבות</div></div></label>
+                <label class="fmt-check" onclick="this.classList.toggle('checked')"><input type="checkbox"><div><div class="fmt-check-text">אפליקציות סינון — אם קיימות → להסיר</div></div></label>
+              </div>
+            </div>
+            <div class="fmt-field">
+              <div class="fmt-label">הגדרות רשת</div>
+              <div class="fmt-checks">
+                <label class="fmt-check" onclick="this.classList.toggle('checked')"><input type="checkbox"><div><div class="fmt-check-text">סימון רשת — שנה ל-4G/5G אוטומטי</div><div class="fmt-check-hint">רלוונטי אם מוצג H+ / 3G בלבד</div></div></label>
+                <label class="fmt-check" onclick="this.classList.toggle('checked')"><input type="checkbox"><div><div class="fmt-check-text">APN — ודא הגדרה נכונה ל-WE</div></div></label>
+                <label class="fmt-check" onclick="this.classList.toggle('checked')"><input type="checkbox"><div><div class="fmt-check-text">איפוס הגדרות רשת + הגדרת APN מחדש</div></div></label>
+              </div>
+            </div>
+            <div class="fmt-field">
+              <div class="fmt-label">הוסף פעולת לקוח</div>
+              <textarea class="fmt-input single" placeholder="לדוגמה: כיבוי והדלקת מכשיר"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- S5: AGENT SYSTEM ACTIONS -->
+        <div class="fmt-section">
+          <div class="fmt-head" onclick="fmtToggle(this)">
+            <div class="fmt-num opt">5</div>
+            <div><div class="fmt-title">פעולות מערכת מצד הנציג</div><div class="fmt-sub">ריענון גלישה, ריענון SIM, פעולות CRM</div></div>
+            <div class="fmt-badges"><span class="type-badge type-system">מערכת</span><span class="type-badge type-optional">אופציונלי</span><span class="fmt-chevron">▼</span></div>
+          </div>
+          <div class="fmt-body">
+            <div class="fmt-field">
+              <div class="fmt-label">ריענון גלישה</div>
+              <div class="fmt-checks">
+                <label class="fmt-check" onclick="this.classList.toggle('checked')"><input type="checkbox"><div><div class="fmt-check-text">כיבוי והפעלה של מתג "גלישה בארץ" באזור האישי</div></div></label>
+              </div>
+              <div class="fmt-outcomes">
+                <span class="fmt-outcome ok">✓ הסתדר – סיום</span>
+                <span class="fmt-outcome next">→ לא הסתדר – ריענון SIM</span>
+              </div>
+            </div>
+            <div class="fmt-field">
+              <div class="fmt-label">ריענון SIM</div>
+              <div class="fmt-checks">
+                <label class="fmt-check" onclick="this.classList.toggle('checked')"><input type="checkbox"><div><div class="fmt-check-text">CRM ← עריכה ← sim block lbl ← שמור ← עריכה ← sim allow lbl ← שמור</div></div></label>
+              </div>
+              <div class="fmt-outcomes">
+                <span class="fmt-outcome ok">✓ הסתדר – סיום</span>
+                <span class="fmt-outcome next">→ לא הסתדר – SIM במכשיר אחר</span>
+              </div>
+            </div>
+            <div class="fmt-field">
+              <div class="fmt-label">הוסף פעולת מערכת</div>
+              <textarea class="fmt-input single" placeholder="לדוגמה: פתיחת פנייה ל-IT"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- S6: VALIDATION -->
+        <div class="fmt-section">
+          <div class="fmt-head" onclick="fmtToggle(this)">
+            <div class="fmt-num opt">6</div>
+            <div><div class="fmt-title">בדיקת תקינות</div><div class="fmt-sub">אימות שהבעיה נפתרה לפני סגירה</div></div>
+            <div class="fmt-badges"><span class="type-badge type-system">מערכת</span><span class="type-badge type-optional">אופציונלי</span><span class="fmt-chevron">▼</span></div>
+          </div>
+          <div class="fmt-body">
+            <div class="fmt-field">
+              <div class="fmt-label">בדיקות תקינות</div>
+              <div class="fmt-checks">
+                <label class="fmt-check" onclick="this.classList.toggle('checked')"><input type="checkbox"><div><div class="fmt-check-text">Speedtest — מעל 6 מגה בהורדה = תקין</div><div class="fmt-check-hint">רלוונטי רק לתלונות איטיות</div></div></label>
+                <label class="fmt-check" onclick="this.classList.toggle('checked')"><input type="checkbox"><div><div class="fmt-check-text">בדיקת SIM במכשיר אחר — לאיתור בעיית חומרה</div></div></label>
+              </div>
+            </div>
+            <div class="fmt-field">
+              <div class="fmt-label">קריטריון הצלחה</div>
+              <div class="fmt-hint">מה מוכיח שהבעיה נפתרה?</div>
+              <textarea class="fmt-input single" placeholder="לדוגמה: לקוח מאשר גלישה תקינה + Speedtest מעל 6 מגה"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- S7: ESCALATION -->
+        <div class="fmt-section">
+          <div class="fmt-head" onclick="fmtToggle(this)">
+            <div class="fmt-num opt">7</div>
+            <div><div class="fmt-title">הפניה לגורם אחר / אסקלציה</div><div class="fmt-sub">מתי לא לטפל לבד ולמי לפנות</div></div>
+            <div class="fmt-badges"><span class="type-badge type-escalate">אסקלציה</span><span class="fmt-chevron">▼</span></div>
+          </div>
+          <div class="fmt-body">
+            <div class="fmt-field">
+              <div class="fmt-label">גורמי הפניה</div>
+              <div class="fmt-esc-card">
+                <div class="fmt-esc-title">מי מטפל במה?</div>
+                <div class="fmt-esc-items">
+                  <div class="fmt-esc-item">🛠 מומחי תמיכה — לאחר מיצוי כל שלבי הדיבאג</div>
+                  <div class="fmt-esc-item">💻 IT — ניוד Prepaid / חשד הונאה</div>
+                  <div class="fmt-esc-item">📡 רדיו + GNETRUCK — תקלה אזורית</div>
+                  <div class="fmt-esc-item">🔧 מעבדה — בעיית מכשיר</div>
+                  <div class="fmt-esc-item">🏪 הום סנטר — החלפת SIM פיזי</div>
+                </div>
+              </div>
+            </div>
+            <div class="fmt-field">
+              <div class="fmt-label">תנאי אסקלציה</div>
+              <textarea class="fmt-input" placeholder="לדוגמה: לאחר ריענון גלישה + ריענון SIM + איפוס הגדרות שלא הסתדרו → פניה למומחי תמיכה"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- S8: SERVICE CLOSURE -->
+        <div class="fmt-section">
+          <div class="fmt-head" onclick="fmtToggle(this)">
+            <div class="fmt-num opt">8</div>
+            <div><div class="fmt-title">שלב שירותי – סגירה ופעולות נוספות</div><div class="fmt-sub">בירור צרכים נוספים, תיאום ציפיות, הצעות</div></div>
+            <div class="fmt-badges"><span class="type-badge type-service">שירות</span><span class="fmt-chevron">▼</span></div>
+          </div>
+          <div class="fmt-body">
+            <div class="fmt-field">
+              <div class="fmt-label">תסריט סגירה — בעיה נפתרה</div>
+              <div class="fmt-script">"סגרנו את הבעיה — רצית לבדוק עוד משהו בנוגע לקו שלך? [...] מצוין, אני מתעדת ומסיימת. יש שאלות נוספות?"</div>
+            </div>
+            <div class="fmt-field">
+              <div class="fmt-label">תסריט סגירה — נפתחה פנייה</div>
+              <div class="fmt-script">"קבענו: אני עושה בדיקה / התאמה, חוזרת אליך עד ___ ב___. אם משהו מתעכב — אני יוצרת קשר."</div>
+            </div>
+            <div class="fmt-field">
+              <div class="fmt-label">הצעות שירות בסיום</div>
+              <div class="fmt-checks">
+                <label class="fmt-check" onclick="this.classList.toggle('checked')"><input type="checkbox"><div><div class="fmt-check-text">Wi-Fi Calling — הציע כפתרון מניעתי לבית / משרד</div></div></label>
+                <label class="fmt-check" onclick="this.classList.toggle('checked')"><input type="checkbox"><div><div class="fmt-check-text">בדיקת התאמת חבילה — האם מנצל נכון?</div></div></label>
+                <label class="fmt-check" onclick="this.classList.toggle('checked')"><input type="checkbox"><div><div class="fmt-check-text">שאלת שביעות רצון — "עד כמה אתה שבע רצון מהטיפול?"</div></div></label>
+              </div>
+            </div>
+            <div class="fmt-field">
+              <div class="fmt-label">הוסף פעולת סגירה</div>
+              <textarea class="fmt-input single" placeholder="לדוגמה: הצע שדרוג חבילה אם מדווח על מחסור קבוע בנפח"></textarea>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /article-body -->
+    </div><!-- /panel-new -->
 
   </main>
 
@@ -1448,6 +1896,20 @@
         <div class="toc-item" onclick="scrollTo('s10')"><span class="toc-num">10</span>איפוס הגדרות רשת</div>
         <div class="toc-item" onclick="scrollTo('s11')"><span class="toc-num">11</span>ריענון SIM</div>
         <div class="toc-item" onclick="scrollTo('s12')"><span class="toc-num">12</span>SIM במכשיר אחר</div>
+      </div>
+    </div>
+
+    <div class="sidebar-card" id="toc-card-new" style="display:none">
+      <div class="sc-head">סקציות</div>
+      <div class="sc-body">
+        <div class="toc-item"><span class="toc-num" style="background:#FF3D00;color:#fff">1</span>זיהוי ותיאור</div>
+        <div class="toc-item"><span class="toc-num" style="background:#FF3D00;color:#fff">2</span>שאלות בירור</div>
+        <div class="toc-item"><span class="toc-num" style="background:#FF3D00;color:#fff">3</span>בדיקות מערכת</div>
+        <div class="toc-item"><span class="toc-num">4</span>פעולות מכשיר לקוח</div>
+        <div class="toc-item"><span class="toc-num">5</span>פעולות נציג</div>
+        <div class="toc-item"><span class="toc-num">6</span>בדיקת תקינות</div>
+        <div class="toc-item"><span class="toc-num">7</span>אסקלציה</div>
+        <div class="toc-item"><span class="toc-num">8</span>שלב שירותי</div>
       </div>
     </div>
 
@@ -1502,7 +1964,11 @@
       <span class="mob-tab-icon">🛡</span>
       <span>נטישה</span>
     </button>
-    <button class="mob-tab" onclick="openToc()">
+    <button class="mob-tab" id="mob-tab-new" onclick="switchTab('new')">
+      <span class="mob-tab-icon">✏️</span>
+      <span>חדש</span>
+    </button>
+        <button class="mob-tab" onclick="openToc()">
       <span class="mob-tab-icon">☰</span>
       <span>תוכן</span>
     </button>
@@ -1532,6 +1998,16 @@
     <div class="toc-item" onclick="drawerScrollTo('s11');closeToc()"><span class="toc-num">11</span>ריענון SIM</div>
     <div class="toc-item" onclick="drawerScrollTo('s12');closeToc()"><span class="toc-num">12</span>SIM במכשיר אחר</div>
   </div>
+  <div id="drawer-new-items" style="display:none">
+    <div class="toc-item" onclick="closeToc()">1 – זיהוי ותיאור</div>
+    <div class="toc-item" onclick="closeToc()">2 – שאלות בירור</div>
+    <div class="toc-item" onclick="closeToc()">3 – בדיקות מערכת</div>
+    <div class="toc-item" onclick="closeToc()">4 – פעולות מכשיר</div>
+    <div class="toc-item" onclick="closeToc()">5 – פעולות נציג</div>
+    <div class="toc-item" onclick="closeToc()">6 – בדיקת תקינות</div>
+    <div class="toc-item" onclick="closeToc()">7 – אסקלציה</div>
+    <div class="toc-item" onclick="closeToc()">8 – שלב שירותי</div>
+  </div>
   <div id="drawer-retain-items" style="display:none">
     <div class="toc-item" onclick="closeToc()">🔍 זיהוי סימני אזהרה</div>
     <div class="toc-item" onclick="closeToc()">💬 פתיחת שיחה</div>
@@ -1548,18 +2024,19 @@
 
   function switchTab(id) {
     currentTab = id;
+    var tabs = ['tech','retain','new'];
     // Desktop tabs
-    document.querySelectorAll('.doc-tab').forEach((t,i)=> t.classList.toggle('active', (i===0&&id==='tech')||(i===1&&id==='retain')));
-    document.getElementById('panel-tech').classList.toggle('active', id==='tech');
-    document.getElementById('panel-retain').classList.toggle('active', id==='retain');
-    document.getElementById('toc-card-tech').style.display = id==='tech' ? '' : 'none';
-    document.getElementById('toc-card-retain').style.display = id==='retain' ? '' : 'none';
-    // Mobile tabs
-    document.getElementById('mob-tab-tech').classList.toggle('active', id==='tech');
-    document.getElementById('mob-tab-retain').classList.toggle('active', id==='retain');
-    // Drawer content
-    document.getElementById('drawer-tech-items').style.display = id==='tech' ? '' : 'none';
-    document.getElementById('drawer-retain-items').style.display = id==='retain' ? '' : 'none';
+    document.querySelectorAll('.doc-tab').forEach((t,i)=> t.classList.toggle('active', tabs[i]===id));
+    tabs.forEach(function(t) {
+      var p = document.getElementById('panel-'+t);
+      if(p) p.classList.toggle('active', t===id);
+      var c = document.getElementById('toc-card-'+t);
+      if(c) c.style.display = t===id ? '' : 'none';
+      var m = document.getElementById('mob-tab-'+t);
+      if(m) m.classList.toggle('active', t===id);
+      var d = document.getElementById('drawer-'+t+'-items');
+      if(d) d.style.display = t===id ? '' : 'none';
+    });
     window.scrollTo({top:0, behavior:'smooth'});
   }
 
@@ -1582,7 +2059,15 @@
     document.body.style.overflow = 'hidden';
   }
 
-  function closeToc() {
+  function fmtToggle(head) {
+    head.closest('.fmt-section').classList.toggle('open');
+  }
+  function fmtSelectRadio(el) {
+    el.closest('.fmt-radios').querySelectorAll('.fmt-radio').forEach(function(r){ r.classList.remove('selected'); });
+    el.classList.add('selected');
+  }
+
+    function closeToc() {
     var overlay = document.getElementById('toc-overlay');
     var drawer = document.getElementById('toc-drawer');
     overlay.style.opacity = '0';
