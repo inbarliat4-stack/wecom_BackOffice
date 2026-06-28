@@ -5,33 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>wecom | כניסה</title>
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script>
-  var PASS="wecom2025",SK="wecom_kb_auth";
-  function checkAuth(){return sessionStorage.getItem(SK)==="ok"}
-  function tryLogin(e){
-    if(e)e.preventDefault();
-    var v=document.getElementById("pw-input").value;
-    if(v===PASS){sessionStorage.setItem(SK,"ok");document.getElementById("pw-gate").style.display="none";document.getElementById("app").style.display="block";document.title="wecom | מאגר ידע";setTimeout(initObservers,100)}
-    else{var err=document.getElementById("pw-error"),box=document.getElementById("pw-input");err.style.opacity="1";box.value="";box.focus();box.style.borderColor="#FF3D00";setTimeout(function(){box.style.borderColor="";err.style.opacity="0"},2500)}
-  }
-  window.addEventListener("DOMContentLoaded",function(){
-    if(checkAuth()){document.getElementById("pw-gate").style.display="none";document.getElementById("app").style.display="block";document.title="wecom | מאגר ידע";setTimeout(initObservers,100)}
-    else{document.getElementById("pw-gate").style.display="flex";document.getElementById("app").style.display="none";setTimeout(function(){document.getElementById("pw-input").focus()},100)}
-  });
-</script>
+
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--red:#FF3D00;--red-l:#FFF0EB;--red-m:#FFB596;--navy:#1F2E3B;--navy-m:#2E4255;--gray:#F5F5F5;--border:#E2E4E6;--white:#fff;--text:#1F2E3B;--muted:#6B7280;--ok:#1A7A4A;--ok-bg:#EDFAF3;--ok-b:#B7E8CE;--warn:#B86A00;--warn-bg:#FFF8EE;--warn-b:#F5D8A5;--r:10px;--rs:6px}
 body{font-family:"Rubik",sans-serif;background:#F0F2F4;color:var(--text);font-size:15px;line-height:1.65;min-height:100vh}
-#pw-gate{position:fixed;inset:0;background:var(--navy);display:none;align-items:center;justify-content:center;z-index:9999}
-.pw-card{background:#fff;border-radius:16px;padding:40px 36px 36px;width:100%;max-width:360px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.3);margin:16px}
-.pw-logo{font-size:32px;font-weight:700;color:var(--red);letter-spacing:-1px;margin-bottom:6px}
-.pw-sub{font-size:13px;color:var(--muted);margin-bottom:28px}
-.pw-input{width:100%;height:46px;border:1.5px solid var(--border);border-radius:10px;padding:0 14px;font-family:"Rubik",sans-serif;font-size:18px;color:var(--text);text-align:center;letter-spacing:4px;outline:none;transition:border-color .2s;direction:ltr}
-.pw-input:focus{border-color:var(--navy)}
-.pw-btn{margin-top:14px;width:100%;height:46px;background:var(--red);color:#fff;border:none;border-radius:10px;font-family:"Rubik",sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:opacity .15s}
-.pw-btn:hover{opacity:.88}
-.pw-err{margin-top:10px;font-size:13px;color:var(--red);opacity:0;transition:opacity .3s;height:18px}
 .topnav{background:var(--navy);height:52px;display:flex;align-items:center;padding:0 24px;gap:14px;position:sticky;top:0;z-index:100}
 .nav-logo{font-size:22px;font-weight:700;color:var(--red);letter-spacing:-.5px;flex-shrink:0}
 .nav-sep{width:1px;height:22px;background:rgba(255,255,255,.15)}
@@ -795,18 +773,8 @@ body{font-family:"Rubik",sans-serif;background:#F0F2F4;color:var(--text);font-si
 </style>
 </head>
 <body>
-<div id="pw-gate">
-  <div class="pw-card">
-    <div class="pw-logo">wecom.</div>
-    <div class="pw-sub">מאגר ידע פנימי – נציגי שירות ותמיכה</div>
-    <form onsubmit="tryLogin(event)">
-      <input id="pw-input" class="pw-input" type="password" placeholder="סיסמה" autocomplete="current-password"/>
-      <button class="pw-btn" type="submit">כניסה</button>
-    </form>
-    <div id="pw-error" class="pw-err">סיסמה שגויה</div>
-  </div>
-</div>
-<div id="app" style="display:none">
+
+<div id="app">
 <nav class="topnav">
   <div class="nav-logo">wecom.</div>
   <div class="nav-sep"></div>
@@ -1584,7 +1552,7 @@ function openArticle(id){
     +'<div class="chk-item"><span>⚠️</span><div><div class="chk-text">טעויות נפוצות להימנע</div></div></div>'
     +'<div class="chk-item"><span>✅</span><div><div class="chk-text">סגירת שיחה ותיעוד</div></div></div>'
     +'</div>'
-    +'<button data-action="new" style="margin-top:14px;background:var(--red);color:#fff;border:none;border-radius:var(--rs);padding:10px 18px;font-family:Rubik,sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;width:100%">✏️ צור תדריך חדש לנושא זה</button>'
+    +'<button onclick="showView(\'new\')" style="margin-top:14px;background:var(--red);color:#fff;border:none;border-radius:var(--rs);padding:10px 18px;font-family:Rubik,sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;width:100%">✏️ צור תדריך חדש לנושא זה</button>'
     +'</div></div></div>';
   showView('article');
 }
@@ -1901,7 +1869,7 @@ function nbInit(){
 function initObservers(){
   // event delegation for dynamically created buttons
   document.addEventListener('click', function(e){
-    if(e.target && e.target.getAttribute('data-action')==='new') showView('new');
+    var btn=e.target.closest('[data-action="new"]');if(btn) showView('new');
   });
 
   renderHotTopics();
