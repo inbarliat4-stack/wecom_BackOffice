@@ -1428,38 +1428,25 @@ body{font-family:"Rubik",sans-serif;background:#F0F2F4;color:var(--text);font-si
 
 <!-- NEW BRIEFING -->
 <div id="view-new" class="view">
-  <div class="page-header"><div class="page-title">✏️ תדריך חדש</div><div class="page-sub">פורמט סטנדרטי | 8 סקציות | מבוסס על ניתוח Glance AI – 15,316 שיחות</div></div>
-  <div style="background:var(--navy);border-radius:12px;padding:20px 24px;color:#fff;margin-bottom:18px">
-    <div style="font-size:16px;font-weight:700;margin-bottom:6px">📋 פורמט מבוסס נתונים</div>
-    <div style="font-size:13px;color:rgba(255,255,255,.6);line-height:1.6">המבנה נגזר מ-15,316 שיחות לקוח ומהמלצות Glance AI. סקציות 1–3 חובה לכל תדריך.</div>
-    <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:12px"><span style="font-size:11.5px;font-weight:500;padding:3px 10px;border-radius:20px;background:var(--red);color:#fff">8 סקציות</span><span style="font-size:11.5px;font-weight:500;padding:3px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.7)">3 חובה</span><span style="font-size:11.5px;font-weight:500;padding:3px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.7)">5 לפי סוג</span><span style="font-size:11.5px;font-weight:500;padding:3px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.7)">גל 1 Glance</span></div>
+<div style="max-width:680px;margin:0 auto;padding:24px 20px 80px;direction:rtl;font-family:'Rubik',sans-serif">
+
+<div style="font-size:20px;font-weight:700;color:var(--navy);margin-bottom:4px">✏️ תדריך חדש</div>
+<div style="font-size:13.5px;color:var(--muted);margin-bottom:1.5rem">בחר שלבים, הוסף ידנית, ולחץ "הוסף" לאישור כל שלב</div>
+
+<div id="nb-stages"></div>
+
+<div id="nb-summary" style="display:none">
+  <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-top:1.5rem">
+    <div style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border)">סיכום התדריך שנבנה</div>
+    <div id="nb-sum-content"></div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+    <button onclick="nbCreateDoc()" style="flex:2;height:42px;background:var(--red);color:#fff;border:none;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;font-family:'Rubik',sans-serif">✚ צור תדריך חדש</button>
+    <button onclick="nbExport()" style="flex:1;height:42px;border:1px solid var(--border);background:var(--gray);border-radius:var(--rs);font-size:13px;color:var(--muted);cursor:pointer;font-family:'Rubik',sans-serif">ייצוא JSON</button>
   </div>
-  <div class="fmt-key"><div class="fk-item"><span class="tb tb-req">חובה</span> לכל תדריך</div><div class="fk-item"><span class="tb tb-sys">מערכת</span> ללא לקוח</div><div class="fk-item"><span class="tb tb-cust">לקוח</span> פעולות</div><div class="fk-item"><span class="tb tb-svc">שירות</span> תסריטים</div><div class="fk-item"><span class="tb tb-esc">אסקלציה</span> הפניה</div><div class="fk-item"><span class="tb tb-opt">אופציונלי</span> לפי סוג</div></div>
-  <div class="wave-label"><span class="wave-pill" style="background:var(--red)">חובה – סקציות 1–3</span></div>
-  <div class="acc-section open fade-in"><div class="acc-head" onclick="accToggle(this)"><div class="acc-num red">1</div><div class="acc-title">זיהוי ותיאור התדריך</div><div class="acc-badges"><span class="tb tb-req">חובה</span><span class="acc-chev">▼</span></div></div><div class="acc-body">
-    <div class="f-field"><div class="f-label">נושא התדריך</div><textarea class="f-input single" placeholder="לדוגמה: הפעלת eSIM – קוד QR"></textarea></div>
-    <div class="f-field"><div class="f-label">תיאור</div><textarea class="f-input" rows="3" placeholder="במה עוסק, מה פותר, מתי להשתמש…"></textarea></div>
-    <div class="f-field"><div class="f-label">סוג</div><div class="radio-list"><label class="radio-item sel" onclick="selRadio(this,'dtype')"><input type="radio" name="dtype" checked><div><div class="radio-label">טכני – דיבאג / תפעול</div></div></label><label class="radio-item" onclick="selRadio(this,'dtype')"><input type="radio" name="dtype"><div><div class="radio-label">שירות – שימור / מכירה</div></div></label><label class="radio-item" onclick="selRadio(this,'dtype')"><input type="radio" name="dtype"><div><div class="radio-label">משולב</div></div></label></div></div>
-    <div class="f-field"><div class="f-label">קטגוריה</div><div class="radio-list" style="display:grid;grid-template-columns:1fr 1fr;gap:6px"><label class="radio-item" onclick="selRadio(this,'cat')"><input type="radio" name="cat"><div><div class="radio-label">📶 SIM/eSIM</div></div></label><label class="radio-item" onclick="selRadio(this,'cat')"><input type="radio" name="cat"><div><div class="radio-label">🔧 טכני</div></div></label><label class="radio-item" onclick="selRadio(this,'cat')"><input type="radio" name="cat"><div><div class="radio-label">💳 חיובים</div></div></label><label class="radio-item" onclick="selRadio(this,'cat')"><input type="radio" name="cat"><div><div class="radio-label">📋 מסלולים</div></div></label><label class="radio-item" onclick="selRadio(this,'cat')"><input type="radio" name="cat"><div><div class="radio-label">✈️ חו"ל</div></div></label><label class="radio-item" onclick="selRadio(this,'cat')"><input type="radio" name="cat"><div><div class="radio-label">🎧 שיחה</div></div></label></div></div>
-    <div class="f-field"><div class="f-label">גל כתיבה</div><div class="radio-list" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px"><label class="radio-item" onclick="selRadio(this,'wave')"><input type="radio" name="wave"><div><div class="radio-label">🔴 גל 1</div><div class="radio-sub">דחוף</div></div></label><label class="radio-item" onclick="selRadio(this,'wave')"><input type="radio" name="wave"><div><div class="radio-label">🟠 גל 2</div><div class="radio-sub">חשוב</div></div></label><label class="radio-item" onclick="selRadio(this,'wave')"><input type="radio" name="wave"><div><div class="radio-label">🟡 גל 3</div><div class="radio-sub">משלים</div></div></label></div></div>
-    <div class="f-field"><div class="f-label">תגיות</div><textarea class="f-input single" placeholder="eSIM, QR, הפעלה…"></textarea></div>
-  </div></div>
-  <div class="acc-section open fade-in"><div class="acc-head" onclick="accToggle(this)"><div class="acc-num red">2</div><div class="acc-title">שאלות בירור ראשוניות</div><div class="acc-badges"><span class="tb tb-req">חובה</span><span class="acc-chev">▼</span></div></div><div class="acc-body">
-    <div class="f-hint">3–6 שאלות לפי המלצת Glance AI — לפני כל פעולה</div>
-    <div class="chk-list"><label class="chk-item" onclick="this.classList.toggle('checked')"><input type="checkbox"><div><div class="chk-text">מהות: "מה בדיוק לא עובד?"</div><div class="chk-hint">→ מכווין למסלול</div></div></label><label class="chk-item" onclick="this.classList.toggle('checked')"><input type="checkbox"><div><div class="chk-text">משך: "מתי זה התחיל?"</div><div class="chk-hint">→ נקודתי vs מתמשך</div></div></label><label class="chk-item" onclick="this.classList.toggle('checked')"><input type="checkbox"><div><div class="chk-text">מיקום: "בכל מקום או רק כאן?"</div><div class="chk-hint">→ כיסוי vs מכשיר</div></div></label></div>
-    <div class="f-field" style="margin-top:10px"><div class="f-label">הוסף שאלה</div><textarea class="f-input single" placeholder='"איזה מכשיר?"'></textarea></div>
-  </div></div>
-  <div class="acc-section open fade-in"><div class="acc-head" onclick="accToggle(this)"><div class="acc-num red">3</div><div class="acc-title">בדיקות מערכות פנימיות</div><div class="acc-badges"><span class="tb tb-req">חובה</span><span class="tb tb-sys">מערכת</span><span class="acc-chev">▼</span></div></div><div class="acc-body">
-    <div class="info-box">⚡ לבצע <strong>לפני</strong> פנייה ללקוח</div>
-    <div class="chk-list"><label class="chk-item" onclick="this.classList.toggle('checked')"><input type="checkbox"><div><div class="chk-text">CRM: שדה "גלישה בארץ"</div></div></label><label class="chk-item" onclick="this.classList.toggle('checked')"><input type="checkbox"><div><div class="chk-text">CRM: ניצול חבילה – 100%?</div></div></label><label class="chk-item" onclick="this.classList.toggle('checked')"><input type="checkbox"><div><div class="chk-text">CRM: Prepaid / הונאה → IT</div></div></label><label class="chk-item" onclick="this.classList.toggle('checked')"><input type="checkbox"><div><div class="chk-text">כיסוי אנטנות באזור</div></div></label><label class="chk-item" onclick="this.classList.toggle('checked')"><input type="checkbox"><div><div class="chk-text">תלונות אזוריות – עוד לקוחות?</div></div></label></div>
-    <div class="f-field" style="margin-top:10px"><div class="f-label">הוסף בדיקה</div><textarea class="f-input single" placeholder="לדוגמה: סטטוס SIM במערכת"></textarea></div>
-  </div></div>
-  <div class="wave-label" style="margin-top:4px"><span class="wave-pill" style="background:var(--muted)">אופציונלי – סקציות 4–8</span></div>
-  <div class="acc-section fade-in"><div class="acc-head" onclick="accToggle(this)"><div class="acc-num" style="background:var(--muted)">4</div><div class="acc-title">פעולות בטלפון / מכשיר הלקוח</div><div class="acc-badges"><span class="tb tb-cust">לקוח</span><span class="tb tb-opt">אופציונלי</span><span class="acc-chev">▼</span></div></div><div class="acc-body"><div class="chk-list"><label class="chk-item" onclick="this.classList.toggle('checked')"><input type="checkbox"><div><div class="chk-text">נתונים סלולריים – כבוי → להדליק</div></div></label><label class="chk-item" onclick="this.classList.toggle('checked')"><input type="checkbox"><div><div class="chk-text">Wi-Fi / VPN / חוסך נתונים – לכבות</div></div></label><label class="chk-item" onclick="this.classList.toggle('checked')"><input type="checkbox"><div><div class="chk-text">סימון רשת → 4G/5G אוטומטי</div></div></label><label class="chk-item" onclick="this.classList.toggle('checked')"><input type="checkbox"><div><div class="chk-text">APN → WE</div></div></label></div></div></div>
-  <div class="acc-section fade-in"><div class="acc-head" onclick="accToggle(this)"><div class="acc-num" style="background:var(--muted)">5</div><div class="acc-title">פעולות מערכת מצד הנציג</div><div class="acc-badges"><span class="tb tb-sys">מערכת</span><span class="tb tb-opt">אופציונלי</span><span class="acc-chev">▼</span></div></div><div class="acc-body"><div class="chk-list"><label class="chk-item" onclick="this.classList.toggle('checked')"><input type="checkbox"><div><div class="chk-text">ריענון גלישה – מתג "גלישה בארץ"</div></div></label><label class="chk-item" onclick="this.classList.toggle('checked')"><input type="checkbox"><div><div class="chk-text">ריענון SIM – sim block / sim allow</div></div></label></div><div class="outcome-row"><span class="outcome ok">✓ הסתדר</span><span class="outcome next">→ המשך</span></div></div></div>
-  <div class="acc-section fade-in"><div class="acc-head" onclick="accToggle(this)"><div class="acc-num" style="background:var(--muted)">6</div><div class="acc-title">בדיקת תקינות</div><div class="acc-badges"><span class="tb tb-sys">מערכת</span><span class="tb tb-opt">אופציונלי</span><span class="acc-chev">▼</span></div></div><div class="acc-body"><div class="chk-list"><label class="chk-item" onclick="this.classList.toggle('checked')"><input type="checkbox"><div><div class="chk-text">Speedtest – מעל 6 מגה = תקין</div></div></label><label class="chk-item" onclick="this.classList.toggle('checked')"><input type="checkbox"><div><div class="chk-text">SIM במכשיר אחר – בדיקת חומרה</div></div></label></div><div class="f-field" style="margin-top:10px"><div class="f-label">קריטריון הצלחה</div><textarea class="f-input single" placeholder="לדוגמה: לקוח מאשר גלישה + Speedtest מעל 6 מגה"></textarea></div></div></div>
-  <div class="acc-section fade-in"><div class="acc-head" onclick="accToggle(this)"><div class="acc-num" style="background:var(--muted)">7</div><div class="acc-title">הפניה / אסקלציה</div><div class="acc-badges"><span class="tb tb-esc">אסקלציה</span><span class="acc-chev">▼</span></div></div><div class="acc-body"><div class="esc-card"><div class="esc-title">מי מטפל במה?</div><div class="esc-items"><div class="esc-item">🛠 מומחי תמיכה</div><div class="esc-item">💻 IT – Prepaid</div><div class="esc-item">📡 רדיו + GNETRUCK</div><div class="esc-item">🔧 מעבדה</div><div class="esc-item">🏪 הום סנטר</div></div></div><div class="f-field" style="margin-top:10px"><div class="f-label">תנאי אסקלציה</div><textarea class="f-input" rows="2" placeholder="לאחר X שלבים שלא הסתדרו…"></textarea></div></div></div>
-  <div class="acc-section fade-in"><div class="acc-head" onclick="accToggle(this)"><div class="acc-num" style="background:var(--muted)">8</div><div class="acc-title">שלב שירותי – סגירה</div><div class="acc-badges"><span class="tb tb-svc">שירות</span><span class="acc-chev">▼</span></div></div><div class="acc-body"><div class="f-label" style="margin-bottom:6px">תסריט סגירה</div><div class="script-block" style="margin-bottom:12px">"קבענו: אני עושה בדיקה / התאמה, חוזרת אליך עד ___ ב___. אם משהו מתעכב — אני יוצרת קשר."</div><div class="chk-list"><label class="chk-item" onclick="this.classList.toggle('checked')"><input type="checkbox"><div><div class="chk-text">הצע Wi-Fi Calling</div></div></label><label class="chk-item" onclick="this.classList.toggle('checked')"><input type="checkbox"><div><div class="chk-text">בדיקת התאמת חבילה</div></div></label><label class="chk-item" onclick="this.classList.toggle('checked')"><input type="checkbox"><div><div class="chk-text">שאלת שביעות רצון</div></div></label></div></div></div>
+  </div>
+</div>
+
+</div>
 </div>
 
 </main>
@@ -1524,6 +1511,7 @@ function showView(id){
   ['home','library','new'].forEach(function(t){var b=document.getElementById('mob-'+t);if(b)b.classList.toggle('active',t===id||(id==='browsing'&&t==='home')||(id==='churn'&&t==='home')||(id==='article'&&t==='library'))});
   if(id==='library') renderLibrary('all');
   if(id==='home') renderHotTopics();
+  if(id==='new'&&!nbState['s1'].applied) nbRender();
   window.scrollTo(0,0);
   setTimeout(function(){document.querySelectorAll('#view-'+id+' .fade-in:not(.visible)').forEach(function(el,i){setTimeout(function(){el.classList.add('visible')},i*55)})},80);
 }
@@ -1641,7 +1629,276 @@ function switchTab(id) {
     event.currentTarget.classList.add('active');
   }
 
-  function initObservers(){
+  
+/* ── NEW BRIEFING FORM BUILDER ── */
+var NB_STAGES = [
+  {id:'s1',num:'1',req:true,title:'זיהוי ותיאור התדריך',sub:'נושא, סוג, קטגוריה, גל',type:'fields'},
+  {id:'s2',num:'2',req:true,title:'שאלות בירור ראשוניות',sub:'מהות, משך, מיקום',options:[
+    {text:'מה בדיוק לא עובד?',hint:'→ מכווין למסלול הנכון'},
+    {text:'מתי זה התחיל?',hint:'→ נקודתי vs מתמשך'},
+    {text:'זה בכל מקום או רק כאן?',hint:'→ כיסוי vs תקלת מכשיר'},
+    {text:'כמה זמן הבעיה קיימת?',hint:'→ דחיפות הטיפול'},
+    {text:'האם זה קרה בעבר?',hint:'→ תבנית חוזרת'},
+    {text:'מה גרם לזה לדעתך?',hint:'→ context ראשוני'},
+  ],ph:'לדוגמה: איזה מכשיר יש לך?'},
+  {id:'s3',num:'3',req:true,title:'בדיקות מערכות פנימיות',sub:'CRM, חבילה, אנטנות – ללא לקוח',options:[
+    {text:'בדיקת שדה "גלישה בארץ" ב-CRM',hint:'חסום / פעיל'},
+    {text:'בדיקת ניצול חבילת גלישה',hint:'אזור אישי ← השימושים שלי'},
+    {text:'בדיקת Prepaid / חשד הונאה',hint:'אם כן → פנייה ל-IT'},
+    {text:'בדיקת כיסוי אנטנות באזור',hint:'אם אין → תסריט פריסת רשת'},
+    {text:'בדיקת תלונות אזוריות',hint:'עוד לקוחות מדווחים?'},
+    {text:'בדיקת סטטוס SIM במערכת',hint:'פעיל / חסום / לא מוגדר'},
+    {text:'בדיקת חוב פתוח',hint:'חסימה בגלל חוב?'},
+  ],ph:'לדוגמה: בדיקת לוג שיחות אחרון'},
+  {id:'s4',num:'4',req:false,title:'פעולות בטלפון / מכשיר הלקוח',sub:'הגדרות שהלקוח מבצע',options:[
+    {text:'נתונים סלולריים – אם כבוי → להדליק'},
+    {text:'Wi-Fi – אם דולק → לכבות'},
+    {text:'נקודת גישה אישית – לכבות'},
+    {text:'VPN / חוסך נתונים – לכבות'},
+    {text:'אפליקציות סינון – להסיר'},
+    {text:'סימון רשת → שנה ל-4G/5G אוטומטי'},
+    {text:'APN → הגדרה נכונה ל-WE'},
+    {text:'איפוס הגדרות רשת'},
+    {text:'כיבוי והדלקת מכשיר'},
+  ],ph:'לדוגמה: בדיקת עדכון מערכת הפעלה'},
+  {id:'s5',num:'5',req:false,title:'פעולות מערכת מצד הנציג',sub:'ריענון, SIM, CRM',options:[
+    {text:'ריענון גלישה – מתג "גלישה בארץ" כבה/הפעל'},
+    {text:'ריענון SIM – sim block lbl → sim allow lbl'},
+    {text:'פתיחת פנייה ל-IT'},
+    {text:'פתיחת טופס רדיו + GNETRUCK'},
+    {text:'עדכון APN במערכת'},
+    {text:'ביצוע זיכוי / החזר'},
+    {text:'שינוי מסלול / חבילה'},
+  ],ph:'לדוגמה: שליחת SMS מאומת ללקוח'},
+  {id:'s6',num:'6',req:false,title:'בדיקת תקינות',sub:'אימות לפני סגירה',options:[
+    {text:'Speedtest – מעל 6 מגה = תקין'},
+    {text:'SIM במכשיר אחר – בדיקת חומרה'},
+    {text:'לקוח מאשר גלישה / שיחה תקינה'},
+    {text:'בדיקת קבלת SMS'},
+    {text:'בדיקת VoLTE פעיל'},
+  ],ph:'לדוגמה: שיחת ביקורת 24 שעות לאחר מכן'},
+  {id:'s7',num:'7',req:false,title:'הפניה / אסקלציה',sub:'מתי ולמי',options:[
+    {text:'מומחי תמיכה – לאחר מיצוי כל השלבים'},
+    {text:'IT – Prepaid / הונאה'},
+    {text:'רדיו + GNETRUCK – תקלה אזורית'},
+    {text:'מעבדה – בעיית מכשיר'},
+    {text:'הום סנטר – החלפת SIM פיזי'},
+    {text:'מנהל / שימור – לקוח מתוסכל'},
+  ],ph:'לדוגמה: אסקלציה לצוות VoLTE'},
+  {id:'s8',num:'8',req:false,title:'שלב שירותי – סגירה',sub:'בירור נוסף, הצעות, תיעוד',options:[
+    {text:'Wi-Fi Calling – הצע כפתרון מניעתי'},
+    {text:'בדיקת התאמת חבילה'},
+    {text:'שאלת שביעות רצון'},
+    {text:'תיאום callback / מעקב'},
+    {text:'תיעוד כל הפעולות שבוצעו'},
+    {text:'הצע שדרוג אם רלוונטי'},
+  ],ph:'לדוגמה: שליחת סיכום בוואטסאפ'},
+];
+
+var nbState={};
+NB_STAGES.forEach(function(s){nbState[s.id]={picked:[],custom:[],applied:false,s1data:{}};});
+
+function nbRender(){
+  var el=document.getElementById('nb-stages');
+  if(!el) return;
+  el.innerHTML=NB_STAGES.map(nbRenderStage).join('');
+}
+
+function nbRenderStage(s){
+  var st=nbState[s.id];
+  var isOpen=document.getElementById('nb-stage-'+s.id)?document.getElementById('nb-stage-'+s.id).classList.contains('open'):false;
+  var openCls=(s.id==='s1'&&!st.applied)?'open':(isOpen?'open':'');
+
+  var tagHtml=st.applied
+    ?('<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--ok-bg);color:var(--ok);border:1px solid var(--ok-b)">✓ '+(s.id==='s1'?'הושלם':(st.picked.length+st.custom.length)+' פריטים')+'</span>')
+    :('<span style="display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;border:1px solid;'+(s.req?'background:#FFE8E8;color:#C02800;border-color:var(--red-m)':'background:var(--gray);color:var(--muted);border-color:var(--border)')+'">'+( s.req?'חובה':'אופציונלי')+'</span>');
+
+  var bodyHtml='';
+  if(s.type==='fields'){
+    var d=st.s1data;
+    bodyHtml='<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:5px">נושא התדריך</div>'
+      +'<textarea style="width:100%;border:1.5px solid var(--border);border-radius:var(--rs);padding:8px 11px;font-family:Rubik,sans-serif;font-size:13.5px;color:var(--text);background:var(--gray);outline:none;height:40px;resize:none;direction:rtl" id="nb-s1-topic" placeholder="לדוגמה: הפעלת eSIM – קוד QR">'+(d.topic||'')+'</textarea></div>'
+      +'<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:5px">תיאור</div>'
+      +'<textarea style="width:100%;border:1.5px solid var(--border);border-radius:var(--rs);padding:8px 11px;font-family:Rubik,sans-serif;font-size:13.5px;color:var(--text);background:var(--gray);outline:none;resize:vertical;min-height:70px;direction:rtl" id="nb-s1-desc" placeholder="במה עוסק, מה פותר, מתי להשתמש…">'+(d.desc||'')+'</textarea></div>'
+      +'<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:5px">סוג</div>'
+      +'<div style="display:flex;flex-direction:column;gap:6px">'
+      +[['tech','טכני – דיבאג / תפעול','שלבי תפעול, הסתעפויות'],['service','שירות – שימור / מכירה','תסריטי שיחה, התנגדויות'],['mixed','משולב','שילוב טכני + שירותי']].map(function(r){
+        return '<label class="radio-item'+(d.type===r[0]?' sel':'')+'" data-field="type" data-val="'+r[0]+'" onclick="nbSelR(this)">'
+          +'<input type="radio" name="nb-dtype" '+(d.type===r[0]?'checked':'')+' style="flex-shrink:0;width:14px;height:14px;margin-top:3px;accent-color:var(--red)">'
+          +'<div><div style="font-size:13.5px;font-weight:500;color:var(--text)">'+r[1]+'</div><div style="font-size:12px;color:var(--muted);margin-top:2px">'+r[2]+'</div></div></label>';
+      }).join('')+'</div></div>'
+      +'<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:5px">קטגוריה</div>'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">'
+      +[['sim','📶 SIM/eSIM'],['tech2','🔧 תמיכה טכנית'],['billing','💳 חיובים'],['plans','📋 מסלולים'],['intl','✈️ חו"ל'],['ops','🎧 שיחה']].map(function(r){
+        return '<label class="radio-item'+(d.cat===r[0]?' sel':'')+'" data-field="cat" data-val="'+r[0]+'" onclick="nbSelR(this)">'
+          +'<input type="radio" name="nb-dcat" '+(d.cat===r[0]?'checked':'')+' style="flex-shrink:0;width:14px;height:14px;margin-top:2px;accent-color:var(--red)">'
+          +'<div style="font-size:13px;font-weight:500;color:var(--text)">'+r[1]+'</div></label>';
+      }).join('')+'</div></div>'
+      +'<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:5px">גל כתיבה</div>'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">'
+      +[['1','🔴 גל 1','דחוף'],['2','🟠 גל 2','חשוב'],['3','🟡 גל 3','משלים']].map(function(r){
+        return '<label class="radio-item'+(d.wave===r[0]?' sel':'')+'" data-field="wave" data-val="'+r[0]+'" onclick="nbSelR(this)">'
+          +'<input type="radio" name="nb-dwave" '+(d.wave===r[0]?'checked':'')+' style="flex-shrink:0;width:14px;height:14px;margin-top:3px;accent-color:var(--red)">'
+          +'<div><div style="font-size:13px;font-weight:500;color:var(--text)">'+r[1]+'</div><div style="font-size:11.5px;color:var(--muted)">'+r[2]+'</div></div></label>';
+      }).join('')+'</div></div>'
+      +'<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:5px">תגיות לחיפוש</div>'
+      +'<textarea style="width:100%;border:1.5px solid var(--border);border-radius:var(--rs);padding:8px 11px;font-family:Rubik,sans-serif;font-size:13.5px;color:var(--text);background:var(--gray);outline:none;height:40px;resize:none;direction:rtl" id="nb-s1-tags" placeholder="לדוגמה: eSIM, QR, הפעלה…">'+(d.tags||'')+'</textarea></div>'
+      +'<button onclick="nbApplyS1()" style="width:100%;height:38px;background:var(--red);color:#fff;border:none;border-radius:var(--rs);font-size:13.5px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif">✓ הוסף שלב 1 לתדריך</button>';
+  } else {
+    var optHtml=s.options.map(function(o,i){
+      return '<div class="chk-item'+(st.picked.indexOf(i)!==-1?' checked':'')+'" data-sid="'+s.id+'" data-idx="'+i+'" onclick="nbTP(this)" style="display:flex;align-items:flex-start;gap:9px;background:var(--gray);border:1px solid var(--border);border-radius:var(--rs);padding:8px 11px;cursor:pointer;transition:border-color .15s,background .15s;margin-bottom:5px">'
+        +'<input type="checkbox" '+(st.picked.indexOf(i)!==-1?'checked':'')+' onclick="event.stopPropagation()" style="flex-shrink:0;width:15px;height:15px;margin-top:1px;accent-color:var(--ok)">'
+        +'<div><div style="font-size:13px;color:var(--text);line-height:1.45">'+o.text+'</div>'+(o.hint?'<div style="font-size:11.5px;color:var(--muted);margin-top:2px">'+o.hint+'</div>':'')+'</div></div>';
+    }).join('');
+
+    var custHtml=st.custom.length?('<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:7px;margin-top:4px">נוסף ידנית</div>'
+      +st.custom.map(function(txt,i){
+        return '<div style="display:flex;align-items:center;gap:8px;background:#EBF1FF;border:1px solid #B5D4F4;border-radius:var(--rs);padding:6px 10px;font-size:12.5px;color:#1D45B4;margin-bottom:4px">'
+          +'<span style="font-size:13px;flex-shrink:0">✏️</span><span>'+txt+'</span>'
+          +'<span data-sid="'+s.id+'" data-idx="'+i+'" onclick="nbRemoveCustom(this.dataset.sid,parseInt(this.dataset.idx))" style="margin-right:auto;font-size:14px;color:var(--muted);cursor:pointer;padding:0 2px" title="הסר">×</span></div>';
+      }).join('')):'';
+
+    bodyHtml='<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:7px">בחר מהרשימה</div>'
+      +optHtml+custHtml
+      +'<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:7px;margin-top:'+(st.custom.length?'4':'0')+'px">הוסף ידנית</div>'
+      +'<div style="display:flex;gap:8px;margin-bottom:12px" id="nb-cr-'+s.id+'">'
+      +'<input type="text" id="nb-inp-'+s.id+'" data-sid="'+s.id+'" placeholder="'+s.ph+'" onkeydown="if(event.keyCode===13)nbAddCustom(this.dataset.sid)" '
+      +'style="flex:1;font-size:13px;height:34px;padding:0 10px;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--gray);color:var(--text);outline:none;font-family:Rubik,sans-serif;direction:rtl">'
+      +'<button data-sid="'+s.id+'" onclick="nbAddCustom(this.dataset.sid)" style="height:34px;padding:0 12px;font-size:12.5px;font-weight:500;background:var(--gray);border:1.5px solid var(--border);border-radius:var(--rs);color:var(--muted);cursor:pointer;white-space:nowrap;font-family:Rubik,sans-serif">+ הוסף</button></div>'
+      +'<button id="nb-apply-'+s.id+'" data-sid="'+s.id+'" onclick="nbApplyStage(this.dataset.sid)" '+(st.picked.length+st.custom.length===0?'disabled':'')+' '
+      +'style="width:100%;height:38px;background:var(--red);color:#fff;border:none;border-radius:var(--rs);font-size:13.5px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif;opacity:'+(st.picked.length+st.custom.length===0?'0.4':'1')+'">✓ הוסף שלב '+s.num+' לתדריך</button>';
+  }
+
+  return '<div class="acc-section '+openCls+'" id="nb-stage-'+s.id+'">'
+    +'<div class="acc-head" data-sid="'+s.id+'" onclick="nbToggleStage(this.dataset.sid)">'
+    +'<div class="acc-num'+(s.req?' red':'')+'">'+s.num+'</div>'
+    +'<div style="flex:1;min-width:0"><div class="acc-title">'+s.title+'</div><div style="font-size:12px;color:var(--muted);margin-top:1px">'+s.sub+'</div></div>'
+    +'<div style="display:flex;align-items:center;gap:8px;flex-shrink:0">'+tagHtml+'<span class="acc-chev">▼</span></div>'
+    +'</div>'
+    +(st.applied && !isOpen ? appliedPreview : '')
+    +'<div class="acc-body" style="padding:'+(openCls==='open'?'16px':'0 16px')+'">'+bodyHtml+'</div>'
+    +'</div>';
+}
+
+function nbToggleStage(id){
+  var el=document.getElementById('nb-stage-'+id);
+  if(el) el.classList.toggle('open');
+}
+
+function nbSelR(el){
+  var field=el.getAttribute('data-field');
+  var val=el.getAttribute('data-val');
+  nbState['s1'].s1data[field]=val;
+  var wasOpen=document.getElementById('nb-stage-s1')&&document.getElementById('nb-stage-s1').classList.contains('open');
+  nbRender();
+  if(wasOpen&&document.getElementById('nb-stage-s1')) document.getElementById('nb-stage-s1').classList.add('open');
+}
+
+function nbTP(el){nbTogglePick(el.getAttribute('data-sid'),parseInt(el.getAttribute('data-idx')));}
+function nbTogglePick(id,idx){
+  var st=nbState[id];
+  var pos=st.picked.indexOf(idx);
+  if(pos===-1) st.picked.push(idx); else st.picked.splice(pos,1);
+  var items=document.querySelectorAll('#nb-stage-'+id+' .chk-item');
+  items.forEach(function(el,i){
+    var isPicked=st.picked.indexOf(i)!==-1;
+    el.style.background=isPicked?'var(--ok-bg)':'var(--gray)';
+    el.style.borderColor=isPicked?'var(--ok-b)':'var(--border)';
+    var cb=el.querySelector('input');
+    if(cb) cb.checked=isPicked;
+  });
+  var btn=document.getElementById('nb-apply-'+id);
+  if(btn){btn.disabled=st.picked.length+st.custom.length===0;btn.style.opacity=btn.disabled?'0.4':'1';}
+}
+
+function nbAddCustom(id){
+  var inp=document.getElementById('nb-inp-'+id);
+  if(!inp||!inp.value.trim()) return;
+  nbState[id].custom.push(inp.value.trim());
+  var wasOpen=document.getElementById('nb-stage-'+id)&&document.getElementById('nb-stage-'+id).classList.contains('open');
+  nbRender();
+  if(wasOpen&&document.getElementById('nb-stage-'+id)) document.getElementById('nb-stage-'+id).classList.add('open');
+  var newInp=document.getElementById('nb-inp-'+id);
+  if(newInp){newInp.value='';newInp.focus();}
+  var btn=document.getElementById('nb-apply-'+id);
+  if(btn){btn.disabled=false;btn.style.opacity='1';}
+}
+
+function nbRemoveCustom(id,idx){
+  nbState[id].custom.splice(idx,1);
+  var wasOpen=document.getElementById('nb-stage-'+id)&&document.getElementById('nb-stage-'+id).classList.contains('open');
+  nbRender();
+  if(wasOpen&&document.getElementById('nb-stage-'+id)) document.getElementById('nb-stage-'+id).classList.add('open');
+}
+
+function nbEditStage(id){
+  nbState[id].applied=false;
+  nbRender();
+  var el=document.getElementById('nb-stage-'+id);
+  if(el){el.classList.add('open');el.scrollIntoView({behavior:'smooth',block:'nearest'});}
+}
+
+function nbApplyS1(){
+  var d=nbState['s1'].s1data;
+  d.topic=(document.getElementById('nb-s1-topic')||{}).value||'';
+  d.desc=(document.getElementById('nb-s1-desc')||{}).value||'';
+  d.tags=(document.getElementById('nb-s1-tags')||{}).value||'';
+  nbState['s1'].applied=true;
+  nbRender();
+  nbUpdateSummary();
+}
+
+function nbApplyStage(id){
+  var st=nbState[id];
+  if(st.picked.length+st.custom.length===0) return;
+  st.applied=true;
+  nbRender();
+  nbUpdateSummary();
+}
+
+function nbUpdateSummary(){
+  var any=NB_STAGES.some(function(s){return nbState[s.id].applied;});
+  var box=document.getElementById('nb-summary');
+  if(box) box.style.display=any?'block':'none';
+  if(!any) return;
+  var html=NB_STAGES.filter(function(s){return nbState[s.id].applied;}).map(function(s){
+    var st=nbState[s.id];
+    var def=NB_STAGES.filter(function(x){return x.id===s.id;})[0];
+    var items=[];
+    if(s.id==='s1'){var d=st.s1data;if(d.topic)items.push('נושא: '+d.topic);if(d.type)items.push('סוג: '+d.type);if(d.cat)items.push('קטגוריה: '+d.cat);if(d.wave)items.push('גל: '+d.wave);if(d.tags)items.push('תגיות: '+d.tags);}
+    else{items=st.picked.map(function(i){return def.options[i].text;}).concat(st.custom.map(function(t){return '[ידני] '+t;}));}
+    return '<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:5px">שלב '+def.num+' – '+def.title+'</div>'
+      +items.map(function(t){return '<div style="display:flex;align-items:flex-start;gap:7px;font-size:13px;color:var(--text);padding:3px 0"><span style="color:var(--red);flex-shrink:0;margin-top:3px;font-size:10px">›</span><span>'+t+'</span></div>';}).join('')+'</div>';
+  }).join('');
+  var sc=document.getElementById('nb-sum-content');
+  if(sc) sc.innerHTML=html;
+}
+
+function nbCreateDoc(){
+  // Gather all applied stages into a structured doc and show confirmation
+  var topic = (nbState['s1'].s1data.topic)||'תדריך חדש';
+  alert('התדריך "'+topic+'" נוצר בהצלחה! בגרסה הבאה יתווסף אוטומטית לספריית הידע.');
+}
+
+function nbExport(){
+  var out={};
+  NB_STAGES.forEach(function(s){
+    if(!nbState[s.id].applied) return;
+    var def=NB_STAGES.filter(function(x){return x.id===s.id;})[0];
+    var st=nbState[s.id];
+    out['שלב '+def.num+' – '+def.title]=s.id==='s1'?st.s1data:st.picked.map(function(i){return def.options[i].text;}).concat(st.custom);
+  });
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(out,null,2)],{type:'application/json'}));
+  a.download='תדריך-חדש.json';a.click();
+}
+
+function nbInit(){
+  NB_STAGES.forEach(function(s){nbState[s.id]={picked:[],custom:[],applied:false,s1data:{}};});
+  nbRender();
+}
+
+function initObservers(){
   // event delegation for dynamically created buttons
   document.addEventListener('click', function(e){
     if(e.target && e.target.getAttribute('data-action')==='new') showView('new');
