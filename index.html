@@ -1530,10 +1530,11 @@ function cardHTML(t){
 }
 
 function openArticle(id){
-  // Topics with existing full docs → open them directly
   if(id===11||id===12){showView('browsing');return;}
   var t=TOPICS.find(function(x){return x.id===id});
   if(!t) return;
+  // Dynamic doc
+  if(t.dynId){showDynamicDoc(t.dynId);return;}
   var pc={hh:'pri-hh',h:'pri-h',m:'pri-m',l:'pri-l'}[t.pri];
   document.getElementById('article-content').innerHTML='<div class="article-box">'
     +'<div class="article-head"><div class="article-meta"><span class="tb tb-opt">'+CAT[t.cat]+'</span><span class="tb tb-opt">'+WAVE[t.wave]+'</span><span class="pri '+pc+'">'+PRI[t.pri]+'</span></div>'
@@ -1843,9 +1844,133 @@ function nbUpdateSummary(){
 }
 
 function nbCreateDoc(){
-  // Gather all applied stages into a structured doc and show confirmation
-  var topic = (nbState['s1'].s1data.topic)||'תדריך חדש';
-  alert('התדריך "'+topic+'" נוצר בהצלחה! בגרסה הבאה יתווסף אוטומטית לספריית הידע.');
+  var topic=(nbState['s1'].s1data.topic||'').trim();
+  var cat=nbState['s1'].s1data.cat||'tech';
+  var wave=parseInt(nbState['s1'].s1data.wave||'2');
+  var docType=nbState['s1'].s1data.type||'tech';
+
+  if(!topic){
+    alert('יש למלא נושא תדריך בשלב 1 לפני יצירה.');
+    var el=document.getElementById('nb-stage-s1');
+    if(el){el.classList.add('open');el.scrollIntoView({behavior:'smooth'});}
+    return;
+  }
+  if(!nbState['s1'].applied){
+    alert('יש להשלים לפחות את שלב 1 לפני יצירת התדריך.');
+    return;
+  }
+
+  var docId='dyn-'+Date.now();
+  var stages=[];
+  NB_STAGES.forEach(function(s){
+    var st=nbState[s.id];
+    if(!st.applied||s.id==='s1') return;
+    var def=NB_STAGES.filter(function(x){return x.id===s.id;})[0];
+    var items=st.picked.map(function(i){return def.options[i].text;}).concat(st.custom);
+    if(items.length) stages.push({num:def.num,title:def.title,items:items});
+  });
+
+  window.dynamicDocs=window.dynamicDocs||{};
+  window.dynamicDocs[docId]={id:docId,topic:topic,cat:cat,wave:wave,docType:docType,stages:stages};
+  nbAddToLibrary(docId,topic,cat,wave);
+  showDynamicDoc(docId);
+  nbShowSuccessModal(topic);
+
+  NB_STAGES.forEach(function(s){nbState[s.id]={picked:[],custom:[],applied:false,s1data:{}};});
+  nbRender();
+  var sumEl=document.getElementById('nb-summary');
+  if(sumEl) sumEl.style.display='none';
+}
+
+function nbShowSuccessModal(topic){
+  // Remove existing modal if any
+  var old=document.getElementById('nb-success-modal');
+  if(old) old.remove();
+
+  var overlay=document.createElement('div');
+  overlay.id='nb-success-modal';
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:9998;display:flex;align-items:center;justify-content:center';
+
+  var card=document.createElement('div');
+  card.style.cssText='background:#fff;border-radius:14px;padding:28px 32px;box-shadow:0 20px 60px rgba(0,0,0,.25);text-align:center;max-width:340px;width:90%;font-family:Rubik,sans-serif;direction:rtl';
+
+  var emoji=document.createElement('div');
+  emoji.style.cssText='font-size:28px;margin-bottom:12px';
+  emoji.textContent='🎉';
+
+  var title=document.createElement('div');
+  title.style.cssText='font-size:16px;font-weight:600;color:#1F2E3B;margin-bottom:8px';
+  title.textContent='התדריך נוצר בהצלחה!';
+
+  var desc=document.createElement('div');
+  desc.style.cssText='font-size:14px;color:#6B7280;margin-bottom:20px;line-height:1.6';
+  desc.innerHTML='התדריך <strong style="color:#FF3D00">'+topic.replace(/</g,'&lt;')+'</strong> נוסף לספריית הידע.';
+
+  var btn=document.createElement('button');
+  btn.style.cssText='background:#FF3D00;color:#fff;border:none;border-radius:8px;padding:10px 28px;font-size:14px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif';
+  btn.textContent='אוקיי!';
+  btn.addEventListener('click',function(){overlay.remove();});
+
+  card.appendChild(emoji);
+  card.appendChild(title);
+  card.appendChild(desc);
+  card.appendChild(btn);
+  overlay.appendChild(card);
+  document.body.appendChild(overlay);
+}
+function nbCloseMsg(el){
+  var p=el.parentElement;
+  while(p&&p.style.position!=='fixed') p=p.parentElement;
+  if(p) p.remove();
+}
+
+function nbAddToLibrary(docId,topic,cat,wave){
+  // Add to TOPICS array as active doc
+  var newId=TOPICS.length>0?Math.max.apply(null,TOPICS.map(function(t){return t.id;}))+1:41;
+  TOPICS.push({id:newId,cat:cat,wave:wave,pri:'h',title:topic,desc:'תדריך שנוצר ידנית',active:true,dynId:docId});
+  // Update home active docs if wave 1
+  renderHotTopics();
+}
+
+function showDynamicDoc(docId){
+  var doc=window.dynamicDocs[docId];
+  if(!doc) return;
+
+  var stagesHtml=doc.stages.map(function(s){
+    var items=s.items.map(function(item){
+      return '<div class="step-card fade-in">'
+        +'<div class="step-num" style="background:var(--navy);width:20px;height:20px;font-size:10px">›</div>'
+        +'<div class="step-content" style="margin-top:0">'
+        +'<div class="action-list" style="margin-top:0"><div class="action-item"><span class="ai-icon">›</span>'+item+'</div></div>'
+        +'</div></div>';
+    }).join('');
+
+    return '<div class="step-card fade-in" style="margin-bottom:4px">'
+      +'<div class="step-num red">'+s.num+'</div>'
+      +'<div class="step-content">'
+      +'<div class="step-title">'+s.title+'</div>'
+      +'</div></div>'
+      +'<div style="padding-right:52px;margin-bottom:16px">'+items+'</div>';
+  }).join('');
+
+  var html='<div class="article-box">'
+    +'<div class="article-head">'
+    +'<div class="article-meta"><span class="tb tb-sys">'+catLabel(doc.cat)+'</span><span class="tb tb-opt">נוצר: '+new Date().toLocaleDateString('he-IL')+'</span></div>'
+    +'<div class="article-title">'+doc.topic+'</div>'
+    +'<div class="article-sub">תדריך שנוצר ידנית דרך מנהלת הידע</div>'
+    +'</div>'
+    +'<div class="article-body">'
+    +(doc.stages.length?stagesHtml:'<div class="info-box">לא נבחרו שלבים לתדריך זה.</div>')
+    +'</div></div>';
+
+  document.getElementById('article-content').innerHTML=html;
+  showView('article');
+  document.querySelector('#view-article .article-back').setAttribute('onclick',"showView('library')");
+}
+
+function catLabel(cat){
+  var m={sim:'📶 SIM/eSIM',tech:'🔧 טכני',tech2:'🔧 טכני',billing:'💳 חיובים',plans:'📋 מסלולים',intl:'✈️ חו"ל',ops:'🎧 שיחה'};
+  return m[cat]||'📄 כללי';
 }
 
 function nbExport(){
