@@ -771,6 +771,884 @@ body{font-family:"Rubik",sans-serif;background:#F0F2F4;color:var(--text);font-si
     margin: 24px 0;
   }
 </style>
+<script>
+var TOPICS=[
+  {id:1,cat:'sim',wave:1,pri:'hh',title:'הפעלת SIM פיזי חדש',desc:'שלבי הפעלה, זיהוי לקוח, בדיקת סטטוס קו, מה לומר ללקוח'},
+  {id:2,cat:'sim',wave:1,pri:'hh',title:'הפעלת eSIM – קוד QR',desc:'דרישות מקדימות, שליחת QR, סריקה, טעויות נפוצות, אימות'},
+  {id:3,cat:'sim',wave:1,pri:'h',title:'מעבר SIM פיזי ↔ eSIM',desc:'בדיקת תאימות, ביטול פרופיל ישן, הפקה מחדש'},
+  {id:4,cat:'sim',wave:1,pri:'h',title:'תקלה אחרי הפעלת SIM/eSIM',desc:'אבחון, רענון קו, APN, הסלמה'},
+  {id:5,cat:'sim',wave:1,pri:'h',title:'QR לא נסרק / קוד לא התקבל',desc:'סיבות, שליחה מחדש, בדיקת מצלמה, חלופות'},
+  {id:6,cat:'sim',wave:2,pri:'m',title:'החלפת SIM אבוד/גנוב',desc:'חסימה מיידית, אימות מוגבר, הנפקה חדשה'},
+  {id:7,cat:'sim',wave:2,pri:'m',title:'בירור סטטוס משלוח SIM',desc:'בדיקת הזמנה, שליח, נקודת איסוף'},
+  {id:8,cat:'sim',wave:2,pri:'m',title:'איסוף SIM מהום סנטר',desc:'תנאי איסוף, מה לקוח צריך להביא'},
+  {id:9,cat:'sim',wave:2,pri:'m',title:'תאימות מכשיר – VoLTE/eSIM/5G',desc:'בדיקת דגם, גרסת מערכת, הסבר מגבלות'},
+  {id:10,cat:'sim',wave:2,pri:'m',title:'קווים שנרכשו ולא הופעלו',desc:'בדיקת סטטוס, הדרכת הפעלה, סגירת טיפול'},
+  {id:11,cat:'tech',wave:1,pri:'hh',title:'אין גלישה סלולרית',desc:'אבחון, חבילה וקו, נתונים, APN, איפוס, הסלמה',active:true},
+  {id:12,cat:'tech',wave:1,pri:'h',title:'גלישה איטית / ניתוקים',desc:'אזור, דור רשת, עומס, מכשיר, שיפור',active:true},
+  {id:13,cat:'tech',wave:1,pri:'h',title:'הגדרת APN במכשיר',desc:'Android/iPhone, ערכים נכונים, שמירה'},
+  {id:14,cat:'tech',wave:1,pri:'h',title:'אין קליטה / אין שירות',desc:'רשת, SIM, מצב טיסה, אזור גיאוגרפי, איפוס'},
+  {id:15,cat:'tech',wave:1,pri:'h',title:'לא מצליח להוציא/לקבל שיחות',desc:'חסימות, חוב, VoLTE, קליטה, מצב קו'},
+  {id:16,cat:'tech',wave:2,pri:'m',title:'שיחות מתנתקות / שמע ירוד',desc:'אזור, מכשיר, VoLTE, קליטה, SIM'},
+  {id:17,cat:'tech',wave:2,pri:'m',title:'בעיות VoLTE ומכשירים ישנים',desc:'זיהוי חוסר תמיכה, חלופות, הסבר'},
+  {id:18,cat:'tech',wave:2,pri:'m',title:'בעיות SMS וקודי אימות',desc:'קבלת SMS, חסימות, קודי בנקים, איפוס'},
+  {id:19,cat:'tech',wave:2,pri:'m',title:'Hotspot לא עובד',desc:'תמיכה בחבילה, APN, הגדרות שיתוף'},
+  {id:20,cat:'tech',wave:1,pri:'h',title:'טרבלשוטינג בסיסי: כיבוי ואיפוס',desc:'סדר פעולות אחיד, הסבר ללקוח, מתי להסלים'},
+  {id:21,cat:'billing',wave:1,pri:'hh',title:'בירור חיוב גבוה / לא מזוהה',desc:'פירוק חיוב, השוואה לחודשים, שירותים נלווים'},
+  {id:22,cat:'billing',wave:1,pri:'hh',title:'הסבר חשבונית וסעיפי חיוב',desc:'מבנה חשבונית, קבועים/משתנים, זיכויים, מע"מ'},
+  {id:23,cat:'billing',wave:1,pri:'h',title:'תשלום חוב / חסימת קו',desc:'בדיקת יתרה, אפשרויות תשלום, הסרת חסימה'},
+  {id:24,cat:'billing',wave:1,pri:'h',title:'עדכון אמצעי תשלום / אשראי',desc:'אימות לקוח, עדכון כרטיס, פג תוקף, הוראת קבע'},
+  {id:25,cat:'billing',wave:2,pri:'m',title:'זיכויים והחזרים',desc:'בדיקת זכאות, SLA, עדכון לקוח, הסלמה'},
+  {id:26,cat:'billing',wave:2,pri:'m',title:'שליחת חשבונית / אישור תשלום',desc:'סוגי מסמכים, אימות, זמני שליחה'},
+  {id:27,cat:'plans',wave:1,pri:'h',title:'שינוי מסלול / הוזלת חבילה',desc:'מסלול נוכחי, הצעות זמינות, השפעה על התחייבויות'},
+  {id:28,cat:'plans',wave:1,pri:'h',title:'צירוף קו / שדרוג 5G',desc:'תנאי הצטרפות, בדיקת מכשיר, עלויות, הפעלה'},
+  {id:29,cat:'plans',wave:1,pri:'h',title:'ניתוק / ביטול קו',desc:'אימות, סיבת ניתוק, שימור, מועד, אישור'},
+  {id:30,cat:'plans',wave:3,pri:'l',title:'הקפאת קו זמנית',desc:'תנאי הקפאה, משך, עלות, חזרה לפעילות'},
+  {id:31,cat:'plans',wave:2,pri:'m',title:'העברת בעלות על קו',desc:'מסמכים, אימות שני צדדים, השפעה על חיובים'},
+  {id:32,cat:'plans',wave:1,pri:'h',title:'עדכון פרטי לקוח',desc:'כתובת, מייל, טלפון, פרטי חיוב, אימות'},
+  {id:33,cat:'plans',wave:2,pri:'m',title:'ניוד מספרים',desc:'שלבי ניוד, סטטוס, זמני השלמה, תקלות'},
+  {id:34,cat:'intl',wave:1,pri:'m',title:'רכישת חבילת חו"ל לפני טיסה',desc:'התאמת חבילה, מדינות, נפח, מועד הפעלה'},
+  {id:35,cat:'intl',wave:2,pri:'m',title:'תקלת גלישה/קליטה בחו"ל',desc:'Roaming, בחירת רשת ידנית, APN'},
+  {id:36,cat:'intl',wave:2,pri:'m',title:'בירור תעריפי חו"ל / חיוב אחרי חזרה',desc:'הסבר תעריפים, חריגה, טיפול'},
+  {id:37,cat:'ops',wave:1,pri:'h',title:'זיהוי ואימות לקוח',desc:'פרטים נדרשים לכל פעולה, אימות מוגבר, ניסוח'},
+  {id:38,cat:'ops',wave:2,pri:'m',title:'ניתוב והעברת שיחה',desc:'מתי להעביר, מה לתעד, מניעת העברה חוזרת'},
+  {id:39,cat:'ops',wave:2,pri:'m',title:'תיאום Callback / מעקב',desc:'מתי לפתוח, SLA, עדכון לקוח, סגירת מעגל'},
+  {id:40,cat:'ops',wave:3,pri:'m',title:'תלונות, הסלמות, קושי תקשורתי',desc:'לקוח מתוסכל, בקשת מנהל, מחסום שפה'},
+];
+var PRI={hh:'גבוה מאוד',h:'גבוה',m:'בינוני',l:'נמוך'};
+var CAT={sim:'📶 SIM/eSIM',tech:'🔧 טכני',tech2:'🔧 טכני',billing:'💳 חיובים',plans:'📋 מסלולים',intl:'✈️ חו"ל',ops:'🎧 שיחה'};
+var WAVE={1:'גל 1 – מיידי',2:'גל 2 – חשוב',3:'גל 3 – משלים'};
+var WCOL={1:'var(--red)',2:'#E06000',3:'#9A7700'};
+
+function showView(id){
+  document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active')});
+  document.getElementById('view-'+id).classList.add('active');
+  document.querySelectorAll('.snav-item').forEach(function(i){i.classList.remove('active')});
+  var sm=document.getElementById('snav-'+id);
+  if(sm) sm.classList.add('active');
+  ['home','library','new'].forEach(function(t){var b=document.getElementById('mob-'+t);if(b)b.classList.toggle('active',t===id||(id==='browsing'&&t==='home')||(id==='churn'&&t==='home')||(id==='article'&&t==='library'))});
+  if(id==='library') renderLibrary('all');
+  if(id==='home') renderHotTopics();
+  if(id==='new'&&!nbState['s1'].applied) nbRender();
+  window.scrollTo(0,0);
+  setTimeout(function(){document.querySelectorAll('#view-'+id+' .fade-in:not(.visible)').forEach(function(el,i){setTimeout(function(){el.classList.add('visible')},i*55)})},80);
+}
+
+function renderHotTopics(){
+  var hot=TOPICS.filter(function(t){return t.wave===1}).slice(0,6);
+  document.getElementById('hot-grid').innerHTML=hot.map(cardHTML).join('');
+}
+
+function renderLibrary(cat){
+  var f=cat==='all'?TOPICS:TOPICS.filter(function(t){return t.cat===cat});
+  var html='';
+  [1,2,3].forEach(function(w){
+    var wt=f.filter(function(t){return t.wave===w});
+    if(!wt.length) return;
+    html+='<div class="wave-label"><span class="wave-pill" style="background:'+WCOL[w]+'">'+WAVE[w]+' — '+wt.length+' נושאים</span></div>';
+    html+='<div class="topic-grid">'+wt.map(cardHTML).join('')+'</div>';
+  });
+  document.getElementById('library-content').innerHTML=html;
+  setTimeout(function(){document.querySelectorAll('#library-content .fade-in:not(.visible)').forEach(function(el,i){setTimeout(function(){el.classList.add('visible')},i*40)})},50);
+}
+
+function filterLibrary(cat,btn){
+  document.querySelectorAll('.filter-btn').forEach(function(b){b.classList.remove('active')});
+  btn.classList.add('active');
+  renderLibrary(cat);
+}
+
+function filterCategory(cat){
+  showView('library');
+  var btns=document.querySelectorAll('.filter-btn');
+  var cats=['all','sim','tech','billing','plans','intl','ops'];
+  setTimeout(function(){filterLibrary(cat,btns[cats.indexOf(cat)])},100);
+}
+
+function filterWave(w){showView('library')}
+
+function cardHTML(t){
+  var pc={hh:'pri-hh',h:'pri-h',m:'pri-m',l:'pri-l'}[t.pri];
+  var activeBadge=t.active?'<span class="cat-tag" style="background:#EDFAF3;color:#1A7A4A;border:1px solid #B7E8CE">✓ פעיל</span>':'';
+  return '<div class="topic-card fade-in" style="'+(t.active?'border-color:#B7E8CE;':'')+'" onclick="nbOpenTopic('+t.id+')">' 
+    +(t.active?'<div style="position:absolute;top:0;right:0;width:3px;height:100%;background:#1A7A4A"></div>':'')
+    +'<div class="tc-num">'+(t.dynId?'✏️ תדריך ידני':'#'+t.id)+' · '+(CAT[t.cat]||'📄 כללי')+'</div>'
+    +'<div class="tc-title">'+t.title+'</div>'
+    +'<div class="tc-desc">'+t.desc+'</div>'
+    +'<div class="tc-footer"><span class="pri '+pc+'">'+PRI[t.pri]+'</span>'+activeBadge+'<span class="cat-tag">'+WAVE[t.wave]+'</span></div>'
+    +'</div>';
+}
+
+function nbOpenTopic(id){
+  var t=TOPICS.find(function(x){return x.id===id;});
+  if(t&&t.dynId){showDynamicDoc(t.dynId);return;}
+  openArticle(id);
+}
+
+function openArticle(id){
+  if(id===11||id===12){showView('browsing');return;}
+  var t=TOPICS.find(function(x){return x.id===id;});
+  if(!t) return;
+  if(t.dynId){showDynamicDoc(t.dynId);return;}
+  var pc={hh:'pri-hh',h:'pri-h',m:'pri-m',l:'pri-l'}[t.pri];
+  var el=document.getElementById('article-content');
+  el.innerHTML='';
+
+  var box=document.createElement('div');
+  box.className='article-box';
+
+  var head=document.createElement('div');
+  head.className='article-head';
+  head.innerHTML='<div class="article-meta">'
+    +'<span class="tb tb-opt">'+(CAT[t.cat]||'📄')+'</span>'
+    +'<span class="tb tb-opt">'+(WAVE[t.wave]||'')+'</span>'
+    +'<span class="pri '+pc+'">'+PRI[t.pri]+'</span>'
+    +'</div>'
+    +'<div class="article-title">'+t.title+'</div>'
+    +'<div class="article-sub">'+t.desc+'</div>';
+
+  var body=document.createElement('div');
+  body.className='article-body';
+  body.innerHTML='<div class="info-box">📝 מסמך זה עדיין לא נכתב — הוא בתיעדוף <strong>'+(WAVE[t.wave]||'')+'</strong>. לחץ "תדריך חדש" ליצירתו.</div>'
+    +'<div style="background:var(--gray);border:1px solid var(--border);border-radius:var(--r);padding:18px">'
+    +'<div class="f-label" style="margin-bottom:10px">מה צריך לכלול לפי Glance AI</div>'
+    +'<div class="chk-list">'
+    +'<div class="chk-item"><span>📋</span><div><div class="chk-text">מתי להשתמש — סימני זיהוי בשיחה</div></div></div>'
+    +'<div class="chk-item"><span>❓</span><div><div class="chk-text">3–6 שאלות אבחון לפני פעולה</div></div></div>'
+    +'<div class="chk-item"><span>🖥</span><div><div class="chk-text">בדיקות מערכות — קו, חוב, SIM, מסלול</div></div></div>'
+    +'<div class="chk-item"><span>📝</span><div><div class="chk-text">צעדי טיפול לפי סדר</div></div></div>'
+    +'<div class="chk-item"><span>💬</span><div><div class="chk-text">ניסוח מומלץ ללקוח</div></div></div>'
+    +'<div class="chk-item"><span>⚑</span><div><div class="chk-text">מתי להסלים ולמי</div></div></div>'
+    +'<div class="chk-item"><span>⚠️</span><div><div class="chk-text">טעויות נפוצות להימנע</div></div></div>'
+    +'<div class="chk-item"><span>✅</span><div><div class="chk-text">סגירת שיחה ותיעוד</div></div></div>'
+    +'</div></div>';
+
+  var btn=document.createElement('button');
+  btn.textContent='✏️ צור תדריך חדש לנושא זה';
+  btn.style.cssText='margin-top:14px;background:var(--red);color:#fff;border:none;border-radius:var(--rs);padding:10px 18px;font-family:Rubik,sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;width:100%';
+  btn.addEventListener('click', function(){ showView('new'); });
+  body.querySelector('div[style]').appendChild(btn);
+
+  box.appendChild(head);
+  box.appendChild(body);
+  el.appendChild(box);
+  showView('article');
+  var back=document.querySelector('#view-article .article-back');
+  if(back) back.setAttribute('onclick',"showView('library')");
+}
+
+
+function nbShowSuccessModal(topic){
+  // Remove existing modal if any
+  var old=document.getElementById('nb-success-modal');
+  if(old) old.remove();
+
+  var overlay=document.createElement('div');
+  overlay.id='nb-success-modal';
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:9998;display:flex;align-items:center;justify-content:center';
+
+  var card=document.createElement('div');
+  card.style.cssText='background:#fff;border-radius:14px;padding:28px 32px;box-shadow:0 20px 60px rgba(0,0,0,.25);text-align:center;max-width:340px;width:90%;font-family:Rubik,sans-serif;direction:rtl';
+
+  var emoji=document.createElement('div');
+  emoji.style.cssText='font-size:28px;margin-bottom:12px';
+  emoji.textContent='🎉';
+
+  var title=document.createElement('div');
+  title.style.cssText='font-size:16px;font-weight:600;color:#1F2E3B;margin-bottom:8px';
+  title.textContent='התדריך נוצר בהצלחה!';
+
+  var desc=document.createElement('div');
+  desc.style.cssText='font-size:14px;color:#6B7280;margin-bottom:20px;line-height:1.6';
+  desc.innerHTML='התדריך <strong style="color:#FF3D00">'+topic.replace(/</g,'&lt;')+'</strong> נוסף לספריית הידע.';
+
+  var btn=document.createElement('button');
+  btn.style.cssText='background:#FF3D00;color:#fff;border:none;border-radius:8px;padding:10px 28px;font-size:14px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif';
+  btn.textContent='אוקיי!';
+  btn.addEventListener('click',function(){overlay.remove();});
+
+  card.appendChild(emoji);
+  card.appendChild(title);
+  card.appendChild(desc);
+  card.appendChild(btn);
+  overlay.appendChild(card);
+  document.body.appendChild(overlay);
+}
+function nbCloseMsg(el){
+  var p=el.parentElement;
+  while(p&&p.style.position!=='fixed') p=p.parentElement;
+  if(p) p.remove();
+}
+
+function nbAddToLibrary(docId,topic,cat,wave){
+  var newId=TOPICS.length>0?Math.max.apply(null,TOPICS.map(function(t){return t.id;}))+1:41;
+  TOPICS.push({id:newId,cat:cat,wave:wave,pri:'h',title:topic,desc:'תדריך שנוצר ידנית',active:true,dynId:docId});
+  // Re-render library so new card appears with correct link
+  renderLibrary('all');
+  renderHotTopics();
+  // Add card to home active docs section
+  var homeGrid=document.getElementById('home-active-grid');
+  if(homeGrid){
+    var div=document.createElement('div');
+    div.className='topic-card fade-in visible';
+    div.setAttribute('onclick','openArticle('+newId+')');
+    div.style.cssText='background:#fff;border:1px solid #B7E8CE;border-radius:10px;padding:16px;cursor:pointer;position:relative;overflow:hidden';
+    div.innerHTML='<div style="position:absolute;top:0;right:0;width:3px;height:100%;background:#1A7A4A"></div>'
+      +'<div class="tc-num">📄 '+CAT[cat]+'</div>'
+      +'<div class="tc-title">'+topic+'</div>'
+      +'<div class="tc-desc">תדריך שנוצר ידנית דרך מנהלת הידע</div>'
+      +'<div class="tc-footer"><span class="pri pri-h">גבוה</span>'
+      +'<span class="cat-tag" style="background:#EDFAF3;color:#1A7A4A;border:1px solid #B7E8CE">✓ פעיל</span></div>';
+    homeGrid.appendChild(div);
+  }
+}
+
+function showDynamicDoc(docId){
+  var doc=window.dynamicDocs[docId];
+  if(!doc) return;
+
+  var stagesHtml=doc.stages.map(function(s){
+    var items=s.items.map(function(item){
+      return '<div class="step-card fade-in">'
+        +'<div class="step-num" style="background:var(--navy);width:20px;height:20px;font-size:10px">›</div>'
+        +'<div class="step-content" style="margin-top:0">'
+        +'<div class="action-list" style="margin-top:0"><div class="action-item"><span class="ai-icon">›</span>'+item+'</div></div>'
+        +'</div></div>';
+    }).join('');
+
+    return '<div class="step-card fade-in" style="margin-bottom:4px">'
+      +'<div class="step-num red">'+s.num+'</div>'
+      +'<div class="step-content">'
+      +'<div class="step-title">'+s.title+'</div>'
+      +'</div></div>'
+      +'<div style="padding-right:52px;margin-bottom:16px">'+items+'</div>';
+  }).join('');
+
+  var html='<div class="article-box">'
+    +'<div class="article-head">'
+    +'<div class="article-meta"><span class="tb tb-sys">'+catLabel(doc.cat)+'</span><span class="tb tb-opt">נוצר: '+new Date().toLocaleDateString('he-IL')+'</span></div>'
+    +'<div class="article-title">'+doc.topic+'</div>'
+    +'<div class="article-sub">תדריך שנוצר ידנית דרך מנהלת הידע</div>'
+    +'</div>'
+    +'<div class="article-body">'
+    +(doc.stages.length?stagesHtml:'<div class="info-box">לא נבחרו שלבים לתדריך זה.</div>')
+    +'</div></div>';
+
+  document.getElementById('article-content').innerHTML=html;
+
+  // Add "עדכן מסמך" button
+  var updateBtn=document.createElement('button');
+  updateBtn.style.cssText='display:block;margin:16px auto 0;height:40px;padding:0 22px;background:var(--navy);color:#fff;border:none;border-radius:var(--rs);font-size:13.5px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif;width:100%;max-width:680px';
+  updateBtn.textContent='✏️ עדכן מסמך';
+  updateBtn.addEventListener('click',function(){ nbEditDoc(docId); });
+  document.getElementById('article-content').appendChild(updateBtn);
+
+  showView('article');
+  document.querySelector('#view-article .article-back').setAttribute('onclick',"showView('library')");
+}
+
+function nbEditDoc(docId){
+  var doc=window.dynamicDocs[docId];
+  if(!doc) return;
+
+  // Reset form state
+  NB_STAGES.forEach(function(s){ nbState[s.id]={picked:[],custom:[],applied:false,s1data:{}}; });
+
+  // Restore s1 data
+  nbState['s1'].s1data={topic:doc.topic,cat:doc.cat,wave:String(doc.wave),type:doc.docType};
+  nbState['s1'].applied=true;
+
+  // Restore stage selections
+  doc.stages.forEach(function(savedStage){
+    var def=NB_STAGES.filter(function(x){return x.num===savedStage.num;})[0];
+    if(!def) return;
+    savedStage.items.forEach(function(item){
+      // Check if it matches a preset option
+      var optIdx=def.options?def.options.findIndex(function(o){return o.text===item;}):-1;
+      if(optIdx>=0) nbState[def.id].picked.push(optIdx);
+      else nbState[def.id].custom.push(item);
+    });
+    if(nbState[def.id].picked.length+nbState[def.id].custom.length>0)
+      nbState[def.id].applied=true;
+  });
+
+  // Store docId being edited
+  window.nbEditingDocId=docId;
+
+  showView('new');
+  nbRender();
+
+  // Scroll to top
+  window.scrollTo(0,0);
+
+  // Change the "צור" button label to "עדכן"
+  setTimeout(function(){
+    var sumBox=document.getElementById('nb-summary');
+    if(sumBox){
+      var createBtn=sumBox.querySelector('button');
+      if(createBtn) createBtn.textContent='💾 שמור שינויים';
+    }
+    nbUpdateSummary();
+  }, 100);
+}
+
+function catLabel(cat){
+  var m={sim:'📶 SIM/eSIM',tech:'🔧 טכני',tech2:'🔧 טכני',billing:'💳 חיובים',plans:'📋 מסלולים',intl:'✈️ חו"ל',ops:'🎧 שיחה'};
+  return m[cat]||'📄 כללי';
+}
+
+function nbExport(){
+  var out={};
+  NB_STAGES.forEach(function(s){
+    if(!nbState[s.id].applied) return;
+    var def=NB_STAGES.filter(function(x){return x.id===s.id;})[0];
+    var st=nbState[s.id];
+    out['שלב '+def.num+' – '+def.title]=s.id==='s1'?st.s1data:st.picked.map(function(i){return def.options[i].text;}).concat(st.custom);
+  });
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(out,null,2)],{type:'application/json'}));
+  a.download='תדריך-חדש.json';a.click();
+}
+
+function nbInit(){
+  NB_STAGES.forEach(function(s){nbState[s.id]={picked:[],custom:[],applied:false,s1data:{}};});
+  nbRender();
+}
+
+function nbGoNew(){ showView('new'); }
+
+function initObservers(){
+  // event delegation for dynamically created buttons
+  document.addEventListener('click', function(e){
+    var btn=e.target.closest('[data-action="new"]');if(btn) showView('new');
+  });
+
+  renderHotTopics();
+  var obs=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        e.target.querySelectorAll('.fade-in:not(.visible)').forEach(function(el,i){setTimeout(function(){el.classList.add('visible')},i*55)});
+        obs.unobserve(e.target);
+      }
+    });
+  },{threshold:0.05});
+  document.querySelectorAll('.view').forEach(function(v){obs.observe(v)});
+  setTimeout(function(){document.querySelectorAll('#view-home .fade-in').forEach(function(el,i){setTimeout(function(){el.classList.add('visible')},i*60)})},200);
+}
+
+var NB_STAGES = [
+  {id:'s1',num:'1',req:true,title:'זיהוי ותיאור התדריך',sub:'נושא, סוג, קטגוריה, גל',type:'fields'},
+  {id:'s2',num:'2',req:true,title:'שאלות בירור ראשוניות',sub:'מהות, משך, מיקום',options:[
+    {text:'מה בדיוק לא עובד?',hint:'→ מכווין למסלול הנכון'},
+    {text:'מתי זה התחיל?',hint:'→ נקודתי vs מתמשך'},
+    {text:'זה בכל מקום או רק כאן?',hint:'→ כיסוי vs תקלת מכשיר'},
+    {text:'כמה זמן הבעיה קיימת?',hint:'→ דחיפות הטיפול'},
+    {text:'האם זה קרה בעבר?',hint:'→ תבנית חוזרת'},
+    {text:'מה גרם לזה לדעתך?',hint:'→ context ראשוני'},
+  ],ph:'לדוגמה: איזה מכשיר יש לך?'},
+  {id:'s3',num:'3',req:true,title:'בדיקות מערכות פנימיות',sub:'CRM, חבילה, אנטנות – ללא לקוח',options:[
+    {text:'בדיקת שדה "גלישה בארץ" ב-CRM',hint:'חסום / פעיל'},
+    {text:'בדיקת ניצול חבילת גלישה',hint:'אזור אישי ← השימושים שלי'},
+    {text:'בדיקת Prepaid / חשד הונאה',hint:'אם כן → פנייה ל-IT'},
+    {text:'בדיקת כיסוי אנטנות באזור',hint:'אם אין → תסריט פריסת רשת'},
+    {text:'בדיקת תלונות אזוריות',hint:'עוד לקוחות מדווחים?'},
+    {text:'בדיקת סטטוס SIM במערכת',hint:'פעיל / חסום / לא מוגדר'},
+    {text:'בדיקת חוב פתוח',hint:'חסימה בגלל חוב?'},
+  ],ph:'לדוגמה: בדיקת לוג שיחות אחרון'},
+  {id:'s4',num:'4',req:false,title:'פעולות בטלפון / מכשיר הלקוח',sub:'הגדרות שהלקוח מבצע',options:[
+    {text:'נתונים סלולריים – אם כבוי → להדליק'},
+    {text:'Wi-Fi – אם דולק → לכבות'},
+    {text:'נקודת גישה אישית – לכבות'},
+    {text:'VPN / חוסך נתונים – לכבות'},
+    {text:'אפליקציות סינון – להסיר'},
+    {text:'סימון רשת → שנה ל-4G/5G אוטומטי'},
+    {text:'APN → הגדרה נכונה ל-WE'},
+    {text:'איפוס הגדרות רשת'},
+    {text:'כיבוי והדלקת מכשיר'},
+  ],ph:'לדוגמה: בדיקת עדכון מערכת הפעלה'},
+  {id:'s5',num:'5',req:false,title:'פעולות מערכת מצד הנציג',sub:'ריענון, SIM, CRM',options:[
+    {text:'ריענון גלישה – מתג "גלישה בארץ" כבה/הפעל'},
+    {text:'ריענון SIM – sim block lbl → sim allow lbl'},
+    {text:'פתיחת פנייה ל-IT'},
+    {text:'פתיחת טופס רדיו + GNETRUCK'},
+    {text:'עדכון APN במערכת'},
+    {text:'ביצוע זיכוי / החזר'},
+    {text:'שינוי מסלול / חבילה'},
+  ],ph:'לדוגמה: שליחת SMS מאומת ללקוח'},
+  {id:'s6',num:'6',req:false,title:'בדיקת תקינות',sub:'אימות לפני סגירה',options:[
+    {text:'Speedtest – מעל 6 מגה = תקין'},
+    {text:'SIM במכשיר אחר – בדיקת חומרה'},
+    {text:'לקוח מאשר גלישה / שיחה תקינה'},
+    {text:'בדיקת קבלת SMS'},
+    {text:'בדיקת VoLTE פעיל'},
+  ],ph:'לדוגמה: שיחת ביקורת 24 שעות לאחר מכן'},
+  {id:'s7',num:'7',req:false,title:'הפניה / אסקלציה',sub:'מתי ולמי',options:[
+    {text:'מומחי תמיכה – לאחר מיצוי כל השלבים'},
+    {text:'IT – Prepaid / הונאה'},
+    {text:'רדיו + GNETRUCK – תקלה אזורית'},
+    {text:'מעבדה – בעיית מכשיר'},
+    {text:'הום סנטר – החלפת SIM פיזי'},
+    {text:'מנהל / שימור – לקוח מתוסכל'},
+  ],ph:'לדוגמה: אסקלציה לצוות VoLTE'},
+  {id:'s8',num:'8',req:false,title:'שלב שירותי – סגירה',sub:'בירור נוסף, הצעות, תיעוד',options:[
+    {text:'Wi-Fi Calling – הצע כפתרון מניעתי'},
+    {text:'בדיקת התאמת חבילה'},
+    {text:'שאלת שביעות רצון'},
+    {text:'תיאום callback / מעקב'},
+    {text:'תיעוד כל הפעולות שבוצעו'},
+    {text:'הצע שדרוג אם רלוונטי'},
+  ],ph:'לדוגמה: שליחת סיכום בוואטסאפ'},
+];
+
+var nbState={};
+NB_STAGES.forEach(function(s){nbState[s.id]={picked:[],custom:[],applied:false,s1data:{}};});
+
+function nbRender(){
+  var el=document.getElementById('nb-stages');
+  if(!el) return;
+  el.innerHTML=NB_STAGES.map(nbRenderStage).join('');
+}
+
+function nbRenderStage(s){
+  var st=nbState[s.id];
+  var isOpen=document.getElementById('nb-stage-'+s.id)?document.getElementById('nb-stage-'+s.id).classList.contains('open'):false;
+  var openCls=(s.id==='s1'&&!st.applied)?'open':(isOpen?'open':'');
+
+  var tagHtml=st.applied
+    ?('<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--ok-bg);color:var(--ok);border:1px solid var(--ok-b)">✓ '+(s.id==='s1'?'הושלם':(st.picked.length+st.custom.length)+' פריטים')+'</span>')
+    :('<span style="display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;border:1px solid;'+(s.req?'background:#FFE8E8;color:#C02800;border-color:var(--red-m)':'background:var(--gray);color:var(--muted);border-color:var(--border)')+'">'+( s.req?'חובה':'אופציונלי')+'</span>');
+
+  var bodyHtml='';
+  if(s.type==='fields'){
+    var d=st.s1data;
+    bodyHtml='<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:5px">נושא התדריך</div>'
+      +'<textarea style="width:100%;border:1.5px solid var(--border);border-radius:var(--rs);padding:8px 11px;font-family:Rubik,sans-serif;font-size:13.5px;color:var(--text);background:var(--gray);outline:none;height:40px;resize:none;direction:rtl" id="nb-s1-topic" placeholder="לדוגמה: הפעלת eSIM – קוד QR">'+(d.topic||'')+'</textarea></div>'
+      +'<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:5px">תיאור</div>'
+      +'<textarea style="width:100%;border:1.5px solid var(--border);border-radius:var(--rs);padding:8px 11px;font-family:Rubik,sans-serif;font-size:13.5px;color:var(--text);background:var(--gray);outline:none;resize:vertical;min-height:70px;direction:rtl" id="nb-s1-desc" placeholder="במה עוסק, מה פותר, מתי להשתמש…">'+(d.desc||'')+'</textarea></div>'
+      +'<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:5px">סוג</div>'
+      +'<div style="display:flex;flex-direction:column;gap:6px">'
+      +[['tech','טכני – דיבאג / תפעול','שלבי תפעול, הסתעפויות'],['service','שירות – שימור / מכירה','תסריטי שיחה, התנגדויות'],['mixed','משולב','שילוב טכני + שירותי']].map(function(r){
+        return '<label class="radio-item'+(d.type===r[0]?' sel':'')+'" data-field="type" data-val="'+r[0]+'" onclick="nbSelR(this)">'
+          +'<input type="radio" name="nb-dtype" '+(d.type===r[0]?'checked':'')+' style="flex-shrink:0;width:14px;height:14px;margin-top:3px;accent-color:var(--red)">'
+          +'<div><div style="font-size:13.5px;font-weight:500;color:var(--text)">'+r[1]+'</div><div style="font-size:12px;color:var(--muted);margin-top:2px">'+r[2]+'</div></div></label>';
+      }).join('')+'</div></div>'
+      +'<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:5px">קטגוריה</div>'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">'
+      +[['sim','📶 SIM/eSIM'],['tech2','🔧 תמיכה טכנית'],['billing','💳 חיובים'],['plans','📋 מסלולים'],['intl','✈️ חו"ל'],['ops','🎧 שיחה']].map(function(r){
+        return '<label class="radio-item'+(d.cat===r[0]?' sel':'')+'" data-field="cat" data-val="'+r[0]+'" onclick="nbSelR(this)">'
+          +'<input type="radio" name="nb-dcat" '+(d.cat===r[0]?'checked':'')+' style="flex-shrink:0;width:14px;height:14px;margin-top:2px;accent-color:var(--red)">'
+          +'<div style="font-size:13px;font-weight:500;color:var(--text)">'+r[1]+'</div></label>';
+      }).join('')+'</div></div>'
+      +'<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:5px">גל כתיבה</div>'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">'
+      +[['1','🔴 גל 1','דחוף'],['2','🟠 גל 2','חשוב'],['3','🟡 גל 3','משלים']].map(function(r){
+        return '<label class="radio-item'+(d.wave===r[0]?' sel':'')+'" data-field="wave" data-val="'+r[0]+'" onclick="nbSelR(this)">'
+          +'<input type="radio" name="nb-dwave" '+(d.wave===r[0]?'checked':'')+' style="flex-shrink:0;width:14px;height:14px;margin-top:3px;accent-color:var(--red)">'
+          +'<div><div style="font-size:13px;font-weight:500;color:var(--text)">'+r[1]+'</div><div style="font-size:11.5px;color:var(--muted)">'+r[2]+'</div></div></label>';
+      }).join('')+'</div></div>'
+      +'<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:5px">תגיות לחיפוש</div>'
+      +'<textarea style="width:100%;border:1.5px solid var(--border);border-radius:var(--rs);padding:8px 11px;font-family:Rubik,sans-serif;font-size:13.5px;color:var(--text);background:var(--gray);outline:none;height:40px;resize:none;direction:rtl" id="nb-s1-tags" placeholder="לדוגמה: eSIM, QR, הפעלה…">'+(d.tags||'')+'</textarea></div>'
+      +'<button onclick="nbApplyS1()" style="width:100%;height:38px;background:var(--red);color:#fff;border:none;border-radius:var(--rs);font-size:13.5px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif">✓ הוסף שלב 1 לתדריך</button>';
+  } else {
+    var optHtml=s.options.map(function(o,i){
+      return '<div class="chk-item'+(st.picked.indexOf(i)!==-1?' checked':'')+'" data-sid="'+s.id+'" data-idx="'+i+'" onclick="nbTP(this)" style="display:flex;align-items:flex-start;gap:9px;background:var(--gray);border:1px solid var(--border);border-radius:var(--rs);padding:8px 11px;cursor:pointer;transition:border-color .15s,background .15s;margin-bottom:5px">'
+        +'<input type="checkbox" '+(st.picked.indexOf(i)!==-1?'checked':'')+' onclick="event.stopPropagation()" style="flex-shrink:0;width:15px;height:15px;margin-top:1px;accent-color:var(--ok)">'
+        +'<div><div style="font-size:13px;color:var(--text);line-height:1.45">'+o.text+'</div>'+(o.hint?'<div style="font-size:11.5px;color:var(--muted);margin-top:2px">'+o.hint+'</div>':'')+'</div></div>';
+    }).join('');
+
+    var custHtml=st.custom.length?('<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:7px;margin-top:4px">נוסף ידנית</div>'
+      +st.custom.map(function(txt,i){
+        return '<div style="display:flex;align-items:center;gap:8px;background:#EBF1FF;border:1px solid #B5D4F4;border-radius:var(--rs);padding:6px 10px;font-size:12.5px;color:#1D45B4;margin-bottom:4px">'
+          +'<span style="font-size:13px;flex-shrink:0">✏️</span><span>'+txt+'</span>'
+          +'<span data-sid="'+s.id+'" data-idx="'+i+'" onclick="nbRemoveCustom(this.dataset.sid,parseInt(this.dataset.idx))" style="margin-right:auto;font-size:14px;color:var(--muted);cursor:pointer;padding:0 2px" title="הסר">×</span></div>';
+      }).join('')):'';
+
+    bodyHtml='<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:7px">בחר מהרשימה</div>'
+      +optHtml+custHtml
+      +'<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:7px;margin-top:'+(st.custom.length?'4':'0')+'px">הוסף ידנית</div>'
+      +'<div style="display:flex;gap:8px;margin-bottom:12px" id="nb-cr-'+s.id+'">'
+      +'<input type="text" id="nb-inp-'+s.id+'" data-sid="'+s.id+'" placeholder="'+s.ph+'" onkeydown="if(event.keyCode===13)nbAddCustom(this.dataset.sid)" '
+      +'style="flex:1;font-size:13px;height:34px;padding:0 10px;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--gray);color:var(--text);outline:none;font-family:Rubik,sans-serif;direction:rtl">'
+      +'<button data-sid="'+s.id+'" onclick="nbAddCustom(this.dataset.sid)" style="height:34px;padding:0 12px;font-size:12.5px;font-weight:500;background:var(--gray);border:1.5px solid var(--border);border-radius:var(--rs);color:var(--muted);cursor:pointer;white-space:nowrap;font-family:Rubik,sans-serif">+ הוסף</button></div>'
+      +'<button id="nb-apply-'+s.id+'" data-sid="'+s.id+'" onclick="nbApplyStage(this.dataset.sid)" '+(st.picked.length+st.custom.length===0?'disabled':'')+' '
+      +'style="width:100%;height:38px;background:var(--red);color:#fff;border:none;border-radius:var(--rs);font-size:13.5px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif;opacity:'+(st.picked.length+st.custom.length===0?'0.4':'1')+'">✓ הוסף שלב '+s.num+' לתדריך</button>';
+  }
+
+  return '<div class="acc-section '+openCls+'" id="nb-stage-'+s.id+'">'
+    +'<div class="acc-head" data-sid="'+s.id+'" onclick="nbToggleStage(this.dataset.sid)">'
+    +'<div class="acc-num'+(s.req?' red':'')+'">'+s.num+'</div>'
+    +'<div style="flex:1;min-width:0"><div class="acc-title">'+s.title+'</div><div style="font-size:12px;color:var(--muted);margin-top:1px">'+s.sub+'</div></div>'
+    +'<div style="display:flex;align-items:center;gap:8px;flex-shrink:0">'+tagHtml+'<span class="acc-chev">▼</span></div>'
+    +'</div>'
+    +(st.applied && !isOpen ? appliedPreview : '')
+    +'<div class="acc-body" style="padding:'+(openCls==='open'?'16px':'0 16px')+'">'+bodyHtml+'</div>'
+    +'</div>';
+}
+
+function nbToggleStage(id){
+  var el=document.getElementById('nb-stage-'+id);
+  if(el) el.classList.toggle('open');
+}
+
+function nbSelR(el){
+  var field=el.getAttribute('data-field');
+  var val=el.getAttribute('data-val');
+  nbState['s1'].s1data[field]=val;
+  var wasOpen=document.getElementById('nb-stage-s1')&&document.getElementById('nb-stage-s1').classList.contains('open');
+  nbRender();
+  if(wasOpen&&document.getElementById('nb-stage-s1')) document.getElementById('nb-stage-s1').classList.add('open');
+}
+
+function nbTP(el){nbTogglePick(el.getAttribute('data-sid'),parseInt(el.getAttribute('data-idx')));}
+function nbTogglePick(id,idx){
+  var st=nbState[id];
+  var pos=st.picked.indexOf(idx);
+  if(pos===-1) st.picked.push(idx); else st.picked.splice(pos,1);
+  var items=document.querySelectorAll('#nb-stage-'+id+' .chk-item');
+  items.forEach(function(el,i){
+    var isPicked=st.picked.indexOf(i)!==-1;
+    el.style.background=isPicked?'var(--ok-bg)':'var(--gray)';
+    el.style.borderColor=isPicked?'var(--ok-b)':'var(--border)';
+    var cb=el.querySelector('input');
+    if(cb) cb.checked=isPicked;
+  });
+  var btn=document.getElementById('nb-apply-'+id);
+  if(btn){btn.disabled=st.picked.length+st.custom.length===0;btn.style.opacity=btn.disabled?'0.4':'1';}
+}
+
+function nbAddCustom(id){
+  var inp=document.getElementById('nb-inp-'+id);
+  if(!inp||!inp.value.trim()) return;
+  nbState[id].custom.push(inp.value.trim());
+  var wasOpen=document.getElementById('nb-stage-'+id)&&document.getElementById('nb-stage-'+id).classList.contains('open');
+  nbRender();
+  if(wasOpen&&document.getElementById('nb-stage-'+id)) document.getElementById('nb-stage-'+id).classList.add('open');
+  var newInp=document.getElementById('nb-inp-'+id);
+  if(newInp){newInp.value='';newInp.focus();}
+  var btn=document.getElementById('nb-apply-'+id);
+  if(btn){btn.disabled=false;btn.style.opacity='1';}
+}
+
+function nbRemoveCustom(id,idx){
+  nbState[id].custom.splice(idx,1);
+  var wasOpen=document.getElementById('nb-stage-'+id)&&document.getElementById('nb-stage-'+id).classList.contains('open');
+  nbRender();
+  if(wasOpen&&document.getElementById('nb-stage-'+id)) document.getElementById('nb-stage-'+id).classList.add('open');
+}
+
+function nbEditStage(id){
+  nbState[id].applied=false;
+  nbRender();
+  var el=document.getElementById('nb-stage-'+id);
+  if(el){el.classList.add('open');el.scrollIntoView({behavior:'smooth',block:'nearest'});}
+}
+
+function nbApplyS1(){
+  var d=nbState['s1'].s1data;
+  d.topic=(document.getElementById('nb-s1-topic')||{}).value||'';
+  d.desc=(document.getElementById('nb-s1-desc')||{}).value||'';
+  d.tags=(document.getElementById('nb-s1-tags')||{}).value||'';
+  nbState['s1'].applied=true;
+  nbRender();
+  nbUpdateSummary();
+}
+
+function nbApplyStage(id){
+  var st=nbState[id];
+  if(st.picked.length+st.custom.length===0) return;
+  st.applied=true;
+  nbRender();
+  nbUpdateSummary();
+}
+
+function nbUpdateSummary(){
+  var any=NB_STAGES.some(function(s){return nbState[s.id].applied;});
+  var box=document.getElementById('nb-summary');
+  if(box) box.style.display=any?'block':'none';
+  if(!any) return;
+  var html=NB_STAGES.filter(function(s){return nbState[s.id].applied;}).map(function(s){
+    var st=nbState[s.id];
+    var def=NB_STAGES.filter(function(x){return x.id===s.id;})[0];
+    var items=[];
+    if(s.id==='s1'){var d=st.s1data;if(d.topic)items.push('נושא: '+d.topic);if(d.type)items.push('סוג: '+d.type);if(d.cat)items.push('קטגוריה: '+d.cat);if(d.wave)items.push('גל: '+d.wave);if(d.tags)items.push('תגיות: '+d.tags);}
+    else{items=st.picked.map(function(i){return def.options[i].text;}).concat(st.custom.map(function(t){return '[ידני] '+t;}));}
+    return '<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:5px">שלב '+def.num+' – '+def.title+'</div>'
+      +items.map(function(t){return '<div style="display:flex;align-items:flex-start;gap:7px;font-size:13px;color:var(--text);padding:3px 0"><span style="color:var(--red);flex-shrink:0;margin-top:3px;font-size:10px">›</span><span>'+t+'</span></div>';}).join('')+'</div>';
+  }).join('');
+  var sc=document.getElementById('nb-sum-content');
+  if(sc) sc.innerHTML=html;
+}
+
+function nbCreateDoc(){
+  var topic=(nbState['s1'].s1data.topic||'').trim();
+  var cat=nbState['s1'].s1data.cat||'tech';
+  var wave=parseInt(nbState['s1'].s1data.wave||'2');
+  var docType=nbState['s1'].s1data.type||'tech';
+
+  // If editing existing doc — update it
+  if(window.nbEditingDocId){
+    var docId=window.nbEditingDocId;
+    window.nbEditingDocId=null;
+    var stages=[];
+    NB_STAGES.forEach(function(s){
+      var st=nbState[s.id];
+      if(!st.applied||s.id==='s1') return;
+      var def=NB_STAGES.filter(function(x){return x.id===s.id;})[0];
+      var items=st.picked.map(function(i){return def.options[i].text;}).concat(st.custom);
+      if(items.length) stages.push({num:def.num,title:def.title,items:items});
+    });
+    window.dynamicDocs[docId].topic=topic;
+    window.dynamicDocs[docId].cat=cat;
+    window.dynamicDocs[docId].wave=wave;
+    window.dynamicDocs[docId].stages=stages;
+    // Update TOPICS entry
+    var t=TOPICS.find(function(x){return x.dynId===docId;});
+    if(t){t.title=topic;t.cat=cat;t.wave=wave;}
+    showDynamicDoc(docId);
+    nbShowSuccessModal(topic+' — עודכן!');
+    NB_STAGES.forEach(function(s){nbState[s.id]={picked:[],custom:[],applied:false,s1data:{}};});
+    nbRender();
+    var sumEl=document.getElementById('nb-summary');
+    if(sumEl) sumEl.style.display='none';
+    return;
+  }
+
+  if(!topic){
+    alert('יש למלא נושא תדריך בשלב 1 לפני יצירה.');
+    var el=document.getElementById('nb-stage-s1');
+    if(el){el.classList.add('open');el.scrollIntoView({behavior:'smooth'});}
+    return;
+  }
+  if(!nbState['s1'].applied){
+    alert('יש להשלים לפחות את שלב 1 לפני יצירת התדריך.');
+    return;
+  }
+
+  var docId='dyn-'+Date.now();
+  var stages=[];
+  NB_STAGES.forEach(function(s){
+    var st=nbState[s.id];
+    if(!st.applied||s.id==='s1') return;
+    var def=NB_STAGES.filter(function(x){return x.id===s.id;})[0];
+    var items=st.picked.map(function(i){return def.options[i].text;}).concat(st.custom);
+    if(items.length) stages.push({num:def.num,title:def.title,items:items});
+  });
+
+  window.dynamicDocs=window.dynamicDocs||{};
+  window.dynamicDocs[docId]={id:docId,topic:topic,cat:cat,wave:wave,docType:docType,stages:stages};
+  nbAddToLibrary(docId,topic,cat,wave);
+  showDynamicDoc(docId);
+  nbShowSuccessModal(topic);
+
+  NB_STAGES.forEach(function(s){nbState[s.id]={picked:[],custom:[],applied:false,s1data:{}};});
+  nbRender();
+  var sumEl=document.getElementById('nb-summary');
+  if(sumEl) sumEl.style.display='none';
+}
+
+function nbShowSuccessModal(topic){
+  // Remove existing modal if any
+  var old=document.getElementById('nb-success-modal');
+  if(old) old.remove();
+
+  var overlay=document.createElement('div');
+  overlay.id='nb-success-modal';
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:9998;display:flex;align-items:center;justify-content:center';
+
+  var card=document.createElement('div');
+  card.style.cssText='background:#fff;border-radius:14px;padding:28px 32px;box-shadow:0 20px 60px rgba(0,0,0,.25);text-align:center;max-width:340px;width:90%;font-family:Rubik,sans-serif;direction:rtl';
+
+  var emoji=document.createElement('div');
+  emoji.style.cssText='font-size:28px;margin-bottom:12px';
+  emoji.textContent='🎉';
+
+  var title=document.createElement('div');
+  title.style.cssText='font-size:16px;font-weight:600;color:#1F2E3B;margin-bottom:8px';
+  title.textContent='התדריך נוצר בהצלחה!';
+
+  var desc=document.createElement('div');
+  desc.style.cssText='font-size:14px;color:#6B7280;margin-bottom:20px;line-height:1.6';
+  desc.innerHTML='התדריך <strong style="color:#FF3D00">'+topic.replace(/</g,'&lt;')+'</strong> נוסף לספריית הידע.';
+
+  var btn=document.createElement('button');
+  btn.style.cssText='background:#FF3D00;color:#fff;border:none;border-radius:8px;padding:10px 28px;font-size:14px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif';
+  btn.textContent='אוקיי!';
+  btn.addEventListener('click',function(){overlay.remove();});
+
+  card.appendChild(emoji);
+  card.appendChild(title);
+  card.appendChild(desc);
+  card.appendChild(btn);
+  overlay.appendChild(card);
+  document.body.appendChild(overlay);
+}
+function nbCloseMsg(el){
+  var p=el.parentElement;
+  while(p&&p.style.position!=='fixed') p=p.parentElement;
+  if(p) p.remove();
+}
+
+function nbAddToLibrary(docId,topic,cat,wave){
+  var newId=TOPICS.length>0?Math.max.apply(null,TOPICS.map(function(t){return t.id;}))+1:41;
+  TOPICS.push({id:newId,cat:cat,wave:wave,pri:'h',title:topic,desc:'תדריך שנוצר ידנית',active:true,dynId:docId});
+  renderHotTopics();
+  // Also add card to home active docs section
+  var homeGrid=document.getElementById('home-active-grid');
+  if(homeGrid){
+    var div=document.createElement('div');
+    div.className='topic-card fade-in visible';
+    div.setAttribute('onclick','openArticle('+newId+')');
+    div.style.borderColor='#B7E8CE';
+    div.innerHTML='<div style="position:absolute;top:0;right:0;width:3px;height:100%;background:#1A7A4A"></div>'
+      +'<div class="tc-num">📄 תדריך חדש</div>'
+      +'<div class="tc-title">'+topic+'</div>'
+      +'<div class="tc-desc">תדריך שנוצר ידנית דרך מנהלת הידע</div>'
+      +'<div class="tc-footer"><span class="pri pri-h">גבוה</span>'
+      +'<span class="cat-tag" style="background:#EDFAF3;color:#1A7A4A;border:1px solid #B7E8CE">✓ פעיל</span></div>';
+    homeGrid.appendChild(div);
+  }
+}
+
+function showDynamicDoc(docId){
+  var doc=window.dynamicDocs[docId];
+  if(!doc) return;
+
+  var stagesHtml=doc.stages.map(function(s){
+    var items=s.items.map(function(item){
+      return '<div class="step-card fade-in">'
+        +'<div class="step-num" style="background:var(--navy);width:20px;height:20px;font-size:10px">›</div>'
+        +'<div class="step-content" style="margin-top:0">'
+        +'<div class="action-list" style="margin-top:0"><div class="action-item"><span class="ai-icon">›</span>'+item+'</div></div>'
+        +'</div></div>';
+    }).join('');
+
+    return '<div class="step-card fade-in" style="margin-bottom:4px">'
+      +'<div class="step-num red">'+s.num+'</div>'
+      +'<div class="step-content">'
+      +'<div class="step-title">'+s.title+'</div>'
+      +'</div></div>'
+      +'<div style="padding-right:52px;margin-bottom:16px">'+items+'</div>';
+  }).join('');
+
+  var html='<div class="article-box">'
+    +'<div class="article-head">'
+    +'<div class="article-meta"><span class="tb tb-sys">'+catLabel(doc.cat)+'</span><span class="tb tb-opt">נוצר: '+new Date().toLocaleDateString('he-IL')+'</span></div>'
+    +'<div class="article-title">'+doc.topic+'</div>'
+    +'<div class="article-sub">תדריך שנוצר ידנית דרך מנהלת הידע</div>'
+    +'</div>'
+    +'<div class="article-body">'
+    +(doc.stages.length?stagesHtml:'<div class="info-box">לא נבחרו שלבים לתדריך זה.</div>')
+    +'</div></div>';
+
+  document.getElementById('article-content').innerHTML=html;
+
+  // Add "עדכן מסמך" button
+  var updateBtn=document.createElement('button');
+  updateBtn.style.cssText='display:block;margin:16px auto 0;height:40px;padding:0 22px;background:var(--navy);color:#fff;border:none;border-radius:var(--rs);font-size:13.5px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif;width:100%;max-width:680px';
+  updateBtn.textContent='✏️ עדכן מסמך';
+  updateBtn.addEventListener('click',function(){ nbEditDoc(docId); });
+  document.getElementById('article-content').appendChild(updateBtn);
+
+  showView('article');
+  document.querySelector('#view-article .article-back').setAttribute('onclick',"showView('library')");
+}
+
+function nbEditDoc(docId){
+  var doc=window.dynamicDocs[docId];
+  if(!doc) return;
+
+  // Reset form state
+  NB_STAGES.forEach(function(s){ nbState[s.id]={picked:[],custom:[],applied:false,s1data:{}}; });
+
+  // Restore s1 data
+  nbState['s1'].s1data={topic:doc.topic,cat:doc.cat,wave:String(doc.wave),type:doc.docType};
+  nbState['s1'].applied=true;
+
+  // Restore stage selections
+  doc.stages.forEach(function(savedStage){
+    var def=NB_STAGES.filter(function(x){return x.num===savedStage.num;})[0];
+    if(!def) return;
+    savedStage.items.forEach(function(item){
+      // Check if it matches a preset option
+      var optIdx=def.options?def.options.findIndex(function(o){return o.text===item;}):-1;
+      if(optIdx>=0) nbState[def.id].picked.push(optIdx);
+      else nbState[def.id].custom.push(item);
+    });
+    if(nbState[def.id].picked.length+nbState[def.id].custom.length>0)
+      nbState[def.id].applied=true;
+  });
+
+  // Store docId being edited
+  window.nbEditingDocId=docId;
+
+  showView('new');
+  nbRender();
+
+  // Scroll to top
+  window.scrollTo(0,0);
+
+  // Change the "צור" button label to "עדכן"
+  setTimeout(function(){
+    var sumBox=document.getElementById('nb-summary');
+    if(sumBox){
+      var createBtn=sumBox.querySelector('button');
+      if(createBtn) createBtn.textContent='💾 שמור שינויים';
+    }
+    nbUpdateSummary();
+  }, 100);
+}
+
+function catLabel(cat){
+  var m={sim:'📶 SIM/eSIM',tech:'🔧 טכני',tech2:'🔧 טכני',billing:'💳 חיובים',plans:'📋 מסלולים',intl:'✈️ חו"ל',ops:'🎧 שיחה'};
+  return m[cat]||'📄 כללי';
+}
+
+function nbExport(){
+  var out={};
+  NB_STAGES.forEach(function(s){
+    if(!nbState[s.id].applied) return;
+    var def=NB_STAGES.filter(function(x){return x.id===s.id;})[0];
+    var st=nbState[s.id];
+    out['שלב '+def.num+' – '+def.title]=s.id==='s1'?st.s1data:st.picked.map(function(i){return def.options[i].text;}).concat(st.custom);
+  });
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(out,null,2)],{type:'application/json'}));
+  a.download='תדריך-חדש.json';a.click();
+}
+
+function nbInit(){
+  NB_STAGES.forEach(function(s){nbState[s.id]={picked:[],custom:[],applied:false,s1data:{}};});
+  nbRender();
+}
+
+function initObservers(){
+  // event delegation for dynamically created buttons
+  document.addEventListener('click', function(e){
+    var btn=e.target.closest('[data-action="new"]');if(btn) showView('new');
+  });
+
+  renderHotTopics();
+  var obs=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        e.target.querySelectorAll('.fade-in:not(.visible)').forEach(function(el,i){setTimeout(function(){el.classList.add('visible')},i*55)});
+        obs.unobserve(e.target);
+      }
+    });
+  },{threshold:0.05});
+  document.querySelectorAll('.view').forEach(function(v){obs.observe(v)});
+  setTimeout(function(){document.querySelectorAll('#view-home .fade-in').forEach(function(el,i){setTimeout(function(){el.classList.add('visible')},i*60)})},200);
+}
+
+// Initialize nbState immediately
+var nbState={};
+NB_STAGES.forEach(function(s){nbState[s.id]={picked:[],custom:[],applied:false,s1data:{}};});
+
+document.addEventListener("DOMContentLoaded", function(){
+  initObservers();
+  nbRender();
+  renderHotTopics();
+});
+</script>
 </head>
 <body>
 
@@ -1422,697 +2300,5 @@ body{font-family:"Rubik",sans-serif;background:#F0F2F4;color:var(--text);font-si
 <nav class="mob-nav"><div class="mob-nav-inner"><button class="mob-btn active" id="mob-home" onclick="showView('home')"><span class="mob-icon">🏠</span><span>בית</span></button><button class="mob-btn" id="mob-library" onclick="showView('library')"><span class="mob-icon">📚</span><span>ספרייה</span></button><button class="mob-btn" id="mob-new" onclick="showView('new')"><span class="mob-icon">✏️</span><span>חדש</span></button></div></nav>
 </div>
 
-<script>
-var TOPICS=[
-  {id:1,cat:'sim',wave:1,pri:'hh',title:'הפעלת SIM פיזי חדש',desc:'שלבי הפעלה, זיהוי לקוח, בדיקת סטטוס קו, מה לומר ללקוח'},
-  {id:2,cat:'sim',wave:1,pri:'hh',title:'הפעלת eSIM – קוד QR',desc:'דרישות מקדימות, שליחת QR, סריקה, טעויות נפוצות, אימות'},
-  {id:3,cat:'sim',wave:1,pri:'h',title:'מעבר SIM פיזי ↔ eSIM',desc:'בדיקת תאימות, ביטול פרופיל ישן, הפקה מחדש'},
-  {id:4,cat:'sim',wave:1,pri:'h',title:'תקלה אחרי הפעלת SIM/eSIM',desc:'אבחון, רענון קו, APN, הסלמה'},
-  {id:5,cat:'sim',wave:1,pri:'h',title:'QR לא נסרק / קוד לא התקבל',desc:'סיבות, שליחה מחדש, בדיקת מצלמה, חלופות'},
-  {id:6,cat:'sim',wave:2,pri:'m',title:'החלפת SIM אבוד/גנוב',desc:'חסימה מיידית, אימות מוגבר, הנפקה חדשה'},
-  {id:7,cat:'sim',wave:2,pri:'m',title:'בירור סטטוס משלוח SIM',desc:'בדיקת הזמנה, שליח, נקודת איסוף'},
-  {id:8,cat:'sim',wave:2,pri:'m',title:'איסוף SIM מהום סנטר',desc:'תנאי איסוף, מה לקוח צריך להביא'},
-  {id:9,cat:'sim',wave:2,pri:'m',title:'תאימות מכשיר – VoLTE/eSIM/5G',desc:'בדיקת דגם, גרסת מערכת, הסבר מגבלות'},
-  {id:10,cat:'sim',wave:2,pri:'m',title:'קווים שנרכשו ולא הופעלו',desc:'בדיקת סטטוס, הדרכת הפעלה, סגירת טיפול'},
-  {id:11,cat:'tech',wave:1,pri:'hh',title:'אין גלישה סלולרית',desc:'אבחון, חבילה וקו, נתונים, APN, איפוס, הסלמה',active:true},
-  {id:12,cat:'tech',wave:1,pri:'h',title:'גלישה איטית / ניתוקים',desc:'אזור, דור רשת, עומס, מכשיר, שיפור',active:true},
-  {id:13,cat:'tech',wave:1,pri:'h',title:'הגדרת APN במכשיר',desc:'Android/iPhone, ערכים נכונים, שמירה'},
-  {id:14,cat:'tech',wave:1,pri:'h',title:'אין קליטה / אין שירות',desc:'רשת, SIM, מצב טיסה, אזור גיאוגרפי, איפוס'},
-  {id:15,cat:'tech',wave:1,pri:'h',title:'לא מצליח להוציא/לקבל שיחות',desc:'חסימות, חוב, VoLTE, קליטה, מצב קו'},
-  {id:16,cat:'tech',wave:2,pri:'m',title:'שיחות מתנתקות / שמע ירוד',desc:'אזור, מכשיר, VoLTE, קליטה, SIM'},
-  {id:17,cat:'tech',wave:2,pri:'m',title:'בעיות VoLTE ומכשירים ישנים',desc:'זיהוי חוסר תמיכה, חלופות, הסבר'},
-  {id:18,cat:'tech',wave:2,pri:'m',title:'בעיות SMS וקודי אימות',desc:'קבלת SMS, חסימות, קודי בנקים, איפוס'},
-  {id:19,cat:'tech',wave:2,pri:'m',title:'Hotspot לא עובד',desc:'תמיכה בחבילה, APN, הגדרות שיתוף'},
-  {id:20,cat:'tech',wave:1,pri:'h',title:'טרבלשוטינג בסיסי: כיבוי ואיפוס',desc:'סדר פעולות אחיד, הסבר ללקוח, מתי להסלים'},
-  {id:21,cat:'billing',wave:1,pri:'hh',title:'בירור חיוב גבוה / לא מזוהה',desc:'פירוק חיוב, השוואה לחודשים, שירותים נלווים'},
-  {id:22,cat:'billing',wave:1,pri:'hh',title:'הסבר חשבונית וסעיפי חיוב',desc:'מבנה חשבונית, קבועים/משתנים, זיכויים, מע"מ'},
-  {id:23,cat:'billing',wave:1,pri:'h',title:'תשלום חוב / חסימת קו',desc:'בדיקת יתרה, אפשרויות תשלום, הסרת חסימה'},
-  {id:24,cat:'billing',wave:1,pri:'h',title:'עדכון אמצעי תשלום / אשראי',desc:'אימות לקוח, עדכון כרטיס, פג תוקף, הוראת קבע'},
-  {id:25,cat:'billing',wave:2,pri:'m',title:'זיכויים והחזרים',desc:'בדיקת זכאות, SLA, עדכון לקוח, הסלמה'},
-  {id:26,cat:'billing',wave:2,pri:'m',title:'שליחת חשבונית / אישור תשלום',desc:'סוגי מסמכים, אימות, זמני שליחה'},
-  {id:27,cat:'plans',wave:1,pri:'h',title:'שינוי מסלול / הוזלת חבילה',desc:'מסלול נוכחי, הצעות זמינות, השפעה על התחייבויות'},
-  {id:28,cat:'plans',wave:1,pri:'h',title:'צירוף קו / שדרוג 5G',desc:'תנאי הצטרפות, בדיקת מכשיר, עלויות, הפעלה'},
-  {id:29,cat:'plans',wave:1,pri:'h',title:'ניתוק / ביטול קו',desc:'אימות, סיבת ניתוק, שימור, מועד, אישור'},
-  {id:30,cat:'plans',wave:3,pri:'l',title:'הקפאת קו זמנית',desc:'תנאי הקפאה, משך, עלות, חזרה לפעילות'},
-  {id:31,cat:'plans',wave:2,pri:'m',title:'העברת בעלות על קו',desc:'מסמכים, אימות שני צדדים, השפעה על חיובים'},
-  {id:32,cat:'plans',wave:1,pri:'h',title:'עדכון פרטי לקוח',desc:'כתובת, מייל, טלפון, פרטי חיוב, אימות'},
-  {id:33,cat:'plans',wave:2,pri:'m',title:'ניוד מספרים',desc:'שלבי ניוד, סטטוס, זמני השלמה, תקלות'},
-  {id:34,cat:'intl',wave:1,pri:'m',title:'רכישת חבילת חו"ל לפני טיסה',desc:'התאמת חבילה, מדינות, נפח, מועד הפעלה'},
-  {id:35,cat:'intl',wave:2,pri:'m',title:'תקלת גלישה/קליטה בחו"ל',desc:'Roaming, בחירת רשת ידנית, APN'},
-  {id:36,cat:'intl',wave:2,pri:'m',title:'בירור תעריפי חו"ל / חיוב אחרי חזרה',desc:'הסבר תעריפים, חריגה, טיפול'},
-  {id:37,cat:'ops',wave:1,pri:'h',title:'זיהוי ואימות לקוח',desc:'פרטים נדרשים לכל פעולה, אימות מוגבר, ניסוח'},
-  {id:38,cat:'ops',wave:2,pri:'m',title:'ניתוב והעברת שיחה',desc:'מתי להעביר, מה לתעד, מניעת העברה חוזרת'},
-  {id:39,cat:'ops',wave:2,pri:'m',title:'תיאום Callback / מעקב',desc:'מתי לפתוח, SLA, עדכון לקוח, סגירת מעגל'},
-  {id:40,cat:'ops',wave:3,pri:'m',title:'תלונות, הסלמות, קושי תקשורתי',desc:'לקוח מתוסכל, בקשת מנהל, מחסום שפה'},
-];
-var PRI={hh:'גבוה מאוד',h:'גבוה',m:'בינוני',l:'נמוך'};
-var CAT={sim:'📶 SIM/eSIM',tech:'🔧 טכני',tech2:'🔧 טכני',billing:'💳 חיובים',plans:'📋 מסלולים',intl:'✈️ חו"ל',ops:'🎧 שיחה'};
-var WAVE={1:'גל 1 – מיידי',2:'גל 2 – חשוב',3:'גל 3 – משלים'};
-var WCOL={1:'var(--red)',2:'#E06000',3:'#9A7700'};
-
-function showView(id){
-  document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active')});
-  document.getElementById('view-'+id).classList.add('active');
-  document.querySelectorAll('.snav-item').forEach(function(i){i.classList.remove('active')});
-  var sm=document.getElementById('snav-'+id);
-  if(sm) sm.classList.add('active');
-  ['home','library','new'].forEach(function(t){var b=document.getElementById('mob-'+t);if(b)b.classList.toggle('active',t===id||(id==='browsing'&&t==='home')||(id==='churn'&&t==='home')||(id==='article'&&t==='library'))});
-  if(id==='library') renderLibrary('all');
-  if(id==='home') renderHotTopics();
-  if(id==='new'&&!nbState['s1'].applied) nbRender();
-  window.scrollTo(0,0);
-  setTimeout(function(){document.querySelectorAll('#view-'+id+' .fade-in:not(.visible)').forEach(function(el,i){setTimeout(function(){el.classList.add('visible')},i*55)})},80);
-}
-
-function renderHotTopics(){
-  var hot=TOPICS.filter(function(t){return t.wave===1}).slice(0,6);
-  document.getElementById('hot-grid').innerHTML=hot.map(cardHTML).join('');
-}
-
-function renderLibrary(cat){
-  var f=cat==='all'?TOPICS:TOPICS.filter(function(t){return t.cat===cat});
-  var html='';
-  [1,2,3].forEach(function(w){
-    var wt=f.filter(function(t){return t.wave===w});
-    if(!wt.length) return;
-    html+='<div class="wave-label"><span class="wave-pill" style="background:'+WCOL[w]+'">'+WAVE[w]+' — '+wt.length+' נושאים</span></div>';
-    html+='<div class="topic-grid">'+wt.map(cardHTML).join('')+'</div>';
-  });
-  document.getElementById('library-content').innerHTML=html;
-  setTimeout(function(){document.querySelectorAll('#library-content .fade-in:not(.visible)').forEach(function(el,i){setTimeout(function(){el.classList.add('visible')},i*40)})},50);
-}
-
-function filterLibrary(cat,btn){
-  document.querySelectorAll('.filter-btn').forEach(function(b){b.classList.remove('active')});
-  btn.classList.add('active');
-  renderLibrary(cat);
-}
-
-function filterCategory(cat){
-  showView('library');
-  var btns=document.querySelectorAll('.filter-btn');
-  var cats=['all','sim','tech','billing','plans','intl','ops'];
-  setTimeout(function(){filterLibrary(cat,btns[cats.indexOf(cat)])},100);
-}
-
-function filterWave(w){showView('library')}
-
-function cardHTML(t){
-  var pc={hh:'pri-hh',h:'pri-h',m:'pri-m',l:'pri-l'}[t.pri];
-  var activeBadge=t.active?'<span class="cat-tag" style="background:#EDFAF3;color:#1A7A4A;border:1px solid #B7E8CE">✓ פעיל</span>':'';
-  return '<div class="topic-card fade-in" style="'+(t.active?'border-color:#B7E8CE;':'')+'" onclick="'+(t.dynId?'showDynamicDoc(\''+t.dynId+'\')':'openArticle('+t.id+')')+'">'
-    +(t.active?'<div style="position:absolute;top:0;right:0;width:3px;height:100%;background:#1A7A4A"></div>':'')
-    +'<div class="tc-num">'+(t.dynId?'✏️ תדריך ידני':'#'+t.id)+' · '+(CAT[t.cat]||'📄 כללי')+'</div>'
-    +'<div class="tc-title">'+t.title+'</div>'
-    +'<div class="tc-desc">'+t.desc+'</div>'
-    +'<div class="tc-footer"><span class="pri '+pc+'">'+PRI[t.pri]+'</span>'+activeBadge+'<span class="cat-tag">'+WAVE[t.wave]+'</span></div>'
-    +'</div>';
-}
-
-function openArticle(id){
-  if(id===11||id===12){showView('browsing');return;}
-  var t=TOPICS.find(function(x){return x.id===id});
-  if(!t) return;
-  // Dynamic doc
-  if(t.dynId){showDynamicDoc(t.dynId);return;}
-  var pc={hh:'pri-hh',h:'pri-h',m:'pri-m',l:'pri-l'}[t.pri];
-  document.getElementById('article-content').innerHTML='<div class="article-box">'
-    +'<div class="article-head"><div class="article-meta"><span class="tb tb-opt">'+CAT[t.cat]+'</span><span class="tb tb-opt">'+WAVE[t.wave]+'</span><span class="pri '+pc+'">'+PRI[t.pri]+'</span></div>'
-    +'<div class="article-title">'+t.title+'</div><div class="article-sub">'+t.desc+'</div></div>'
-    +'<div class="article-body">'
-    +'<div class="info-box">📝 מסמך זה עדיין לא נכתב — הוא בתיעדוף <strong>'+WAVE[t.wave]+'</strong>. לחץ "תדריך חדש" ליצירתו.</div>'
-    +'<div style="background:var(--gray);border:1px solid var(--border);border-radius:var(--r);padding:18px">'
-    +'<div class="f-label" style="margin-bottom:10px">מה צריך לכלול לפי Glance AI</div>'
-    +'<div class="chk-list">'
-    +'<div class="chk-item"><span>📋</span><div><div class="chk-text">מתי להשתמש — סימני זיהוי בשיחה</div></div></div>'
-    +'<div class="chk-item"><span>❓</span><div><div class="chk-text">3–6 שאלות אבחון לפני פעולה</div></div></div>'
-    +'<div class="chk-item"><span>🖥</span><div><div class="chk-text">בדיקות מערכות — קו, חוב, SIM, מסלול</div></div></div>'
-    +'<div class="chk-item"><span>📝</span><div><div class="chk-text">צעדי טיפול לפי סדר</div></div></div>'
-    +'<div class="chk-item"><span>💬</span><div><div class="chk-text">ניסוח מומלץ ללקוח</div></div></div>'
-    +'<div class="chk-item"><span>⚑</span><div><div class="chk-text">מתי להסלים ולמי</div></div></div>'
-    +'<div class="chk-item"><span>⚠️</span><div><div class="chk-text">טעויות נפוצות להימנע</div></div></div>'
-    +'<div class="chk-item"><span>✅</span><div><div class="chk-text">סגירת שיחה ותיעוד</div></div></div>'
-    +'</div>'
-    +'<button onclick="showView(\'new\')" style="margin-top:14px;background:var(--red);color:#fff;border:none;border-radius:var(--rs);padding:10px 18px;font-family:Rubik,sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;width:100%">✏️ צור תדריך חדש לנושא זה</button>'
-    +'</div></div></div>';
-  showView('article');
-}
-
-function searchTopics(q){
-  if(!q||q.length<2) return;
-  var r=TOPICS.filter(function(t){return t.title.includes(q)||t.desc.includes(q)});
-  showView('library');
-  setTimeout(function(){
-    document.getElementById('library-content').innerHTML='<div class="wave-label"><span class="wave-pill" style="background:var(--navy)">תוצאות: '+r.length+' נושאים</span></div><div class="topic-grid">'+r.map(cardHTML).join('')+'</div>';
-    setTimeout(function(){document.querySelectorAll('#library-content .fade-in').forEach(function(el,i){setTimeout(function(){el.classList.add('visible')},i*40)})},50);
-  },100);
-}
-
-function accToggle(head){
-  var s=head.closest('.acc-section');
-  s.classList.toggle('open');
-  if(s.classList.contains('open')){s.style.transform='scale(1.003)';setTimeout(function(){s.style.transform=''},180)}
-}
-
-function selRadio(el,name){
-  el.closest('.radio-list').querySelectorAll('.radio-item').forEach(function(r){r.classList.remove('sel')});
-  el.classList.add('sel');
-}
-
-function setTocActive(el) {
-  document.querySelectorAll('.doc-toc-item').forEach(function(i){i.classList.remove('active')});
-  el.classList.add('active');
-}
-
-/* orig template fns */
-function switchTab(id) {
-    document.querySelectorAll('.doc-tab').forEach((t,i)=> t.classList.toggle('active', (i===0&&id==='tech')||(i===1&&id==='retain')));
-    document.getElementById('panel-tech').classList.toggle('active', id==='tech');
-    document.getElementById('panel-retain').classList.toggle('active', id==='retain');
-    document.getElementById('toc-card-tech').style.display = id==='tech' ? '' : 'none';
-    document.getElementById('toc-card-retain').style.display = id==='retain' ? '' : 'none';
-  }
-  function scrollTo(id) {
-    document.getElementById(id)?.scrollIntoView({behavior:'smooth', block:'start'});
-    document.querySelectorAll('.toc-item').forEach(el => el.classList.remove('active'));
-    event.currentTarget.classList.add('active');
-  }
-
-  
-/* ── NEW BRIEFING FORM BUILDER ── */
-var NB_STAGES = [
-  {id:'s1',num:'1',req:true,title:'זיהוי ותיאור התדריך',sub:'נושא, סוג, קטגוריה, גל',type:'fields'},
-  {id:'s2',num:'2',req:true,title:'שאלות בירור ראשוניות',sub:'מהות, משך, מיקום',options:[
-    {text:'מה בדיוק לא עובד?',hint:'→ מכווין למסלול הנכון'},
-    {text:'מתי זה התחיל?',hint:'→ נקודתי vs מתמשך'},
-    {text:'זה בכל מקום או רק כאן?',hint:'→ כיסוי vs תקלת מכשיר'},
-    {text:'כמה זמן הבעיה קיימת?',hint:'→ דחיפות הטיפול'},
-    {text:'האם זה קרה בעבר?',hint:'→ תבנית חוזרת'},
-    {text:'מה גרם לזה לדעתך?',hint:'→ context ראשוני'},
-  ],ph:'לדוגמה: איזה מכשיר יש לך?'},
-  {id:'s3',num:'3',req:true,title:'בדיקות מערכות פנימיות',sub:'CRM, חבילה, אנטנות – ללא לקוח',options:[
-    {text:'בדיקת שדה "גלישה בארץ" ב-CRM',hint:'חסום / פעיל'},
-    {text:'בדיקת ניצול חבילת גלישה',hint:'אזור אישי ← השימושים שלי'},
-    {text:'בדיקת Prepaid / חשד הונאה',hint:'אם כן → פנייה ל-IT'},
-    {text:'בדיקת כיסוי אנטנות באזור',hint:'אם אין → תסריט פריסת רשת'},
-    {text:'בדיקת תלונות אזוריות',hint:'עוד לקוחות מדווחים?'},
-    {text:'בדיקת סטטוס SIM במערכת',hint:'פעיל / חסום / לא מוגדר'},
-    {text:'בדיקת חוב פתוח',hint:'חסימה בגלל חוב?'},
-  ],ph:'לדוגמה: בדיקת לוג שיחות אחרון'},
-  {id:'s4',num:'4',req:false,title:'פעולות בטלפון / מכשיר הלקוח',sub:'הגדרות שהלקוח מבצע',options:[
-    {text:'נתונים סלולריים – אם כבוי → להדליק'},
-    {text:'Wi-Fi – אם דולק → לכבות'},
-    {text:'נקודת גישה אישית – לכבות'},
-    {text:'VPN / חוסך נתונים – לכבות'},
-    {text:'אפליקציות סינון – להסיר'},
-    {text:'סימון רשת → שנה ל-4G/5G אוטומטי'},
-    {text:'APN → הגדרה נכונה ל-WE'},
-    {text:'איפוס הגדרות רשת'},
-    {text:'כיבוי והדלקת מכשיר'},
-  ],ph:'לדוגמה: בדיקת עדכון מערכת הפעלה'},
-  {id:'s5',num:'5',req:false,title:'פעולות מערכת מצד הנציג',sub:'ריענון, SIM, CRM',options:[
-    {text:'ריענון גלישה – מתג "גלישה בארץ" כבה/הפעל'},
-    {text:'ריענון SIM – sim block lbl → sim allow lbl'},
-    {text:'פתיחת פנייה ל-IT'},
-    {text:'פתיחת טופס רדיו + GNETRUCK'},
-    {text:'עדכון APN במערכת'},
-    {text:'ביצוע זיכוי / החזר'},
-    {text:'שינוי מסלול / חבילה'},
-  ],ph:'לדוגמה: שליחת SMS מאומת ללקוח'},
-  {id:'s6',num:'6',req:false,title:'בדיקת תקינות',sub:'אימות לפני סגירה',options:[
-    {text:'Speedtest – מעל 6 מגה = תקין'},
-    {text:'SIM במכשיר אחר – בדיקת חומרה'},
-    {text:'לקוח מאשר גלישה / שיחה תקינה'},
-    {text:'בדיקת קבלת SMS'},
-    {text:'בדיקת VoLTE פעיל'},
-  ],ph:'לדוגמה: שיחת ביקורת 24 שעות לאחר מכן'},
-  {id:'s7',num:'7',req:false,title:'הפניה / אסקלציה',sub:'מתי ולמי',options:[
-    {text:'מומחי תמיכה – לאחר מיצוי כל השלבים'},
-    {text:'IT – Prepaid / הונאה'},
-    {text:'רדיו + GNETRUCK – תקלה אזורית'},
-    {text:'מעבדה – בעיית מכשיר'},
-    {text:'הום סנטר – החלפת SIM פיזי'},
-    {text:'מנהל / שימור – לקוח מתוסכל'},
-  ],ph:'לדוגמה: אסקלציה לצוות VoLTE'},
-  {id:'s8',num:'8',req:false,title:'שלב שירותי – סגירה',sub:'בירור נוסף, הצעות, תיעוד',options:[
-    {text:'Wi-Fi Calling – הצע כפתרון מניעתי'},
-    {text:'בדיקת התאמת חבילה'},
-    {text:'שאלת שביעות רצון'},
-    {text:'תיאום callback / מעקב'},
-    {text:'תיעוד כל הפעולות שבוצעו'},
-    {text:'הצע שדרוג אם רלוונטי'},
-  ],ph:'לדוגמה: שליחת סיכום בוואטסאפ'},
-];
-
-var nbState={};
-NB_STAGES.forEach(function(s){nbState[s.id]={picked:[],custom:[],applied:false,s1data:{}};});
-
-function nbRender(){
-  var el=document.getElementById('nb-stages');
-  if(!el) return;
-  el.innerHTML=NB_STAGES.map(nbRenderStage).join('');
-}
-
-function nbRenderStage(s){
-  var st=nbState[s.id];
-  var isOpen=document.getElementById('nb-stage-'+s.id)?document.getElementById('nb-stage-'+s.id).classList.contains('open'):false;
-  var openCls=(s.id==='s1'&&!st.applied)?'open':(isOpen?'open':'');
-
-  var tagHtml=st.applied
-    ?('<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--ok-bg);color:var(--ok);border:1px solid var(--ok-b)">✓ '+(s.id==='s1'?'הושלם':(st.picked.length+st.custom.length)+' פריטים')+'</span>')
-    :('<span style="display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;border:1px solid;'+(s.req?'background:#FFE8E8;color:#C02800;border-color:var(--red-m)':'background:var(--gray);color:var(--muted);border-color:var(--border)')+'">'+( s.req?'חובה':'אופציונלי')+'</span>');
-
-  var bodyHtml='';
-  if(s.type==='fields'){
-    var d=st.s1data;
-    bodyHtml='<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:5px">נושא התדריך</div>'
-      +'<textarea style="width:100%;border:1.5px solid var(--border);border-radius:var(--rs);padding:8px 11px;font-family:Rubik,sans-serif;font-size:13.5px;color:var(--text);background:var(--gray);outline:none;height:40px;resize:none;direction:rtl" id="nb-s1-topic" placeholder="לדוגמה: הפעלת eSIM – קוד QR">'+(d.topic||'')+'</textarea></div>'
-      +'<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:5px">תיאור</div>'
-      +'<textarea style="width:100%;border:1.5px solid var(--border);border-radius:var(--rs);padding:8px 11px;font-family:Rubik,sans-serif;font-size:13.5px;color:var(--text);background:var(--gray);outline:none;resize:vertical;min-height:70px;direction:rtl" id="nb-s1-desc" placeholder="במה עוסק, מה פותר, מתי להשתמש…">'+(d.desc||'')+'</textarea></div>'
-      +'<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:5px">סוג</div>'
-      +'<div style="display:flex;flex-direction:column;gap:6px">'
-      +[['tech','טכני – דיבאג / תפעול','שלבי תפעול, הסתעפויות'],['service','שירות – שימור / מכירה','תסריטי שיחה, התנגדויות'],['mixed','משולב','שילוב טכני + שירותי']].map(function(r){
-        return '<label class="radio-item'+(d.type===r[0]?' sel':'')+'" data-field="type" data-val="'+r[0]+'" onclick="nbSelR(this)">'
-          +'<input type="radio" name="nb-dtype" '+(d.type===r[0]?'checked':'')+' style="flex-shrink:0;width:14px;height:14px;margin-top:3px;accent-color:var(--red)">'
-          +'<div><div style="font-size:13.5px;font-weight:500;color:var(--text)">'+r[1]+'</div><div style="font-size:12px;color:var(--muted);margin-top:2px">'+r[2]+'</div></div></label>';
-      }).join('')+'</div></div>'
-      +'<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:5px">קטגוריה</div>'
-      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">'
-      +[['sim','📶 SIM/eSIM'],['tech2','🔧 תמיכה טכנית'],['billing','💳 חיובים'],['plans','📋 מסלולים'],['intl','✈️ חו"ל'],['ops','🎧 שיחה']].map(function(r){
-        return '<label class="radio-item'+(d.cat===r[0]?' sel':'')+'" data-field="cat" data-val="'+r[0]+'" onclick="nbSelR(this)">'
-          +'<input type="radio" name="nb-dcat" '+(d.cat===r[0]?'checked':'')+' style="flex-shrink:0;width:14px;height:14px;margin-top:2px;accent-color:var(--red)">'
-          +'<div style="font-size:13px;font-weight:500;color:var(--text)">'+r[1]+'</div></label>';
-      }).join('')+'</div></div>'
-      +'<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:5px">גל כתיבה</div>'
-      +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">'
-      +[['1','🔴 גל 1','דחוף'],['2','🟠 גל 2','חשוב'],['3','🟡 גל 3','משלים']].map(function(r){
-        return '<label class="radio-item'+(d.wave===r[0]?' sel':'')+'" data-field="wave" data-val="'+r[0]+'" onclick="nbSelR(this)">'
-          +'<input type="radio" name="nb-dwave" '+(d.wave===r[0]?'checked':'')+' style="flex-shrink:0;width:14px;height:14px;margin-top:3px;accent-color:var(--red)">'
-          +'<div><div style="font-size:13px;font-weight:500;color:var(--text)">'+r[1]+'</div><div style="font-size:11.5px;color:var(--muted)">'+r[2]+'</div></div></label>';
-      }).join('')+'</div></div>'
-      +'<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:5px">תגיות לחיפוש</div>'
-      +'<textarea style="width:100%;border:1.5px solid var(--border);border-radius:var(--rs);padding:8px 11px;font-family:Rubik,sans-serif;font-size:13.5px;color:var(--text);background:var(--gray);outline:none;height:40px;resize:none;direction:rtl" id="nb-s1-tags" placeholder="לדוגמה: eSIM, QR, הפעלה…">'+(d.tags||'')+'</textarea></div>'
-      +'<button onclick="nbApplyS1()" style="width:100%;height:38px;background:var(--red);color:#fff;border:none;border-radius:var(--rs);font-size:13.5px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif">✓ הוסף שלב 1 לתדריך</button>';
-  } else {
-    var optHtml=s.options.map(function(o,i){
-      return '<div class="chk-item'+(st.picked.indexOf(i)!==-1?' checked':'')+'" data-sid="'+s.id+'" data-idx="'+i+'" onclick="nbTP(this)" style="display:flex;align-items:flex-start;gap:9px;background:var(--gray);border:1px solid var(--border);border-radius:var(--rs);padding:8px 11px;cursor:pointer;transition:border-color .15s,background .15s;margin-bottom:5px">'
-        +'<input type="checkbox" '+(st.picked.indexOf(i)!==-1?'checked':'')+' onclick="event.stopPropagation()" style="flex-shrink:0;width:15px;height:15px;margin-top:1px;accent-color:var(--ok)">'
-        +'<div><div style="font-size:13px;color:var(--text);line-height:1.45">'+o.text+'</div>'+(o.hint?'<div style="font-size:11.5px;color:var(--muted);margin-top:2px">'+o.hint+'</div>':'')+'</div></div>';
-    }).join('');
-
-    var custHtml=st.custom.length?('<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:7px;margin-top:4px">נוסף ידנית</div>'
-      +st.custom.map(function(txt,i){
-        return '<div style="display:flex;align-items:center;gap:8px;background:#EBF1FF;border:1px solid #B5D4F4;border-radius:var(--rs);padding:6px 10px;font-size:12.5px;color:#1D45B4;margin-bottom:4px">'
-          +'<span style="font-size:13px;flex-shrink:0">✏️</span><span>'+txt+'</span>'
-          +'<span data-sid="'+s.id+'" data-idx="'+i+'" onclick="nbRemoveCustom(this.dataset.sid,parseInt(this.dataset.idx))" style="margin-right:auto;font-size:14px;color:var(--muted);cursor:pointer;padding:0 2px" title="הסר">×</span></div>';
-      }).join('')):'';
-
-    bodyHtml='<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:7px">בחר מהרשימה</div>'
-      +optHtml+custHtml
-      +'<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:7px;margin-top:'+(st.custom.length?'4':'0')+'px">הוסף ידנית</div>'
-      +'<div style="display:flex;gap:8px;margin-bottom:12px" id="nb-cr-'+s.id+'">'
-      +'<input type="text" id="nb-inp-'+s.id+'" data-sid="'+s.id+'" placeholder="'+s.ph+'" onkeydown="if(event.keyCode===13)nbAddCustom(this.dataset.sid)" '
-      +'style="flex:1;font-size:13px;height:34px;padding:0 10px;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--gray);color:var(--text);outline:none;font-family:Rubik,sans-serif;direction:rtl">'
-      +'<button data-sid="'+s.id+'" onclick="nbAddCustom(this.dataset.sid)" style="height:34px;padding:0 12px;font-size:12.5px;font-weight:500;background:var(--gray);border:1.5px solid var(--border);border-radius:var(--rs);color:var(--muted);cursor:pointer;white-space:nowrap;font-family:Rubik,sans-serif">+ הוסף</button></div>'
-      +'<button id="nb-apply-'+s.id+'" data-sid="'+s.id+'" onclick="nbApplyStage(this.dataset.sid)" '+(st.picked.length+st.custom.length===0?'disabled':'')+' '
-      +'style="width:100%;height:38px;background:var(--red);color:#fff;border:none;border-radius:var(--rs);font-size:13.5px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif;opacity:'+(st.picked.length+st.custom.length===0?'0.4':'1')+'">✓ הוסף שלב '+s.num+' לתדריך</button>';
-  }
-
-  return '<div class="acc-section '+openCls+'" id="nb-stage-'+s.id+'">'
-    +'<div class="acc-head" data-sid="'+s.id+'" onclick="nbToggleStage(this.dataset.sid)">'
-    +'<div class="acc-num'+(s.req?' red':'')+'">'+s.num+'</div>'
-    +'<div style="flex:1;min-width:0"><div class="acc-title">'+s.title+'</div><div style="font-size:12px;color:var(--muted);margin-top:1px">'+s.sub+'</div></div>'
-    +'<div style="display:flex;align-items:center;gap:8px;flex-shrink:0">'+tagHtml+'<span class="acc-chev">▼</span></div>'
-    +'</div>'
-    +(st.applied && !isOpen ? appliedPreview : '')
-    +'<div class="acc-body" style="padding:'+(openCls==='open'?'16px':'0 16px')+'">'+bodyHtml+'</div>'
-    +'</div>';
-}
-
-function nbToggleStage(id){
-  var el=document.getElementById('nb-stage-'+id);
-  if(el) el.classList.toggle('open');
-}
-
-function nbSelR(el){
-  var field=el.getAttribute('data-field');
-  var val=el.getAttribute('data-val');
-  nbState['s1'].s1data[field]=val;
-  var wasOpen=document.getElementById('nb-stage-s1')&&document.getElementById('nb-stage-s1').classList.contains('open');
-  nbRender();
-  if(wasOpen&&document.getElementById('nb-stage-s1')) document.getElementById('nb-stage-s1').classList.add('open');
-}
-
-function nbTP(el){nbTogglePick(el.getAttribute('data-sid'),parseInt(el.getAttribute('data-idx')));}
-function nbTogglePick(id,idx){
-  var st=nbState[id];
-  var pos=st.picked.indexOf(idx);
-  if(pos===-1) st.picked.push(idx); else st.picked.splice(pos,1);
-  var items=document.querySelectorAll('#nb-stage-'+id+' .chk-item');
-  items.forEach(function(el,i){
-    var isPicked=st.picked.indexOf(i)!==-1;
-    el.style.background=isPicked?'var(--ok-bg)':'var(--gray)';
-    el.style.borderColor=isPicked?'var(--ok-b)':'var(--border)';
-    var cb=el.querySelector('input');
-    if(cb) cb.checked=isPicked;
-  });
-  var btn=document.getElementById('nb-apply-'+id);
-  if(btn){btn.disabled=st.picked.length+st.custom.length===0;btn.style.opacity=btn.disabled?'0.4':'1';}
-}
-
-function nbAddCustom(id){
-  var inp=document.getElementById('nb-inp-'+id);
-  if(!inp||!inp.value.trim()) return;
-  nbState[id].custom.push(inp.value.trim());
-  var wasOpen=document.getElementById('nb-stage-'+id)&&document.getElementById('nb-stage-'+id).classList.contains('open');
-  nbRender();
-  if(wasOpen&&document.getElementById('nb-stage-'+id)) document.getElementById('nb-stage-'+id).classList.add('open');
-  var newInp=document.getElementById('nb-inp-'+id);
-  if(newInp){newInp.value='';newInp.focus();}
-  var btn=document.getElementById('nb-apply-'+id);
-  if(btn){btn.disabled=false;btn.style.opacity='1';}
-}
-
-function nbRemoveCustom(id,idx){
-  nbState[id].custom.splice(idx,1);
-  var wasOpen=document.getElementById('nb-stage-'+id)&&document.getElementById('nb-stage-'+id).classList.contains('open');
-  nbRender();
-  if(wasOpen&&document.getElementById('nb-stage-'+id)) document.getElementById('nb-stage-'+id).classList.add('open');
-}
-
-function nbEditStage(id){
-  nbState[id].applied=false;
-  nbRender();
-  var el=document.getElementById('nb-stage-'+id);
-  if(el){el.classList.add('open');el.scrollIntoView({behavior:'smooth',block:'nearest'});}
-}
-
-function nbApplyS1(){
-  var d=nbState['s1'].s1data;
-  d.topic=(document.getElementById('nb-s1-topic')||{}).value||'';
-  d.desc=(document.getElementById('nb-s1-desc')||{}).value||'';
-  d.tags=(document.getElementById('nb-s1-tags')||{}).value||'';
-  nbState['s1'].applied=true;
-  nbRender();
-  nbUpdateSummary();
-}
-
-function nbApplyStage(id){
-  var st=nbState[id];
-  if(st.picked.length+st.custom.length===0) return;
-  st.applied=true;
-  nbRender();
-  nbUpdateSummary();
-}
-
-function nbUpdateSummary(){
-  var any=NB_STAGES.some(function(s){return nbState[s.id].applied;});
-  var box=document.getElementById('nb-summary');
-  if(box) box.style.display=any?'block':'none';
-  if(!any) return;
-  var html=NB_STAGES.filter(function(s){return nbState[s.id].applied;}).map(function(s){
-    var st=nbState[s.id];
-    var def=NB_STAGES.filter(function(x){return x.id===s.id;})[0];
-    var items=[];
-    if(s.id==='s1'){var d=st.s1data;if(d.topic)items.push('נושא: '+d.topic);if(d.type)items.push('סוג: '+d.type);if(d.cat)items.push('קטגוריה: '+d.cat);if(d.wave)items.push('גל: '+d.wave);if(d.tags)items.push('תגיות: '+d.tags);}
-    else{items=st.picked.map(function(i){return def.options[i].text;}).concat(st.custom.map(function(t){return '[ידני] '+t;}));}
-    return '<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:5px">שלב '+def.num+' – '+def.title+'</div>'
-      +items.map(function(t){return '<div style="display:flex;align-items:flex-start;gap:7px;font-size:13px;color:var(--text);padding:3px 0"><span style="color:var(--red);flex-shrink:0;margin-top:3px;font-size:10px">›</span><span>'+t+'</span></div>';}).join('')+'</div>';
-  }).join('');
-  var sc=document.getElementById('nb-sum-content');
-  if(sc) sc.innerHTML=html;
-}
-
-function nbCreateDoc(){
-  // Always read s1 fields from DOM first (in case user typed but didn't click apply)
-  var topicEl=document.getElementById('nb-s1-topic');
-  var descEl=document.getElementById('nb-s1-desc');
-  var tagsEl=document.getElementById('nb-s1-tags');
-  if(topicEl) nbState['s1'].s1data.topic=topicEl.value;
-  if(descEl) nbState['s1'].s1data.desc=descEl.value;
-  if(tagsEl) nbState['s1'].s1data.tags=tagsEl.value;
-
-  var topic=(nbState['s1'].s1data.topic||'').trim();
-  var cat=nbState['s1'].s1data.cat||'tech';
-  var wave=parseInt(nbState['s1'].s1data.wave||'2');
-  var docType=nbState['s1'].s1data.type||'tech';
-
-  // If editing existing doc — update it
-  if(window.nbEditingDocId){
-    var docId=window.nbEditingDocId;
-    window.nbEditingDocId=null;
-    var stages=[];
-    NB_STAGES.forEach(function(s){
-      var st=nbState[s.id];
-      if(!st.applied||s.id==='s1') return;
-      var def=NB_STAGES.filter(function(x){return x.id===s.id;})[0];
-      var items=st.picked.map(function(i){return def.options[i].text;}).concat(st.custom);
-      if(items.length) stages.push({num:def.num,title:def.title,items:items});
-    });
-    window.dynamicDocs[docId].topic=topic;
-    window.dynamicDocs[docId].cat=cat;
-    window.dynamicDocs[docId].wave=wave;
-    window.dynamicDocs[docId].stages=stages;
-    // Update TOPICS entry
-    var t=TOPICS.find(function(x){return x.dynId===docId;});
-    if(t){t.title=topic;t.cat=cat;t.wave=wave;}
-    showDynamicDoc(docId);
-    nbShowSuccessModal(topic+' — עודכן!');
-    NB_STAGES.forEach(function(s){nbState[s.id]={picked:[],custom:[],applied:false,s1data:{}};});
-    nbRender();
-    var sumEl=document.getElementById('nb-summary');
-    if(sumEl) sumEl.style.display='none';
-    return;
-  }
-
-  if(!topic){
-    alert('יש למלא נושא תדריך בשלב 1 לפני יצירה.');
-    var el=document.getElementById('nb-stage-s1');
-    if(el){el.classList.add('open');el.scrollIntoView({behavior:'smooth'});}
-    return;
-  }
-  if(!nbState['s1'].applied){
-    alert('יש להשלים לפחות את שלב 1 לפני יצירת התדריך.');
-    return;
-  }
-
-  var docId='dyn-'+Date.now();
-  var stages=[];
-  NB_STAGES.forEach(function(s){
-    var st=nbState[s.id];
-    if(!st.applied||s.id==='s1') return;
-    var def=NB_STAGES.filter(function(x){return x.id===s.id;})[0];
-    var items=st.picked.map(function(i){return def.options[i].text;}).concat(st.custom);
-    if(items.length) stages.push({num:def.num,title:def.title,items:items});
-  });
-
-  window.dynamicDocs=window.dynamicDocs||{};
-  window.dynamicDocs[docId]={id:docId,topic:topic,cat:cat,wave:wave,docType:docType,stages:stages};
-  nbAddToLibrary(docId,topic,cat,wave);
-  showDynamicDoc(docId);
-  nbShowSuccessModal(topic);
-
-  NB_STAGES.forEach(function(s){nbState[s.id]={picked:[],custom:[],applied:false,s1data:{}};});
-  nbRender();
-  var sumEl=document.getElementById('nb-summary');
-  if(sumEl) sumEl.style.display='none';
-}
-
-function nbShowSuccessModal(topic){
-  // Remove existing modal if any
-  var old=document.getElementById('nb-success-modal');
-  if(old) old.remove();
-
-  var overlay=document.createElement('div');
-  overlay.id='nb-success-modal';
-  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:9998;display:flex;align-items:center;justify-content:center';
-
-  var card=document.createElement('div');
-  card.style.cssText='background:#fff;border-radius:14px;padding:28px 32px;box-shadow:0 20px 60px rgba(0,0,0,.25);text-align:center;max-width:340px;width:90%;font-family:Rubik,sans-serif;direction:rtl';
-
-  var emoji=document.createElement('div');
-  emoji.style.cssText='font-size:28px;margin-bottom:12px';
-  emoji.textContent='🎉';
-
-  var title=document.createElement('div');
-  title.style.cssText='font-size:16px;font-weight:600;color:#1F2E3B;margin-bottom:8px';
-  title.textContent='התדריך נוצר בהצלחה!';
-
-  var desc=document.createElement('div');
-  desc.style.cssText='font-size:14px;color:#6B7280;margin-bottom:20px;line-height:1.6';
-  desc.innerHTML='התדריך <strong style="color:#FF3D00">'+topic.replace(/</g,'&lt;')+'</strong> נוסף לספריית הידע.';
-
-  var btn=document.createElement('button');
-  btn.style.cssText='background:#FF3D00;color:#fff;border:none;border-radius:8px;padding:10px 28px;font-size:14px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif';
-  btn.textContent='אוקיי!';
-  btn.addEventListener('click',function(){overlay.remove();});
-
-  card.appendChild(emoji);
-  card.appendChild(title);
-  card.appendChild(desc);
-  card.appendChild(btn);
-  overlay.appendChild(card);
-  document.body.appendChild(overlay);
-}
-function nbCloseMsg(el){
-  var p=el.parentElement;
-  while(p&&p.style.position!=='fixed') p=p.parentElement;
-  if(p) p.remove();
-}
-
-function nbAddToLibrary(docId,topic,cat,wave){
-  var newId=TOPICS.length>0?Math.max.apply(null,TOPICS.map(function(t){return t.id;}))+1:41;
-  TOPICS.push({id:newId,cat:cat,wave:wave,pri:'h',title:topic,desc:'תדריך שנוצר ידנית',active:true,dynId:docId});
-  // Re-render library so new card appears with correct link
-  renderLibrary('all');
-  renderHotTopics();
-  // Add card to home active docs section
-  var homeGrid=document.getElementById('home-active-grid');
-  if(homeGrid){
-    var div=document.createElement('div');
-    div.className='topic-card fade-in visible';
-    div.setAttribute('onclick','openArticle('+newId+')');
-    div.style.cssText='background:#fff;border:1px solid #B7E8CE;border-radius:10px;padding:16px;cursor:pointer;position:relative;overflow:hidden';
-    div.innerHTML='<div style="position:absolute;top:0;right:0;width:3px;height:100%;background:#1A7A4A"></div>'
-      +'<div class="tc-num">📄 '+CAT[cat]+'</div>'
-      +'<div class="tc-title">'+topic+'</div>'
-      +'<div class="tc-desc">תדריך שנוצר ידנית דרך מנהלת הידע</div>'
-      +'<div class="tc-footer"><span class="pri pri-h">גבוה</span>'
-      +'<span class="cat-tag" style="background:#EDFAF3;color:#1A7A4A;border:1px solid #B7E8CE">✓ פעיל</span></div>';
-    homeGrid.appendChild(div);
-  }
-}
-
-function showDynamicDoc(docId){
-  var doc=window.dynamicDocs[docId];
-  if(!doc) return;
-
-  var stagesHtml=doc.stages.map(function(s){
-    var items=s.items.map(function(item){
-      return '<div class="step-card fade-in">'
-        +'<div class="step-num" style="background:var(--navy);width:20px;height:20px;font-size:10px">›</div>'
-        +'<div class="step-content" style="margin-top:0">'
-        +'<div class="action-list" style="margin-top:0"><div class="action-item"><span class="ai-icon">›</span>'+item+'</div></div>'
-        +'</div></div>';
-    }).join('');
-
-    return '<div class="step-card fade-in" style="margin-bottom:4px">'
-      +'<div class="step-num red">'+s.num+'</div>'
-      +'<div class="step-content">'
-      +'<div class="step-title">'+s.title+'</div>'
-      +'</div></div>'
-      +'<div style="padding-right:52px;margin-bottom:16px">'+items+'</div>';
-  }).join('');
-
-  var html='<div class="article-box">'
-    +'<div class="article-head">'
-    +'<div class="article-meta"><span class="tb tb-sys">'+catLabel(doc.cat)+'</span><span class="tb tb-opt">נוצר: '+new Date().toLocaleDateString('he-IL')+'</span></div>'
-    +'<div class="article-title">'+doc.topic+'</div>'
-    +'<div class="article-sub">תדריך שנוצר ידנית דרך מנהלת הידע</div>'
-    +'</div>'
-    +'<div class="article-body">'
-    +(doc.stages.length?stagesHtml:'<div class="info-box">לא נבחרו שלבים לתדריך זה.</div>')
-    +'</div></div>';
-
-  document.getElementById('article-content').innerHTML=html;
-
-  // Add "עדכן מסמך" button
-  var updateBtn=document.createElement('button');
-  updateBtn.style.cssText='display:block;margin:16px auto 0;height:40px;padding:0 22px;background:var(--navy);color:#fff;border:none;border-radius:var(--rs);font-size:13.5px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif;width:100%;max-width:680px';
-  updateBtn.textContent='✏️ עדכן מסמך';
-  updateBtn.addEventListener('click',function(){ nbEditDoc(docId); });
-  document.getElementById('article-content').appendChild(updateBtn);
-
-  showView('article');
-  document.querySelector('#view-article .article-back').setAttribute('onclick',"showView('library')");
-}
-
-function nbEditDoc(docId){
-  var doc=window.dynamicDocs[docId];
-  if(!doc) return;
-
-  // Reset form state
-  NB_STAGES.forEach(function(s){ nbState[s.id]={picked:[],custom:[],applied:false,s1data:{}}; });
-
-  // Restore s1 data
-  nbState['s1'].s1data={topic:doc.topic,cat:doc.cat,wave:String(doc.wave),type:doc.docType};
-  nbState['s1'].applied=true;
-
-  // Restore stage selections
-  doc.stages.forEach(function(savedStage){
-    var def=NB_STAGES.filter(function(x){return x.num===savedStage.num;})[0];
-    if(!def) return;
-    savedStage.items.forEach(function(item){
-      // Check if it matches a preset option
-      var optIdx=def.options?def.options.findIndex(function(o){return o.text===item;}):-1;
-      if(optIdx>=0) nbState[def.id].picked.push(optIdx);
-      else nbState[def.id].custom.push(item);
-    });
-    if(nbState[def.id].picked.length+nbState[def.id].custom.length>0)
-      nbState[def.id].applied=true;
-  });
-
-  // Store docId being edited
-  window.nbEditingDocId=docId;
-
-  showView('new');
-  nbRender();
-
-  // Scroll to top
-  window.scrollTo(0,0);
-
-  // Change the "צור" button label to "עדכן"
-  setTimeout(function(){
-    var sumBox=document.getElementById('nb-summary');
-    if(sumBox){
-      var createBtn=sumBox.querySelector('button');
-      if(createBtn) createBtn.textContent='💾 שמור שינויים';
-    }
-    nbUpdateSummary();
-  }, 100);
-}
-
-function catLabel(cat){
-  var m={sim:'📶 SIM/eSIM',tech:'🔧 טכני',tech2:'🔧 טכני',billing:'💳 חיובים',plans:'📋 מסלולים',intl:'✈️ חו"ל',ops:'🎧 שיחה'};
-  return m[cat]||'📄 כללי';
-}
-
-function nbExport(){
-  var out={};
-  NB_STAGES.forEach(function(s){
-    if(!nbState[s.id].applied) return;
-    var def=NB_STAGES.filter(function(x){return x.id===s.id;})[0];
-    var st=nbState[s.id];
-    out['שלב '+def.num+' – '+def.title]=s.id==='s1'?st.s1data:st.picked.map(function(i){return def.options[i].text;}).concat(st.custom);
-  });
-  var a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([JSON.stringify(out,null,2)],{type:'application/json'}));
-  a.download='תדריך-חדש.json';a.click();
-}
-
-function nbInit(){
-  NB_STAGES.forEach(function(s){nbState[s.id]={picked:[],custom:[],applied:false,s1data:{}};});
-  nbRender();
-}
-
-function initObservers(){
-  // event delegation for dynamically created buttons
-  document.addEventListener('click', function(e){
-    var btn=e.target.closest('[data-action="new"]');if(btn) showView('new');
-  });
-
-  renderHotTopics();
-  var obs=new IntersectionObserver(function(entries){
-    entries.forEach(function(e){
-      if(e.isIntersecting){
-        e.target.querySelectorAll('.fade-in:not(.visible)').forEach(function(el,i){setTimeout(function(){el.classList.add('visible')},i*55)});
-        obs.unobserve(e.target);
-      }
-    });
-  },{threshold:0.05});
-  document.querySelectorAll('.view').forEach(function(v){obs.observe(v)});
-  setTimeout(function(){document.querySelectorAll('#view-home .fade-in').forEach(function(el,i){setTimeout(function(){el.classList.add('visible')},i*60)})},200);
-}
-</script>
 </body>
 </html>
