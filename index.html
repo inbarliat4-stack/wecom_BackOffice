@@ -822,7 +822,7 @@ body{font-family:"Rubik",sans-serif;background:#F0F2F4;color:var(--text);font-si
   <div class="wave-label"><span class="wave-pill" style="background:var(--red)">🔴 הכי דחוף – גל 1</span></div>
   <div class="topic-grid" id="hot-grid"></div>
   <div class="wave-label" style="margin-top:8px"><span class="wave-pill">📂 מסמכים פעילים</span></div>
-  <div class="topic-grid">
+  <div class="topic-grid" id="home-active-grid">
     <div class="topic-card fade-in" onclick="showView('browsing')"><div class="tc-num">📡 תפעולי טכני</div><div class="tc-title">איטיות גלישה / חוסר גלישה</div><div class="tc-desc">נוהל דיבאג מלא – 13 שלבים, שני מסלולים, עד החלפת SIM</div><div class="tc-footer"><span class="pri pri-hh">● גבוה מאוד</span><span class="cat-tag">פעיל</span></div></div>
     <div class="topic-card fade-in" onclick="showView('churn')"><div class="tc-num">🛡 שימור לקוחות</div><div class="tc-title">דיבאג נטישה</div><div class="tc-desc">זיהוי לקוח מאותת נטישה, 3 מסלולים, תסריטי שיחה והתנגדויות</div><div class="tc-footer"><span class="pri pri-hh">● גבוה מאוד</span><span class="cat-tag">פעיל</span></div></div>
   </div>
@@ -1466,7 +1466,7 @@ var TOPICS=[
   {id:40,cat:'ops',wave:3,pri:'m',title:'תלונות, הסלמות, קושי תקשורתי',desc:'לקוח מתוסכל, בקשת מנהל, מחסום שפה'},
 ];
 var PRI={hh:'גבוה מאוד',h:'גבוה',m:'בינוני',l:'נמוך'};
-var CAT={sim:'📶 SIM/eSIM',tech:'🔧 טכני',billing:'💳 חיובים',plans:'📋 מסלולים',intl:'✈️ חו"ל',ops:'🎧 שיחה'};
+var CAT={sim:'📶 SIM/eSIM',tech:'🔧 טכני',tech2:'🔧 טכני',billing:'💳 חיובים',plans:'📋 מסלולים',intl:'✈️ חו"ל',ops:'🎧 שיחה'};
 var WAVE={1:'גל 1 – מיידי',2:'גל 2 – חשוב',3:'גל 3 – משלים'};
 var WCOL={1:'var(--red)',2:'#E06000',3:'#9A7700'};
 
@@ -1520,9 +1520,9 @@ function filterWave(w){showView('library')}
 function cardHTML(t){
   var pc={hh:'pri-hh',h:'pri-h',m:'pri-m',l:'pri-l'}[t.pri];
   var activeBadge=t.active?'<span class="cat-tag" style="background:#EDFAF3;color:#1A7A4A;border:1px solid #B7E8CE">✓ פעיל</span>':'';
-  return '<div class="topic-card fade-in" style="'+(t.active?'border-color:#B7E8CE;':'')+'" onclick="openArticle('+t.id+')">'
+  return '<div class="topic-card fade-in" style="'+(t.active?'border-color:#B7E8CE;':'')+'" onclick="'+(t.dynId?'showDynamicDoc(\''+t.dynId+'\')':'openArticle('+t.id+')')+'">'
     +(t.active?'<div style="position:absolute;top:0;right:0;width:3px;height:100%;background:#1A7A4A"></div>':'')
-    +'<div class="tc-num">#'+t.id+' · '+CAT[t.cat]+'</div>'
+    +'<div class="tc-num">'+(t.dynId?'✏️ תדריך ידני':'#'+t.id)+' · '+(CAT[t.cat]||'📄 כללי')+'</div>'
     +'<div class="tc-title">'+t.title+'</div>'
     +'<div class="tc-desc">'+t.desc+'</div>'
     +'<div class="tc-footer"><span class="pri '+pc+'">'+PRI[t.pri]+'</span>'+activeBadge+'<span class="cat-tag">'+WAVE[t.wave]+'</span></div>'
@@ -1844,10 +1844,46 @@ function nbUpdateSummary(){
 }
 
 function nbCreateDoc(){
+  // Always read s1 fields from DOM first (in case user typed but didn't click apply)
+  var topicEl=document.getElementById('nb-s1-topic');
+  var descEl=document.getElementById('nb-s1-desc');
+  var tagsEl=document.getElementById('nb-s1-tags');
+  if(topicEl) nbState['s1'].s1data.topic=topicEl.value;
+  if(descEl) nbState['s1'].s1data.desc=descEl.value;
+  if(tagsEl) nbState['s1'].s1data.tags=tagsEl.value;
+
   var topic=(nbState['s1'].s1data.topic||'').trim();
   var cat=nbState['s1'].s1data.cat||'tech';
   var wave=parseInt(nbState['s1'].s1data.wave||'2');
   var docType=nbState['s1'].s1data.type||'tech';
+
+  // If editing existing doc — update it
+  if(window.nbEditingDocId){
+    var docId=window.nbEditingDocId;
+    window.nbEditingDocId=null;
+    var stages=[];
+    NB_STAGES.forEach(function(s){
+      var st=nbState[s.id];
+      if(!st.applied||s.id==='s1') return;
+      var def=NB_STAGES.filter(function(x){return x.id===s.id;})[0];
+      var items=st.picked.map(function(i){return def.options[i].text;}).concat(st.custom);
+      if(items.length) stages.push({num:def.num,title:def.title,items:items});
+    });
+    window.dynamicDocs[docId].topic=topic;
+    window.dynamicDocs[docId].cat=cat;
+    window.dynamicDocs[docId].wave=wave;
+    window.dynamicDocs[docId].stages=stages;
+    // Update TOPICS entry
+    var t=TOPICS.find(function(x){return x.dynId===docId;});
+    if(t){t.title=topic;t.cat=cat;t.wave=wave;}
+    showDynamicDoc(docId);
+    nbShowSuccessModal(topic+' — עודכן!');
+    NB_STAGES.forEach(function(s){nbState[s.id]={picked:[],custom:[],applied:false,s1data:{}};});
+    nbRender();
+    var sumEl=document.getElementById('nb-summary');
+    if(sumEl) sumEl.style.display='none';
+    return;
+  }
 
   if(!topic){
     alert('יש למלא נושא תדריך בשלב 1 לפני יצירה.');
@@ -1925,11 +1961,26 @@ function nbCloseMsg(el){
 }
 
 function nbAddToLibrary(docId,topic,cat,wave){
-  // Add to TOPICS array as active doc
   var newId=TOPICS.length>0?Math.max.apply(null,TOPICS.map(function(t){return t.id;}))+1:41;
   TOPICS.push({id:newId,cat:cat,wave:wave,pri:'h',title:topic,desc:'תדריך שנוצר ידנית',active:true,dynId:docId});
-  // Update home active docs if wave 1
+  // Re-render library so new card appears with correct link
+  renderLibrary('all');
   renderHotTopics();
+  // Add card to home active docs section
+  var homeGrid=document.getElementById('home-active-grid');
+  if(homeGrid){
+    var div=document.createElement('div');
+    div.className='topic-card fade-in visible';
+    div.setAttribute('onclick','openArticle('+newId+')');
+    div.style.cssText='background:#fff;border:1px solid #B7E8CE;border-radius:10px;padding:16px;cursor:pointer;position:relative;overflow:hidden';
+    div.innerHTML='<div style="position:absolute;top:0;right:0;width:3px;height:100%;background:#1A7A4A"></div>'
+      +'<div class="tc-num">📄 '+CAT[cat]+'</div>'
+      +'<div class="tc-title">'+topic+'</div>'
+      +'<div class="tc-desc">תדריך שנוצר ידנית דרך מנהלת הידע</div>'
+      +'<div class="tc-footer"><span class="pri pri-h">גבוה</span>'
+      +'<span class="cat-tag" style="background:#EDFAF3;color:#1A7A4A;border:1px solid #B7E8CE">✓ פעיל</span></div>';
+    homeGrid.appendChild(div);
+  }
 }
 
 function showDynamicDoc(docId){
@@ -1964,8 +2015,61 @@ function showDynamicDoc(docId){
     +'</div></div>';
 
   document.getElementById('article-content').innerHTML=html;
+
+  // Add "עדכן מסמך" button
+  var updateBtn=document.createElement('button');
+  updateBtn.style.cssText='display:block;margin:16px auto 0;height:40px;padding:0 22px;background:var(--navy);color:#fff;border:none;border-radius:var(--rs);font-size:13.5px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif;width:100%;max-width:680px';
+  updateBtn.textContent='✏️ עדכן מסמך';
+  updateBtn.addEventListener('click',function(){ nbEditDoc(docId); });
+  document.getElementById('article-content').appendChild(updateBtn);
+
   showView('article');
   document.querySelector('#view-article .article-back').setAttribute('onclick',"showView('library')");
+}
+
+function nbEditDoc(docId){
+  var doc=window.dynamicDocs[docId];
+  if(!doc) return;
+
+  // Reset form state
+  NB_STAGES.forEach(function(s){ nbState[s.id]={picked:[],custom:[],applied:false,s1data:{}}; });
+
+  // Restore s1 data
+  nbState['s1'].s1data={topic:doc.topic,cat:doc.cat,wave:String(doc.wave),type:doc.docType};
+  nbState['s1'].applied=true;
+
+  // Restore stage selections
+  doc.stages.forEach(function(savedStage){
+    var def=NB_STAGES.filter(function(x){return x.num===savedStage.num;})[0];
+    if(!def) return;
+    savedStage.items.forEach(function(item){
+      // Check if it matches a preset option
+      var optIdx=def.options?def.options.findIndex(function(o){return o.text===item;}):-1;
+      if(optIdx>=0) nbState[def.id].picked.push(optIdx);
+      else nbState[def.id].custom.push(item);
+    });
+    if(nbState[def.id].picked.length+nbState[def.id].custom.length>0)
+      nbState[def.id].applied=true;
+  });
+
+  // Store docId being edited
+  window.nbEditingDocId=docId;
+
+  showView('new');
+  nbRender();
+
+  // Scroll to top
+  window.scrollTo(0,0);
+
+  // Change the "צור" button label to "עדכן"
+  setTimeout(function(){
+    var sumBox=document.getElementById('nb-summary');
+    if(sumBox){
+      var createBtn=sumBox.querySelector('button');
+      if(createBtn) createBtn.textContent='💾 שמור שינויים';
+    }
+    nbUpdateSummary();
+  }, 100);
 }
 
 function catLabel(cat){
