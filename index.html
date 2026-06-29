@@ -990,15 +990,19 @@ function nbAddToLibrary(docId,topic,cat,wave){
   if(homeGrid){
     var div=document.createElement('div');
     div.className='topic-card fade-in visible';
-    div.setAttribute('onclick','openArticle('+newId+')');
-    div.style.cssText='background:#fff;border:1px solid #B7E8CE;border-radius:10px;padding:16px;cursor:pointer;position:relative;overflow:hidden';
+    div.style.cssText='background:#fff;border:1px solid #B7E8CE;border-radius:10px;padding:16px;cursor:pointer;position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s';
+    div.addEventListener('click', function(){ showDynamicDoc(docId); });
     div.innerHTML='<div style="position:absolute;top:0;right:0;width:3px;height:100%;background:#1A7A4A"></div>'
-      +'<div class="tc-num">📄 '+CAT[cat]+'</div>'
-      +'<div class="tc-title">'+topic+'</div>'
+      +'<div class="tc-num">✏️ תדריך ידני · '+(CAT[cat]||'📄')+'</div>'
+      +'<div class="tc-title">'+topic.replace(/</g,'&lt;')+'</div>'
       +'<div class="tc-desc">תדריך שנוצר ידנית דרך מנהלת הידע</div>'
-      +'<div class="tc-footer"><span class="pri pri-h">גבוה</span>'
-      +'<span class="cat-tag" style="background:#EDFAF3;color:#1A7A4A;border:1px solid #B7E8CE">✓ פעיל</span></div>';
+      +'<div class="tc-footer">'
+      +'<span class="pri pri-h">גבוה</span>'
+      +'<span class="cat-tag" style="background:#EDFAF3;color:#1A7A4A;border:1px solid #B7E8CE">✓ פעיל</span>'
+      +'</div>';
     homeGrid.appendChild(div);
+    // animate in
+    setTimeout(function(){div.classList.add('visible');},50);
   }
 }
 
