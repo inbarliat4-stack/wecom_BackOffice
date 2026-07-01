@@ -830,16 +830,34 @@ function showView(id){
   if(sm) sm.classList.add('active');
   ['home','library','new'].forEach(function(t){var b=document.getElementById('mob-'+t);if(b)b.classList.toggle('active',t===id||(id==='browsing'&&t==='home')||(id==='churn'&&t==='home')||(id==='article'&&t==='library'))});
   if(id==='library') renderLibrary('all');
-  if(id==='home') renderHotTopics();
+  if(id==='home') renderHomeWaves();
   if(id==='new'&&!nbState['s1'].applied) nbRender();
   window.scrollTo(0,0);
   setTimeout(function(){document.querySelectorAll('#view-'+id+' .fade-in:not(.visible)').forEach(function(el,i){setTimeout(function(){el.classList.add('visible')},i*55)})},80);
 }
 
-function renderHotTopics(){
-  var hot=TOPICS.filter(function(t){return t.wave===1}).slice(0,6);
-  document.getElementById('hot-grid').innerHTML=hot.map(cardHTML).join('');
+function renderHotTopics(){ renderHomeWaves(); }
+
+function renderHomeWaves(){
+  var container=document.getElementById('home-waves');
+  if(!container) return;
+  var wColors={1:'var(--red)',2:'#E06000',3:'#9A7700'};
+  var wLabels={1:'גל 1 – שכיח מאוד',2:'גל 2 – חשוב',3:'גל 3 – משלים'};
+  var html='';
+  [1,2,3].forEach(function(w){
+    var wt=TOPICS.filter(function(t){return t.wave===w;});
+    if(!wt.length) return;
+    html+='<div class="wave-label"><span class="wave-pill" style="background:'+wColors[w]+'">'+wLabels[w]+' — '+wt.length+' נושאים</span></div>';
+    html+='<div class="topic-grid">'+wt.map(cardHTML).join('')+'</div>';
+  });
+  container.innerHTML=html;
+  setTimeout(function(){
+    container.querySelectorAll('.fade-in:not(.visible)').forEach(function(el,i){
+      setTimeout(function(){el.classList.add('visible');},i*30);
+    });
+  },50);
 }
+
 
 function renderLibrary(cat){
   var f=cat==='all'?TOPICS:TOPICS.filter(function(t){return t.cat===cat});
@@ -874,7 +892,7 @@ function cardHTML(t){
   var activeBadge=t.active?'<span class="cat-tag" style="background:#EDFAF3;color:#1A7A4A;border:1px solid #B7E8CE">✓ פעיל</span>':'';
   return '<div class="topic-card fade-in" style="'+(t.active?'border-color:#B7E8CE;':'')+'" onclick="nbOpenTopic('+t.id+')">' 
     +(t.active?'<div style="position:absolute;top:0;right:0;width:3px;height:100%;background:#1A7A4A"></div>':'')
-    +'<div class="tc-num">'+(t.dynId?'✏️ תדריך ידני':'#'+t.id)+' · '+(CAT[t.cat]||'📄 כללי')+'</div>'
+    +'<div class="tc-num">#'+t.id+' · '+(CAT[t.cat]||'📄 כללי')+'</div>'
     +'<div class="tc-title">'+t.title+'</div>'
     +'<div class="tc-desc">'+t.desc+'</div>'
     +'<div class="tc-footer"><span class="pri '+pc+'">'+PRI[t.pri]+'</span>'+activeBadge+'<span class="cat-tag">'+WAVE[t.wave]+'</span></div>'
@@ -990,77 +1008,27 @@ function nbCloseMsg(el){
   if(p) p.remove();
 }
 
-function nbAddToLibrary(docId,topic,cat,wave){
-  // If created from an existing topic card, link doc to that topic
-  if(window.nbLinkToTopicId){
-    var existing=TOPICS.find(function(t){return t.id===window.nbLinkToTopicId;});
-    if(existing){
-      existing.dynId=docId;
-      existing.active=true;
-      window.nbLinkToTopicId=null;
-      // Re-render library and home
+function nbAddToLibrary(docId,topic,cat,wave,linkTopicId){
+  console.log('ADD TO LIBRARY: linkTopicId='+linkTopicId);
+  if(linkTopicId){
+    var linked=TOPICS.find(function(t){return t.id===linkTopicId;});
+    console.log('linked topic found:', linked?linked.title:'NOT FOUND');
+    if(linked){
+      linked.dynId=docId;
+      linked.active=true;
+      // Re-render both pages — title unchanged, badge added, onclick updated
       renderLibrary('all');
-      renderHotTopics();
-      nbUpdateHomeCard(existing);
-      // Also update any existing cards in hot-grid that match this topic
-      document.querySelectorAll('#hot-grid .topic-card, #home-active-grid .topic-card').forEach(function(card){
-        // Re-attach click to open dynamic doc
-      });
+      renderHomeWaves();
       return;
     }
-    window.nbLinkToTopicId=null;
   }
-  // Otherwise create a new card
+  // Standalone (no linked topic) — add new entry
   var newId=TOPICS.length>0?Math.max.apply(null,TOPICS.map(function(t){return t.id;}))+1:41;
   TOPICS.push({id:newId,cat:cat,wave:wave,pri:'h',title:topic,desc:'תדריך שנוצר ידנית',active:true,dynId:docId});
   renderLibrary('all');
-  renderHotTopics();
-  // Add card to home active docs section
-  var homeGrid=document.getElementById('home-active-grid');
-  if(homeGrid){
-    var div=document.createElement('div');
-    div.className='topic-card fade-in visible';
-    div.style.cssText='background:#fff;border:1px solid #B7E8CE;border-radius:10px;padding:16px;cursor:pointer;position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s';
-    div.addEventListener('click', function(){ showDynamicDoc(docId); });
-    div.innerHTML='<div style="position:absolute;top:0;right:0;width:3px;height:100%;background:#1A7A4A"></div>'
-      +'<div class="tc-num">✏️ תדריך ידני · '+(CAT[cat]||'📄')+'</div>'
-      +'<div class="tc-title">'+topic.replace(/</g,'&lt;')+'</div>'
-      +'<div class="tc-desc">תדריך שנוצר ידנית דרך מנהלת הידע</div>'
-      +'<div class="tc-footer">'
-      +'<span class="pri pri-h">גבוה</span>'
-      +'<span class="cat-tag" style="background:#EDFAF3;color:#1A7A4A;border:1px solid #B7E8CE">✓ פעיל</span>'
-      +'</div>';
-    homeGrid.appendChild(div);
-    // animate in
-    setTimeout(function(){div.classList.add('visible');},50);
-  }
+  renderHomeWaves();
 }
 
-function nbUpdateHomeCard(topic){
-  // Find the card in home-active-grid that matches this topic and update its onclick
-  var homeGrid=document.getElementById('home-active-grid');
-  if(!homeGrid) return;
-  // Add a new active card for this topic if not already there
-  var cards=homeGrid.querySelectorAll('.topic-card');
-  var found=false;
-  cards.forEach(function(card){
-    if(card.getAttribute('data-topic-id')===String(topic.id)) found=true;
-  });
-  if(!found){
-    var div=document.createElement('div');
-    div.className='topic-card fade-in visible';
-    div.setAttribute('data-topic-id', String(topic.id));
-    div.style.cssText='background:#fff;border:1px solid #B7E8CE;border-radius:10px;padding:16px;cursor:pointer;position:relative;overflow:hidden';
-    div.addEventListener('click',function(){ showDynamicDoc(topic.dynId); });
-    div.innerHTML='<div style="position:absolute;top:0;right:0;width:3px;height:100%;background:#1A7A4A"></div>'
-      +'<div class="tc-num">✏️ '+(CAT[topic.cat]||'📄')+'</div>'
-      +'<div class="tc-title">'+topic.title+'</div>'
-      +'<div class="tc-desc">תדריך שנוצר ידנית</div>'
-      +'<div class="tc-footer"><span class="pri pri-'+(topic.pri||'h')+'">'+( PRI[topic.pri]||'גבוה')+'</span>'
-      +'<span class="cat-tag" style="background:#EDFAF3;color:#1A7A4A;border:1px solid #B7E8CE">✓ פעיל</span></div>';
-    homeGrid.appendChild(div);
-  }
-}
 
 function showDynamicDoc(docId){
   var doc=window.dynamicDocs[docId];
@@ -1519,7 +1487,11 @@ function nbCreateDoc(){
 
   window.dynamicDocs=window.dynamicDocs||{};
   window.dynamicDocs[docId]={id:docId,topic:topic,cat:cat,wave:wave,docType:docType,stages:stages};
-  nbAddToLibrary(docId,topic,cat,wave);
+  // Pass linkTopicId directly — don't rely on window variable surviving
+  var linkTopicId=window.nbLinkToTopicId||null;
+  window.nbLinkToTopicId=null;
+  console.log('CREATE DOC: linkTopicId='+linkTopicId+' topic='+topic);
+  nbAddToLibrary(docId,topic,cat,wave,linkTopicId);
   showDynamicDoc(docId);
   nbShowSuccessModal(topic);
 
@@ -1529,199 +1501,6 @@ function nbCreateDoc(){
   if(sumEl) sumEl.style.display='none';
 }
 
-function nbShowSuccessModal(topic){
-  // Remove existing modal if any
-  var old=document.getElementById('nb-success-modal');
-  if(old) old.remove();
-
-  var overlay=document.createElement('div');
-  overlay.id='nb-success-modal';
-  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:9998;display:flex;align-items:center;justify-content:center';
-
-  var card=document.createElement('div');
-  card.style.cssText='background:#fff;border-radius:14px;padding:28px 32px;box-shadow:0 20px 60px rgba(0,0,0,.25);text-align:center;max-width:340px;width:90%;font-family:Rubik,sans-serif;direction:rtl';
-
-  var emoji=document.createElement('div');
-  emoji.style.cssText='font-size:28px;margin-bottom:12px';
-  emoji.textContent='🎉';
-
-  var title=document.createElement('div');
-  title.style.cssText='font-size:16px;font-weight:600;color:#1F2E3B;margin-bottom:8px';
-  title.textContent='התדריך נוצר בהצלחה!';
-
-  var desc=document.createElement('div');
-  desc.style.cssText='font-size:14px;color:#6B7280;margin-bottom:20px;line-height:1.6';
-  desc.innerHTML='התדריך <strong style="color:#FF3D00">'+topic.replace(/</g,'&lt;')+'</strong> נוסף לספריית הידע.';
-
-  var btn=document.createElement('button');
-  btn.style.cssText='background:#FF3D00;color:#fff;border:none;border-radius:8px;padding:10px 28px;font-size:14px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif';
-  btn.textContent='אוקיי!';
-  btn.addEventListener('click',function(){overlay.remove();});
-
-  card.appendChild(emoji);
-  card.appendChild(title);
-  card.appendChild(desc);
-  card.appendChild(btn);
-  overlay.appendChild(card);
-  document.body.appendChild(overlay);
-}
-function nbCloseMsg(el){
-  var p=el.parentElement;
-  while(p&&p.style.position!=='fixed') p=p.parentElement;
-  if(p) p.remove();
-}
-
-function nbAddToLibrary(docId,topic,cat,wave){
-  var newId=TOPICS.length>0?Math.max.apply(null,TOPICS.map(function(t){return t.id;}))+1:41;
-  TOPICS.push({id:newId,cat:cat,wave:wave,pri:'h',title:topic,desc:'תדריך שנוצר ידנית',active:true,dynId:docId});
-  renderHotTopics();
-  // Also add card to home active docs section
-  var homeGrid=document.getElementById('home-active-grid');
-  if(homeGrid){
-    var div=document.createElement('div');
-    div.className='topic-card fade-in visible';
-    div.setAttribute('onclick','openArticle('+newId+')');
-    div.style.borderColor='#B7E8CE';
-    div.innerHTML='<div style="position:absolute;top:0;right:0;width:3px;height:100%;background:#1A7A4A"></div>'
-      +'<div class="tc-num">📄 תדריך חדש</div>'
-      +'<div class="tc-title">'+topic+'</div>'
-      +'<div class="tc-desc">תדריך שנוצר ידנית דרך מנהלת הידע</div>'
-      +'<div class="tc-footer"><span class="pri pri-h">גבוה</span>'
-      +'<span class="cat-tag" style="background:#EDFAF3;color:#1A7A4A;border:1px solid #B7E8CE">✓ פעיל</span></div>';
-    homeGrid.appendChild(div);
-  }
-}
-
-function showDynamicDoc(docId){
-  var doc=window.dynamicDocs[docId];
-  if(!doc) return;
-
-  var stagesHtml=doc.stages.map(function(s){
-    var items=s.items.map(function(item){
-      return '<div class="step-card fade-in">'
-        +'<div class="step-num" style="background:var(--navy);width:20px;height:20px;font-size:10px">›</div>'
-        +'<div class="step-content" style="margin-top:0">'
-        +'<div class="action-list" style="margin-top:0"><div class="action-item"><span class="ai-icon">›</span>'+item+'</div></div>'
-        +'</div></div>';
-    }).join('');
-
-    return '<div class="step-card fade-in" style="margin-bottom:4px">'
-      +'<div class="step-num red">'+s.num+'</div>'
-      +'<div class="step-content">'
-      +'<div class="step-title">'+s.title+'</div>'
-      +'</div></div>'
-      +'<div style="padding-right:52px;margin-bottom:16px">'+items+'</div>';
-  }).join('');
-
-  var html='<div class="article-box">'
-    +'<div class="article-head">'
-    +'<div class="article-meta"><span class="tb tb-sys">'+catLabel(doc.cat)+'</span><span class="tb tb-opt">נוצר: '+new Date().toLocaleDateString('he-IL')+'</span></div>'
-    +'<div class="article-title">'+doc.topic+'</div>'
-    +'<div class="article-sub">תדריך שנוצר ידנית דרך מנהלת הידע</div>'
-    +'</div>'
-    +'<div class="article-body">'
-    +(doc.stages.length?stagesHtml:'<div class="info-box">לא נבחרו שלבים לתדריך זה.</div>')
-    +'</div></div>';
-
-  document.getElementById('article-content').innerHTML=html;
-
-  // Add "עדכן מסמך" button
-  var updateBtn=document.createElement('button');
-  updateBtn.style.cssText='display:block;margin:16px auto 0;height:40px;padding:0 22px;background:var(--navy);color:#fff;border:none;border-radius:var(--rs);font-size:13.5px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif;width:100%;max-width:680px';
-  updateBtn.textContent='✏️ עדכן מסמך';
-  updateBtn.addEventListener('click',function(){ nbEditDoc(docId); });
-  document.getElementById('article-content').appendChild(updateBtn);
-
-  showView('article');
-  document.querySelector('#view-article .article-back').setAttribute('onclick',"showView('library')");
-}
-
-function nbEditDoc(docId){
-  var doc=window.dynamicDocs[docId];
-  if(!doc) return;
-
-  // Reset form state
-  NB_STAGES.forEach(function(s){ nbState[s.id]={picked:[],custom:[],applied:false,s1data:{}}; });
-
-  // Restore s1 data
-  nbState['s1'].s1data={topic:doc.topic,cat:doc.cat,wave:String(doc.wave),type:doc.docType};
-  nbState['s1'].applied=true;
-
-  // Restore stage selections
-  doc.stages.forEach(function(savedStage){
-    var def=NB_STAGES.filter(function(x){return x.num===savedStage.num;})[0];
-    if(!def) return;
-    savedStage.items.forEach(function(item){
-      // Check if it matches a preset option
-      var optIdx=def.options?def.options.findIndex(function(o){return o.text===item;}):-1;
-      if(optIdx>=0) nbState[def.id].picked.push(optIdx);
-      else nbState[def.id].custom.push(item);
-    });
-    if(nbState[def.id].picked.length+nbState[def.id].custom.length>0)
-      nbState[def.id].applied=true;
-  });
-
-  // Store docId being edited
-  window.nbEditingDocId=docId;
-
-  showView('new');
-  nbRender();
-
-  // Scroll to top
-  window.scrollTo(0,0);
-
-  // Change the "צור" button label to "עדכן"
-  setTimeout(function(){
-    var sumBox=document.getElementById('nb-summary');
-    if(sumBox){
-      var createBtn=sumBox.querySelector('button');
-      if(createBtn) createBtn.textContent='💾 שמור שינויים';
-    }
-    nbUpdateSummary();
-  }, 100);
-}
-
-function catLabel(cat){
-  var m={sim:'📶 SIM/eSIM',tech:'🔧 טכני',tech2:'🔧 טכני',billing:'💳 חיובים',plans:'📋 מסלולים',intl:'✈️ חו"ל',ops:'🎧 שיחה'};
-  return m[cat]||'📄 כללי';
-}
-
-function nbExport(){
-  var out={};
-  NB_STAGES.forEach(function(s){
-    if(!nbState[s.id].applied) return;
-    var def=NB_STAGES.filter(function(x){return x.id===s.id;})[0];
-    var st=nbState[s.id];
-    out['שלב '+def.num+' – '+def.title]=s.id==='s1'?st.s1data:st.picked.map(function(i){return def.options[i].text;}).concat(st.custom);
-  });
-  var a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([JSON.stringify(out,null,2)],{type:'application/json'}));
-  a.download='תדריך-חדש.json';a.click();
-}
-
-function nbInit(){
-  NB_STAGES.forEach(function(s){nbState[s.id]={picked:[],custom:[],applied:false,s1data:{}};});
-  nbRender();
-}
-
-function initObservers(){
-  // event delegation for dynamically created buttons
-  document.addEventListener('click', function(e){
-    var btn=e.target.closest('[data-action="new"]');if(btn) showView('new');
-  });
-
-  renderHotTopics();
-  var obs=new IntersectionObserver(function(entries){
-    entries.forEach(function(e){
-      if(e.isIntersecting){
-        e.target.querySelectorAll('.fade-in:not(.visible)').forEach(function(el,i){setTimeout(function(){el.classList.add('visible')},i*55)});
-        obs.unobserve(e.target);
-      }
-    });
-  },{threshold:0.05});
-  document.querySelectorAll('.view').forEach(function(v){obs.observe(v)});
-  setTimeout(function(){document.querySelectorAll('#view-home .fade-in').forEach(function(el,i){setTimeout(function(){el.classList.add('visible')},i*60)})},200);
-}
 
 // Initialize nbState immediately
 var nbState={};
@@ -1730,7 +1509,7 @@ NB_STAGES.forEach(function(s){nbState[s.id]={picked:[],custom:[],applied:false,s
 document.addEventListener("DOMContentLoaded", function(){
   initObservers();
   nbRender();
-  renderHotTopics();
+  renderHomeWaves();
 });
 
 // Single delegated listener for option clicks
@@ -1794,15 +1573,10 @@ document.addEventListener('click', function(e){
     <div class="stat"><div class="stat-num">15,316</div><div class="stat-label">שיחות שנותחו</div></div>
     <div class="stat"><div class="stat-num">40</div><div class="stat-label">נושאי ידע</div></div>
     <div class="stat"><div class="stat-num">13</div><div class="stat-label">גל 1 – מיידי</div></div>
-    <div class="stat"><div class="stat-num">2</div><div class="stat-label">מסמכים פעילים</div></div>
+    
   </div>
-  <div class="wave-label"><span class="wave-pill" style="background:var(--red)">🔴 הכי דחוף – גל 1</span></div>
-  <div class="topic-grid" id="hot-grid"></div>
-  <div class="wave-label" style="margin-top:8px"><span class="wave-pill">📂 מסמכים פעילים</span></div>
-  <div class="topic-grid" id="home-active-grid">
-    <div class="topic-card fade-in" onclick="showView('browsing')"><div class="tc-num">📡 תפעולי טכני</div><div class="tc-title">איטיות גלישה / חוסר גלישה</div><div class="tc-desc">נוהל דיבאג מלא – 13 שלבים, שני מסלולים, עד החלפת SIM</div><div class="tc-footer"><span class="pri pri-hh">● גבוה מאוד</span><span class="cat-tag">פעיל</span></div></div>
-    <div class="topic-card fade-in" onclick="showView('churn')"><div class="tc-num">🛡 שימור לקוחות</div><div class="tc-title">דיבאג נטישה</div><div class="tc-desc">זיהוי לקוח מאותת נטישה, 3 מסלולים, תסריטי שיחה והתנגדויות</div><div class="tc-footer"><span class="pri pri-hh">● גבוה מאוד</span><span class="cat-tag">פעיל</span></div></div>
-  </div>
+  <div id="home-waves"></div>
+
 </div>
 
 <!-- LIBRARY -->
