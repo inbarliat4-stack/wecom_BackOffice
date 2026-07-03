@@ -26,17 +26,17 @@
   --shadow-red:0 4px 20px rgba(255,61,0,.25);
   --t:200ms cubic-bezier(.4,0,.2,1);
 }
-body{font-family:"Rubik",sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.65;min-height:100vh}
-.topnav{background:var(--white);height:60px;display:flex;align-items:center;padding:0 28px;gap:16px;position:sticky;top:0;z-index:100;border-bottom:1px solid var(--border);box-shadow:var(--shadow-sm)}
-.nav-logo{font-size:24px;font-weight:800;color:var(--red);letter-spacing:-.5px;flex-shrink:0}
-.nav-sep{width:1px;height:24px;background:var(--border)}
-.nav-label{font-size:12.5px;color:var(--muted);font-weight:500}
-.nav-search{margin-inline-start:auto;display:flex;align-items:center;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:0 13px;gap:8px;height:38px;min-width:220px;transition:border-color var(--t)}
-.nav-search:focus-within{border-color:var(--red);background:var(--white)}
+html{overflow-x:hidden}body{font-family:"Rubik",sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.65;min-height:100vh;overflow-x:hidden;-webkit-text-size-adjust:100%}
+.topnav{background:var(--white);height:80px;display:flex;align-items:center;padding:0 28px;gap:16px;position:sticky;top:0;z-index:100;border-bottom:1px solid var(--border);box-shadow:var(--shadow-sm);min-width:0}
+.nav-logo{font-size:28px;font-weight:800;color:var(--red);letter-spacing:-.5px;flex-shrink:0;line-height:1}
+.nav-sep{display:none}
+.nav-label{font-size:11px;color:var(--muted);font-weight:600;line-height:1.35;flex-shrink:0;text-align:right}
+.nav-search{margin-inline-start:auto;display:flex;align-items:center;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:0 13px;gap:8px;height:36px;flex:1;max-width:480px;min-width:0;transition:border-color var(--t),box-shadow var(--t)}
+.nav-search:focus-within{border-color:var(--red);background:var(--white);box-shadow:0 0 0 3px rgba(255,61,0,.08)}
 .nav-search input{background:transparent;border:none;outline:none;font-family:"Rubik",sans-serif;font-size:13px;color:var(--text);direction:rtl;flex:1;width:100%}
 .nav-search input::placeholder{color:var(--muted-l)}
-.app-shell{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 60px);background:var(--bg)}
-.sidebar-nav{background:var(--white);border-left:1px solid var(--border);padding:16px 10px;position:sticky;top:60px;height:calc(100vh - 60px);overflow-y:auto;width:220px}
+.app-shell{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 80px);background:var(--bg);max-width:100%;overflow-x:hidden}
+.sidebar-nav{background:var(--white);border-left:1px solid var(--border);padding:16px 10px;position:sticky;top:80px;height:calc(100vh - 80px);overflow-y:auto;width:220px}
 .snav-section{margin-bottom:4px;padding:0 10px}
 .snav-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted-l);padding:10px 8px 5px}
 .snav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;font-size:13px;font-weight:500;color:var(--text-2);cursor:pointer;border-radius:var(--r-sm);transition:background var(--t),color var(--t);margin-bottom:1px;border:none}
@@ -46,7 +46,7 @@ body{font-family:"Rubik",sans-serif;background:var(--bg);color:var(--text);font-
 .snav-item.active .snav-icon{opacity:1}
 .snav-badge{margin-inline-start:auto;font-size:10px;font-weight:700;background:var(--red);color:#fff;border-radius:20px;padding:1px 7px;min-width:18px;text-align:center}
 .snav-badge.gray{background:var(--border);color:var(--muted)}
-.content{padding:28px 32px 60px;overflow-y:auto;background:var(--bg)}
+.content{padding:24px 20px 60px;overflow-y:auto;background:var(--bg);min-width:0;max-width:100%}
 .view{display:none}.view.active{display:block}
 .page-header{margin-bottom:28px}
 .page-title{font-size:24px;font-weight:800;color:var(--navy);margin-bottom:5px;letter-spacing:-.3px}
@@ -64,8 +64,8 @@ body{font-family:"Rubik",sans-serif;background:var(--bg);color:var(--text);font-
 .wave-label{display:flex;align-items:center;gap:10px;margin:28px 0 14px;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted-l)}
 .wave-label::before,.wave-label::after{content:"";flex:1;height:1px;background:var(--border)}
 .wave-pill{background:var(--navy);color:#fff;border-radius:20px;font-size:10.5px;font-weight:700;padding:4px 14px;white-space:nowrap;letter-spacing:.3px}
-.topic-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-bottom:8px}
-.topic-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r);padding:18px;cursor:pointer;position:relative;overflow:hidden;transition:border-color var(--t),box-shadow var(--t),transform var(--t);box-shadow:var(--shadow-sm)}
+.topic-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:8px}
+.topic-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r);padding:16px;cursor:pointer;position:relative;overflow:hidden;transition:border-color var(--t),box-shadow var(--t),transform var(--t);box-shadow:var(--shadow-sm);min-width:0;word-break:break-word}
 .topic-card::before{content:"";position:absolute;top:0;right:0;width:3px;height:100%;background:var(--red);opacity:0;transition:opacity var(--t)}
 .topic-card:hover{border-color:rgba(255,61,0,.35);box-shadow:var(--shadow-md);transform:translateY(-3px)}
 .topic-card:hover::before{opacity:1}
@@ -155,9 +155,9 @@ body{font-family:"Rubik",sans-serif;background:var(--bg);color:var(--text);font-
 
 
   /* ── PANEL INNER OVERRIDE ── */
-  .doc-panel-inner { display: block !important; }
-  .doc-panel-inner .page-wrap { grid-template-columns: 1fr 260px; }
-  @media(max-width:768px){ .doc-panel-inner .page-wrap { grid-template-columns: 1fr; } }
+  .doc-panel-inner { display: block !important; width:100%; box-sizing:border-box; }
+  .doc-panel-inner .page-wrap { grid-template-columns: 1fr; width:100%; box-sizing:border-box; max-width:100%; overflow-x:hidden; }
+  @media(max-width:768px){ .doc-panel-inner .page-wrap { grid-template-columns: 1fr; width:100%; box-sizing:border-box; max-width:100%; overflow-x:hidden; } }
 
   /* ── ORIGINAL TEMPLATE CSS ── */
 
@@ -790,6 +790,24 @@ body{font-family:"Rubik",sans-serif;background:var(--bg);color:var(--text);font-
     border-top: 1px solid var(--gray-border);
     margin: 24px 0;
   }
+
+@media(max-width:640px){
+  .nav-label{font-size:10px}
+  .nav-search{width:140px;min-width:0}
+  .topnav{padding:0 14px;gap:10px;height:60px}
+  .topic-grid{grid-template-columns:1fr}
+  .content{padding:14px 12px 76px}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .wave-label{margin:18px 0 10px}
+  .doc-layout{grid-template-columns:1fr}
+  .doc-sidebar{display:none}
+  .acc-section{margin-bottom:8px}
+  .step-card{gap:10px}
+  .step-content{padding:12px}
+}
+
+  .doc-wrapper{width:100%;max-width:100%;padding:16px 16px 40px;box-sizing:border-box}
+  @media(max-width:640px){.doc-wrapper{padding:10px 10px 60px}}
 </style>
 <script>
 var TOPICS=[
@@ -1548,10 +1566,10 @@ document.addEventListener('click', function(e){
 <div id="app">
 <nav class="topnav">
   <div class="nav-logo">wecom.</div>
-  <div class="nav-sep"></div>
-  <div class="nav-label">מאגר ידע פנימי</div>
+  
+  <div class="nav-label">מאגר<br>ידע<br>פנימי</div>
   <div class="nav-search">
-    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="rgba(255,255,255,.4)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#9AA5B4" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     <input type="text" placeholder="חפש נושא, תקלה, נוהל…" oninput="searchTopics(this.value)"/>
   </div>
 </nav>
@@ -1617,7 +1635,7 @@ document.addEventListener('click', function(e){
 
 <!-- BROWSING DOC -->
 <div id="view-browsing" class="view">
-  <div style="max-width:960px;margin:0 auto;padding:24px 20px 80px">
+  <div class="doc-wrapper">
     <div class="article-back" onclick="showView('home')" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);cursor:pointer;margin-bottom:20px;transition:color .15s">← חזרה לדף הבית</div>
     <div id="panel-tech" class="doc-panel-inner">
       <div class="article-header">
@@ -1940,7 +1958,7 @@ document.addEventListener('click', function(e){
 
 <!-- CHURN DOC -->
 <div id="view-churn" class="view">
-  <div style="max-width:960px;margin:0 auto;padding:24px 20px 80px">
+  <div class="doc-wrapper">
     <div class="article-back" onclick="showView('home')" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);cursor:pointer;margin-bottom:20px;transition:color .15s">← חזרה לדף הבית</div>
     <div id="panel-retain" class="doc-panel-inner">
       <div class="article-header">
