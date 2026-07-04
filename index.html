@@ -81,7 +81,7 @@ html{overflow-x:hidden}body{font-family:"Rubik",sans-serif;background:var(--bg);
 .article-title{font-size:20px;font-weight:700;color:var(--navy);margin-bottom:6px}
 .article-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
 .article-sub{font-size:13.5px;color:var(--muted)}
-.article-body{padding:24px 28px}
+.article-body{padding:16px 16px}
 .acc-section{border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:10px;background:var(--white);box-shadow:var(--shadow-sm);transition:border-color var(--t),box-shadow var(--t)}
 .acc-section.open{border-color:rgba(255,61,0,.2);box-shadow:var(--shadow-md)}
 .acc-head{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--gray);cursor:pointer;user-select:none;transition:background .2s;border-bottom:1px solid transparent}
@@ -122,7 +122,7 @@ html{overflow-x:hidden}body{font-family:"Rubik",sans-serif;background:var(--bg);
 .outcome.next{background:var(--warn-bg);color:var(--warn);border-color:var(--warn-b)}
 .outcome.alert{background:var(--red-l);color:var(--red);border-color:var(--red-m)}
 .script-block{background:var(--red-l);border-right:3px solid var(--red);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:13px 16px;font-size:13px;color:var(--navy);font-style:italic;line-height:1.7;margin-top:8px}
-.info-box{background:var(--warn-bg);border:1px solid var(--warn-b);border-radius:var(--rs);padding:9px 13px;font-size:12.5px;color:var(--warn);display:flex;gap:7px;margin-bottom:12px}
+.info-box{background:var(--warn-bg);border:1px solid var(--warn-b);border-radius:var(--rs);padding:9px 13px;font-size:12.5px;color:var(--warn);display:flex;gap:7px;margin-bottom:12px;width:100%;box-sizing:border-box}
 .esc-card{background:var(--warn-bg);border:1px solid var(--warn-b);border-radius:var(--rs);padding:14px 16px}
 .esc-title{font-size:13px;font-weight:600;color:var(--warn);margin-bottom:9px}
 .esc-items{display:flex;flex-wrap:wrap;gap:7px}
@@ -155,9 +155,9 @@ html{overflow-x:hidden}body{font-family:"Rubik",sans-serif;background:var(--bg);
 
 
   /* ── PANEL INNER OVERRIDE ── */
-  .doc-panel-inner { display: block !important; width:100%; box-sizing:border-box; }
-  .doc-panel-inner .page-wrap { grid-template-columns: 1fr; width:100%; box-sizing:border-box; max-width:100%; overflow-x:hidden; }
-  @media(max-width:768px){ .doc-panel-inner .page-wrap { grid-template-columns: 1fr; width:100%; box-sizing:border-box; max-width:100%; overflow-x:hidden; } }
+  .doc-panel-inner { display: block !important; }
+  .doc-panel-inner .page-wrap { grid-template-columns: 1fr; }
+  @media(max-width:768px){ .doc-panel-inner .page-wrap { grid-template-columns: 1fr; } }
 
   /* ── ORIGINAL TEMPLATE CSS ── */
 
@@ -240,7 +240,7 @@ html{overflow-x:hidden}body{font-family:"Rubik",sans-serif;background:var(--bg);
   .page-wrap {
     max-width: 960px;
     margin: 0 auto;
-    padding: 32px 24px 80px;
+    padding: 8px 0 80px;
     display: grid;
     grid-template-columns: 1fr 260px;
     gap: 28px;
@@ -309,9 +309,7 @@ html{overflow-x:hidden}body{font-family:"Rubik",sans-serif;background:var(--bg);
     font-weight: 400;
   }
 
-  .article-body {
-    padding: 28px 32px;
-  }
+  .article-body { padding: 16px 16px; }
 
   /* ─── PHASE HEADER ─── */
   .phase {
@@ -805,9 +803,6 @@ html{overflow-x:hidden}body{font-family:"Rubik",sans-serif;background:var(--bg);
   .step-card{gap:10px}
   .step-content{padding:12px}
 }
-
-  .doc-wrapper{width:100%;max-width:100%;padding:16px 16px 40px;box-sizing:border-box}
-  @media(max-width:640px){.doc-wrapper{padding:10px 10px 60px}}
 </style>
 <script>
 var TOPICS=[
@@ -964,6 +959,7 @@ function openArticle(id){
 
   var body=document.createElement('div');
   body.className='article-body';
+  body.style.cssText='padding:16px;width:100%;box-sizing:border-box';
   body.innerHTML='<div class="info-box">📝 מסמך זה עדיין לא נכתב — הוא בתיעדוף <strong>'+(WAVE[t.wave]||'')+'</strong>. לחץ "תדריך חדש" ליצירתו.</div>'
     +'<div style="background:var(--gray);border:1px solid var(--border);border-radius:var(--r);padding:18px">'
     +'<div class="f-label" style="margin-bottom:10px">מה צריך לכלול לפי Glance AI</div>'
@@ -1635,7 +1631,7 @@ document.addEventListener('click', function(e){
 
 <!-- BROWSING DOC -->
 <div id="view-browsing" class="view">
-  <div class="doc-wrapper">
+  <div style="max-width:960px;margin:0 auto;padding:16px 8px 80px">
     <div class="article-back" onclick="showView('home')" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);cursor:pointer;margin-bottom:20px;transition:color .15s">← חזרה לדף הבית</div>
     <div id="panel-tech" class="doc-panel-inner">
       <div class="article-header">
@@ -1958,7 +1954,7 @@ document.addEventListener('click', function(e){
 
 <!-- CHURN DOC -->
 <div id="view-churn" class="view">
-  <div class="doc-wrapper">
+  <div style="max-width:960px;margin:0 auto;padding:16px 8px 80px">
     <div class="article-back" onclick="showView('home')" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);cursor:pointer;margin-bottom:20px;transition:color .15s">← חזרה לדף הבית</div>
     <div id="panel-retain" class="doc-panel-inner">
       <div class="article-header">
