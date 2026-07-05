@@ -27,16 +27,16 @@
   --t:200ms cubic-bezier(.4,0,.2,1);
 }
 html{overflow-x:hidden}body{font-family:"Rubik",sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.65;min-height:100vh;overflow-x:hidden;-webkit-text-size-adjust:100%}
-.topnav{background:var(--white);height:80px;display:flex;align-items:center;padding:0 28px;gap:16px;position:sticky;top:0;z-index:100;border-bottom:1px solid var(--border);box-shadow:var(--shadow-sm);min-width:0}
+.topnav{background:var(--navy);height:80px;display:flex;align-items:center;padding:0 28px;gap:16px;position:sticky;top:0;z-index:100;border-bottom:1px solid rgba(255,255,255,.1)}
 .nav-logo{font-size:28px;font-weight:800;color:var(--red);letter-spacing:-.5px;flex-shrink:0;line-height:1}
 .nav-sep{display:none}
-.nav-label{font-size:11px;color:var(--muted);font-weight:600;line-height:1.2;flex-shrink:0;text-align:right}
+.nav-label{font-size:11px;color:rgba(255,255,255,.6);font-weight:600;line-height:1.2;flex-shrink:0;text-align:right}
 .nav-search{margin-inline-start:auto;display:flex;align-items:center;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:0 13px;gap:8px;height:36px;flex:1;max-width:480px;min-width:0;transition:border-color var(--t),box-shadow var(--t)}
 .nav-search:focus-within{border-color:var(--red);background:var(--white);box-shadow:0 0 0 3px rgba(255,61,0,.08)}
-.nav-search input{background:transparent;border:none;outline:none;font-family:"Rubik",sans-serif;font-size:13px;color:var(--text);direction:rtl;flex:1;width:100%}
-.nav-search input::placeholder{color:var(--muted-l)}
-.app-shell{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 80px);background:var(--bg);max-width:100%;overflow-x:hidden}
-.sidebar-nav{background:var(--white);border-left:1px solid var(--border);padding:16px 10px;position:sticky;top:80px;height:calc(100vh - 80px);overflow-y:auto;width:220px}
+.nav-search input{background:transparent;border:none;outline:none;font-family:"Rubik",sans-serif;font-size:13px;color:#fff;direction:rtl;flex:1;width:100%}
+.nav-search input::placeholder{color:rgba(255,255,255,.35)}
+.app-shell{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 80px);background:var(--bg);max-width:100%;overflow-x:hidden;align-items:stretch}
+.sidebar-nav{background:var(--white);border-left:1px solid var(--border);padding:16px 10px;width:220px;min-height:100%}
 .snav-section{margin-bottom:4px;padding:0 10px}
 .snav-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted-l);padding:10px 8px 5px}
 .snav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;font-size:13px;font-weight:500;color:var(--text-2);cursor:pointer;border-radius:var(--r-sm);transition:background var(--t),color var(--t);margin-bottom:1px;border:none}
@@ -61,7 +61,7 @@ html{overflow-x:hidden}body{font-family:"Rubik",sans-serif;background:var(--bg);
 .pri-h{background:#FFF0EB;color:#C02800;border-color:#FFCDB5}
 .pri-m{background:var(--warn-bg);color:var(--warn);border-color:var(--warn-b)}
 .pri-l{background:var(--bg);color:var(--muted);border-color:var(--border)}
-.wave-label{display:flex;align-items:center;gap:10px;margin:28px 0 14px;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted-l)}
+.wave-label{display:flex;align-items:center;gap:10px;margin:28px 0 14px;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.35)}
 .wave-label::before,.wave-label::after{content:"";flex:1;height:1px;background:var(--border)}
 .wave-pill{background:var(--navy);color:#fff;border-radius:20px;font-size:10.5px;font-weight:700;padding:4px 14px;white-space:nowrap;letter-spacing:.3px}
 .topic-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:8px}
@@ -792,7 +792,7 @@ html{overflow-x:hidden}body{font-family:"Rubik",sans-serif;background:var(--bg);
 @media(max-width:640px){
   .nav-label{font-size:10px}
   .nav-search{width:140px;min-width:0}
-  .topnav{padding:0 14px;gap:10px;height:60px}
+  .topnav{padding:0 14px;gap:10px;height:80px}
   .topic-grid{grid-template-columns:1fr}
   .content{padding:14px 12px 76px}
   .stats-row{grid-template-columns:1fr 1fr}
