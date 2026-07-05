@@ -1103,11 +1103,73 @@ function showDynamicDoc(docId){
   document.getElementById('article-content').innerHTML=html;
 
   // Add "עדכן מסמך" button
+  var btnRow=document.createElement('div');
+  btnRow.style.cssText='display:flex;gap:10px;margin:16px 0 0;max-width:680px';
+
   var updateBtn=document.createElement('button');
-  updateBtn.style.cssText='display:block;margin:16px auto 0;height:40px;padding:0 22px;background:var(--navy);color:#fff;border:none;border-radius:var(--rs);font-size:13.5px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif;width:100%;max-width:680px';
+  updateBtn.style.cssText='flex:1;height:40px;padding:0 22px;background:var(--navy);color:#fff;border:none;border-radius:var(--rs);font-size:13.5px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif';
   updateBtn.textContent='✏️ עדכן מסמך';
   updateBtn.addEventListener('click',function(){ nbEditDoc(docId); });
-  document.getElementById('article-content').appendChild(updateBtn);
+
+  var deleteBtn=document.createElement('button');
+  deleteBtn.style.cssText='flex:1;height:40px;padding:0 22px;background:#fff;color:var(--red);border:2px solid var(--red);border-radius:var(--rs);font-size:13.5px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif';
+  deleteBtn.textContent='🗑 מחק מסמך';
+  deleteBtn.addEventListener('click',function(){
+    // Build custom confirm modal
+    var overlay=document.createElement('div');
+    overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;display:flex;align-items:center;justify-content:center';
+
+    var modal=document.createElement('div');
+    modal.style.cssText='background:#fff;border-radius:16px;padding:28px 24px;max-width:320px;width:90%;font-family:Rubik,sans-serif;direction:rtl;text-align:center';
+
+    var title=document.createElement('div');
+    title.style.cssText='font-size:16px;font-weight:700;color:var(--navy);margin-bottom:10px';
+    title.textContent='מחיקת תדריך';
+
+    var msg=document.createElement('div');
+    msg.style.cssText='font-size:14px;color:var(--muted);margin-bottom:24px;line-height:1.6';
+    msg.innerHTML='האם ברצונך למחוק את התדריך<br><strong style="color:var(--navy)">'+doc.topic+'</strong>?';
+
+    var btns=document.createElement('div');
+    btns.style.cssText='display:flex;gap:10px';
+
+    var yesBtn=document.createElement('button');
+    yesBtn.style.cssText='flex:1;height:40px;background:var(--red);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif';
+    yesBtn.textContent='כן, מחק';
+    yesBtn.addEventListener('click',function(){
+      overlay.remove();
+      delete window.dynamicDocs[docId];
+      var t=TOPICS.find(function(x){return x.dynId===docId;});
+      if(t){
+        if(t.desc==='תדריך שנוצר ידנית'){
+          var idx=TOPICS.indexOf(t);
+          if(idx>-1) TOPICS.splice(idx,1);
+        } else {
+          t.dynId=null;t.active=false;
+        }
+      }
+      renderLibrary('all');
+      renderHomeWaves();
+      showView('library');
+    });
+
+    var noBtn=document.createElement('button');
+    noBtn.style.cssText='flex:1;height:40px;background:#fff;color:var(--navy);border:2px solid var(--border);border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif';
+    noBtn.textContent='לא, ביטול';
+    noBtn.addEventListener('click',function(){ overlay.remove(); });
+
+    btns.appendChild(yesBtn);
+    btns.appendChild(noBtn);
+    modal.appendChild(title);
+    modal.appendChild(msg);
+    modal.appendChild(btns);
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+  });
+
+  btnRow.appendChild(updateBtn);
+  btnRow.appendChild(deleteBtn);
+  document.getElementById('article-content').appendChild(btnRow);
 
   showView('article');
   document.querySelector('#view-article .article-back').setAttribute('onclick',"showView('library')");
