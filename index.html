@@ -812,6 +812,12 @@ html{overflow-x:hidden}body{font-family:"Rubik",sans-serif;background:var(--bg);
     .label-desktop{display:none}
     .nav-label{align-self:center !important;padding-bottom:0 !important;line-height:1.2}
   }
+
+/* Hide connector line in dynamic docs */
+#article-content .step-card:not(:last-of-type)::after {
+  display: none !important;
+}
+
 </style>
 <script>
 var TOPICS=[
