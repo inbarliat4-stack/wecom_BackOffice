@@ -1061,7 +1061,9 @@ function nbAddToLibrary(docId,topic,cat,wave,linkTopicId){
   }
   // Standalone (no linked topic) — add new entry
   var newId=TOPICS.length>0?Math.max.apply(null,TOPICS.map(function(t){return t.id;}))+1:41;
-  TOPICS.push({id:newId,cat:cat,wave:wave,pri:'h',title:topic,desc:'תדריך שנוצר ידנית',active:true,dynId:docId});
+  var waveNum=parseInt(wave)||2;
+  var catKey=cat||'tech';
+  TOPICS.push({id:newId,cat:catKey,wave:waveNum,pri:'h',title:topic||'תדריך חדש',desc:'תדריך שנוצר ידנית',active:true,dynId:docId});
   renderLibrary('all');
   renderHomeWaves();
 }
