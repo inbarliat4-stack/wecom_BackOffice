@@ -1076,19 +1076,25 @@ function showDynamicDoc(docId){
 
   var stagesHtml=doc.stages.map(function(s){
     var items=s.items.map(function(item){
+      var txt=typeof item==='object'?item.text:item;
+      var img=typeof item==='object'?item.img:null;
       return '<div class="step-card fade-in">'
         +'<div class="step-num" style="background:var(--navy);width:20px;height:20px;font-size:10px">›</div>'
         +'<div class="step-content" style="margin-top:0">'
-        +'<div class="action-list" style="margin-top:0"><div class="action-item"><span class="ai-icon">›</span>'+item+'</div></div>'
+        +'<div class="action-list" style="margin-top:0"><div class="action-item"><span class="ai-icon">›</span>'+txt+'</div></div>'
+        +(img?'<img src="'+img+'" style="max-width:100%;max-height:180px;border-radius:8px;margin-top:8px;border:1px solid var(--border)">':'')
         +'</div></div>';
     }).join('');
 
+    var stageImgHtml=(s.images&&s.images.length)?s.images.map(function(img){
+      return '<div style="margin:8px 0;width:100%"><img src="'+img+'" style="width:100%;max-height:400px;object-fit:contain;border-radius:8px;border:1px solid var(--border);background:#f9f9f9;display:block"></div>';
+    }).join(''):'';
     return '<div class="step-card fade-in" style="margin-bottom:4px">'
       +'<div class="step-num red">'+s.num+'</div>'
       +'<div class="step-content">'
       +'<div class="step-title">'+s.title+'</div>'
       +'</div></div>'
-      +'<div style="padding-right:52px;margin-bottom:16px">'+items+'</div>';
+      +'<div style="padding-right:52px;margin-bottom:16px">'+items+stageImgHtml+'</div>';
   }).join('');
 
   var html='<div class="article-box">'
@@ -1192,10 +1198,15 @@ function nbEditDoc(docId){
     var def=NB_STAGES.filter(function(x){return x.num===savedStage.num;})[0];
     if(!def) return;
     savedStage.items.forEach(function(item){
-      // Check if it matches a preset option
-      var optIdx=def.options?def.options.findIndex(function(o){return o.text===item;}):-1;
-      if(optIdx>=0) nbState[def.id].picked.push(optIdx);
-      else nbState[def.id].custom.push(item);
+      var txt=typeof item==='object'?item.text:item;
+      var img=typeof item==='object'?item.img:null;
+      var optIdx=def.options?def.options.findIndex(function(o){return o.text===txt;}):-1;
+      if(optIdx>=0){
+        nbState[def.id].picked.push(optIdx);
+        if(img){if(!nbState[def.id].images)nbState[def.id].images={};nbState[def.id].images[optIdx]=img;}
+      } else {
+        nbState[def.id].custom.push(txt);
+      }
     });
     if(nbState[def.id].picked.length+nbState[def.id].custom.length>0)
       nbState[def.id].applied=true;
@@ -1468,9 +1479,8 @@ function nbPickOpt(sid,idx){
 function nbTP(el){var t=el.closest('[data-idx]');if(t)nbPickOpt(t.getAttribute('data-sid'),parseInt(t.getAttribute('data-idx')));}
 function nbRemoveImage(sid,idx){
   if(nbState[sid] && nbState[sid].images) delete nbState[sid].images[idx];
-  var uid='nb-opt-'+sid+'-'+idx;
-  var preview=document.getElementById('img-preview-'+uid);
-  if(preview) preview.innerHTML='';
+  var container=document.getElementById('nb-opt-imgs-nb-opt-'+sid+'-'+idx);
+  if(container) container.innerHTML='';
 }
 
 
@@ -1555,8 +1565,10 @@ function nbCreateDoc(){
       var st=nbState[s.id];
       if(!st.applied||s.id==='s1') return;
       var def=NB_STAGES.filter(function(x){return x.id===s.id;})[0];
-      var items=st.picked.map(function(i){return def.options[i].text;}).concat(st.custom);
-      if(items.length) stages.push({num:def.num,title:def.title,items:items});
+      var items=st.picked.map(function(i){return def.options[i].text;}).concat(st.custom.map(function(t){return {text:t,img:null};}));
+      var stageImgs2=[];
+      if(st.images) Object.keys(st.images).forEach(function(k){if(isNaN(parseInt(k)))stageImgs2.push(st.images[k]);});
+      if(items.length) stages.push({num:def.num,title:def.title,items:items,images:stageImgs2});
     });
     window.dynamicDocs[docId].topic=topic;
     window.dynamicDocs[docId].cat=cat;
@@ -1600,8 +1612,13 @@ function nbCreateDoc(){
     var st=nbState[s.id];
     if(!st.applied||s.id==='s1') return;
     var def=NB_STAGES.filter(function(x){return x.id===s.id;})[0];
-    var items=st.picked.map(function(i){return def.options[i].text;}).concat(st.custom);
-    if(items.length) stages.push({num:def.num,title:def.title,items:items});
+    var items=st.picked.map(function(i){
+      var img=(st.images&&st.images[i])||null;
+      return {text:def.options[i].text,img:img};
+    }).concat(st.custom.map(function(t){return {text:t,img:null};}));
+    var stageImgs=[];
+    if(st.images) Object.keys(st.images).forEach(function(k){if(isNaN(parseInt(k)))stageImgs.push(st.images[k]);});
+    if(items.length) stages.push({num:def.num,title:def.title,items:items,images:stageImgs});
   });
 
   window.dynamicDocs=window.dynamicDocs||{};
@@ -1645,6 +1662,74 @@ document.addEventListener('click', function(e){
   e.stopPropagation();
   nbPickOpt(sid, idx);
 });
+// ── IMAGE UPLOAD HANDLING ────────────────────────────────────────────────
+document.addEventListener('change', function(e){
+  var input = e.target;
+  if(input.type !== 'file' || !input.files[0]) return;
+  
+  var sid = input.getAttribute('data-sid');
+  var idx = input.getAttribute('data-idx');
+  if(!sid) return;
+  
+  var file = input.files[0];
+  var reader = new FileReader();
+  reader.onload = function(ev){
+    var dataUrl = ev.target.result;
+    if(!nbState[sid]) return;
+    if(!nbState[sid].images) nbState[sid].images = {};
+    
+    var key = (idx !== null && idx !== 'custom') ? parseInt(idx) : 'stage_' + Date.now();
+    nbState[sid].images[key] = dataUrl;
+    
+    // Show preview
+    var uid = 'nb-opt-' + sid + '-' + idx;
+    var previewEl = document.getElementById('nb-opt-imgs-' + uid);
+    if(previewEl){
+      var wrap = document.createElement('div');
+      wrap.style.cssText = 'position:relative;display:block;margin-top:8px;width:100%';
+      wrap.setAttribute('data-key', key);
+      var img = document.createElement('img');
+      img.src = dataUrl;
+      img.style.cssText = 'width:100%;max-height:300px;object-fit:contain;border-radius:6px;border:1px solid var(--border);display:block;background:#f9f9f9';
+      var del = document.createElement('button');
+      del.textContent = '×';
+      del.style.cssText = 'position:absolute;top:2px;right:2px;background:var(--red);color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:12px;cursor:pointer;line-height:18px;padding:0;text-align:center';
+      del.addEventListener('click', function(e){
+        e.stopPropagation();
+        delete nbState[sid].images[key];
+        wrap.remove();
+      });
+      wrap.appendChild(img);
+      wrap.appendChild(del);
+      previewEl.appendChild(wrap);
+    }
+    
+    // Stage-level image container
+    var stageImgsEl = document.getElementById('nb-imgs-' + sid);
+    if(stageImgsEl && (idx === null || idx === 'custom')){
+      var wrap2 = document.createElement('div');
+      wrap2.style.cssText = 'position:relative;display:block;margin-top:8px;width:100%';
+      var img2 = document.createElement('img');
+      img2.src = dataUrl;
+      img2.style.cssText = 'width:100%;max-height:300px;object-fit:contain;border-radius:6px;border:1px solid var(--border);display:block;background:#f9f9f9';
+      var del2 = document.createElement('button');
+      del2.textContent = '×';
+      del2.style.cssText = 'position:absolute;top:2px;right:2px;background:var(--red);color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:12px;cursor:pointer;line-height:18px;padding:0;text-align:center';
+      del2.addEventListener('click', function(e){
+        e.stopPropagation();
+        delete nbState[sid].images[key];
+        wrap2.remove();
+      });
+      wrap2.appendChild(img2);
+      wrap2.appendChild(del2);
+      stageImgsEl.appendChild(wrap2);
+    }
+    
+    input.value = ''; // allow re-select same file
+  };
+  reader.readAsDataURL(file);
+});
+
 </script>
 </head>
 <body>
