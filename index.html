@@ -1082,8 +1082,8 @@ function showDynamicDoc(docId){
         +'<div class="step-num" style="background:var(--navy);width:20px;height:20px;font-size:10px">›</div>'
         +'<div class="step-content" style="margin-top:0">'
         +'<div class="action-list" style="margin-top:0"><div class="action-item"><span class="ai-icon">›</span>'+txt+'</div></div>'
-        +(img?'<img src="'+img+'" style="max-width:100%;max-height:180px;border-radius:8px;margin-top:8px;border:1px solid var(--border)">':'')
-        +'</div></div>';
+        +'</div></div>'
+        +(img?'<div style="margin:6px 0 10px 0;width:100%"><img src="'+img+'" style="width:100%;border-radius:8px;border:1px solid var(--border);display:block"></div>':'');
     }).join('');
 
     var stageImgHtml=(s.images&&s.images.length)?s.images.map(function(img){
@@ -1347,6 +1347,33 @@ function nbRender(){
   var el=document.getElementById('nb-stages');
   if(!el) return;
   el.innerHTML=NB_STAGES.map(nbRenderStage).join('');
+  // Restore image previews from nbState
+  NB_STAGES.forEach(function(s){
+    var st=nbState[s.id];
+    if(!st||!st.images) return;
+    Object.keys(st.images).forEach(function(k){
+      var dataUrl=st.images[k];
+      var key=parseInt(k);
+      if(!isNaN(key)){
+        // Option-level image
+        var uid='nb-opt-'+s.id+'-'+k;
+        var container=document.getElementById('nb-opt-imgs-'+uid);
+        if(container && container.children.length===0){
+          var wrap=document.createElement('div');
+          wrap.style.cssText='position:relative;display:block;margin-top:8px;width:100%';
+          var img=document.createElement('img');
+          img.src=dataUrl;
+          img.style.cssText='width:100%;max-height:300px;object-fit:contain;border-radius:6px;border:1px solid var(--border);display:block;background:#f9f9f9';
+          var del=document.createElement('button');
+          del.textContent='×';
+          del.style.cssText='position:absolute;top:2px;right:2px;background:var(--red);color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:12px;cursor:pointer;line-height:18px;padding:0;text-align:center';
+          (function(sid,kk){del.addEventListener('click',function(e){e.stopPropagation();delete nbState[sid].images[kk];wrap.remove();});})(s.id,k);
+          wrap.appendChild(img);wrap.appendChild(del);
+          container.appendChild(wrap);
+        }
+      }
+    });
+  });
 }
 
 function nbRenderStage(s){
@@ -1565,7 +1592,10 @@ function nbCreateDoc(){
       var st=nbState[s.id];
       if(!st.applied||s.id==='s1') return;
       var def=NB_STAGES.filter(function(x){return x.id===s.id;})[0];
-      var items=st.picked.map(function(i){return def.options[i].text;}).concat(st.custom.map(function(t){return {text:t,img:null};}));
+      var items=st.picked.map(function(i){
+        var img2=(st.images&&st.images[i])||null;
+        return {text:def.options[i].text,img:img2};
+      }).concat(st.custom.map(function(t){return {text:t,img:null};}));
       var stageImgs2=[];
       if(st.images) Object.keys(st.images).forEach(function(k){if(isNaN(parseInt(k)))stageImgs2.push(st.images[k]);});
       if(items.length) stages.push({num:def.num,title:def.title,items:items,images:stageImgs2});
