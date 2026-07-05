@@ -82,8 +82,9 @@ html{overflow-x:hidden}body{font-family:"Rubik",sans-serif;background:var(--bg);
 .article-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
 .article-sub{font-size:13.5px;color:var(--muted)}
 .article-body{padding:16px 16px}
-.acc-section{border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:10px;background:var(--white);box-shadow:var(--shadow-sm);transition:border-color var(--t),box-shadow var(--t)}
+.acc-section{border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:4px;background:var(--white);box-shadow:var(--shadow-sm);transition:border-color var(--t),box-shadow var(--t)}
 .acc-section.open{border-color:rgba(255,61,0,.2);box-shadow:var(--shadow-md)}
+.acc-section.open .acc-body{max-height:none;overflow:visible}
 .acc-head{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--gray);cursor:pointer;user-select:none;transition:background .2s;border-bottom:1px solid transparent}
 .acc-section.open .acc-head{background:#EEF2F6;border-bottom-color:#D0DCE8}
 .acc-head:hover{background:#E5E8EB}
@@ -93,8 +94,8 @@ html{overflow-x:hidden}body{font-family:"Rubik",sans-serif;background:var(--bg);
 .acc-badges{display:flex;gap:5px;align-items:center;margin-inline-start:auto}
 .acc-chev{font-size:11px;color:var(--muted);transition:transform .3s cubic-bezier(.4,0,.2,1)}
 .acc-section.open .acc-chev{transform:rotate(180deg)}
-.acc-body{padding:0 16px;max-height:0;overflow:hidden;transition:max-height .38s cubic-bezier(.4,0,.2,1),padding .28s}
-.acc-section.open .acc-body{padding:16px;max-height:2000px}
+.acc-body{padding:0 12px;max-height:0;overflow:hidden;transition:max-height .38s cubic-bezier(.4,0,.2,1),padding .28s}
+.acc-section.open .acc-body{padding:10px 12px;max-height:none}
 .f-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:5px}
 .f-hint{font-size:12px;color:var(--muted);margin-bottom:7px;line-height:1.5}
 .f-field{margin-bottom:14px}
@@ -1239,7 +1240,7 @@ function nbExport(){
 }
 
 function nbInit(){
-  NB_STAGES.forEach(function(s){nbState[s.id]={picked:[],custom:[],applied:false,s1data:{}};});
+  NB_STAGES.forEach(function(s){nbState[s.id]={picked:[],custom:[],applied:false,s1data:{},images:{}};});
   nbRender();
 }
 
@@ -1379,16 +1380,18 @@ function nbRenderStage(s){
       +'<button onclick="nbApplyS1()" style="width:100%;height:38px;background:var(--red);color:#fff;border:none;border-radius:var(--rs);font-size:13.5px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif">✓ הוסף שלב 1 לתדריך</button>';
   } else {
     var optHtml=s.options.map(function(o,i){
-      var uid='nb-opt-'+s.id+'-'+i;
       var isPicked=st.picked.indexOf(i)!==-1;
-      var bg=isPicked?'var(--ok-bg)':'var(--gray)';
-      var bc=isPicked?'var(--ok-b)':'var(--border)';
-      var cbc=isPicked?'var(--ok)':'#ccc';
-      var cbBg=isPicked?'var(--ok)':'#fff';
-      var tick=isPicked?'&#10003;':'';
-      return '<div id="'+uid+'" class="nb-opt" data-s="'+s.id+'" data-i="'+i+'" style="display:flex;align-items:flex-start;gap:9px;background:'+bg+';border:1px solid '+bc+';border-radius:var(--rs);padding:8px 11px;cursor:pointer;user-select:none;margin-bottom:5px">'
-        +'<div id="cb-'+uid+'" style="flex-shrink:0;width:16px;height:16px;margin-top:1px;border-radius:3px;border:2px solid '+cbc+';background:'+cbBg+';display:flex;align-items:center;justify-content:center;pointer-events:none">'+tick+'</div>'
-        +'<div style="pointer-events:none"><div style="font-size:13px;color:var(--text);line-height:1.45">'+o.text+'</div>'+(o.hint?'<div style="font-size:11.5px;color:var(--muted);margin-top:2px">'+o.hint+'</div>':'')+'</div></div>';
+      var uid='nb-opt-'+s.id+'-'+i;
+      return '<div id="'+uid+'" class="nb-opt" data-s="'+s.id+'" data-i="'+i+'" style="display:flex;flex-direction:column;background:'+(isPicked?'var(--ok-bg)':'var(--gray)')+';border:1px solid '+(isPicked?'var(--ok-b)':'var(--border)')+';border-radius:var(--rs);padding:8px 11px;cursor:pointer;user-select:none;margin-bottom:5px">'
+        +'<div style="display:flex;align-items:flex-start;gap:9px">'
+        +'<div id="cb-'+uid+'" style="flex-shrink:0;width:16px;height:16px;margin-top:1px;border-radius:3px;border:2px solid '+(isPicked?'var(--ok)':'#ccc')+';background:'+(isPicked?'var(--ok)':'#fff')+';display:flex;align-items:center;justify-content:center;pointer-events:none">'+(isPicked?'&#10003;':'')+'</div>'
+        +'<div style="pointer-events:none;flex:1"><div style="font-size:13px;color:var(--text);line-height:1.45">'+o.text+'</div>'+(o.hint?'<div style="font-size:11.5px;color:var(--muted);margin-top:2px">'+o.hint+'</div>':'')+'</div>'
+        +'<label style="display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--muted);cursor:pointer;border:1px solid #F5D8A5;border-radius:5px;padding:3px 8px;background:#FFF8EE;flex-shrink:0;pointer-events:auto">'
+        +'<span style="font-size:11px;color:#E06000">📎 תמונה</span><input type="file" accept="image/*" style="display:none" data-uid="'+uid+'" data-sid="'+s.id+'" data-idx="'+i+'">'
+        +'</label>'
+        +'</div>'
+        +'<div id="nb-opt-imgs-'+uid+'" style="margin-top:4px;display:flex;flex-wrap:wrap;gap:6px"></div>'
+        +'</div>';
     }).join('');
 
     var custHtml=st.custom.length?('<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:7px;margin-top:4px">נוסף ידנית</div>'
@@ -1404,9 +1407,13 @@ function nbRenderStage(s){
       +'<div style="display:flex;gap:8px;margin-bottom:12px" id="nb-cr-'+s.id+'">'
       +'<input type="text" id="nb-inp-'+s.id+'" data-sid="'+s.id+'" placeholder="'+s.ph+'" onkeydown="if(event.keyCode===13)nbAddCustom(this.dataset.sid)" '
       +'style="flex:1;font-size:13px;height:34px;padding:0 10px;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--gray);color:var(--text);outline:none;font-family:Rubik,sans-serif;direction:rtl">'
-      +'<button data-sid="'+s.id+'" onclick="nbAddCustom(this.dataset.sid)" style="height:34px;padding:0 12px;font-size:12.5px;font-weight:500;background:var(--gray);border:1.5px solid var(--border);border-radius:var(--rs);color:var(--muted);cursor:pointer;white-space:nowrap;font-family:Rubik,sans-serif">+ הוסף</button></div>'
+      +'<label id="nb-img-lbl-'+s.id+'" style="height:34px;padding:0 12px;font-size:12.5px;font-weight:500;background:var(--gray);border:1.5px solid var(--border);border-radius:var(--rs);color:var(--muted);cursor:pointer;white-space:nowrap;font-family:Rubik,sans-serif;display:inline-flex;align-items:center;gap:5px">'
+      +'📎 תמונה<input type="file" accept="image/*" style="display:none" data-sid="'+s.id+'"></label>'
+      +'<button data-sid="'+s.id+'" onclick="nbAddCustom(this.dataset.sid)" style="height:34px;padding:0 12px;font-size:12.5px;font-weight:500;background:var(--gray);border:1.5px solid var(--border);border-radius:var(--rs);color:var(--muted);cursor:pointer;white-space:nowrap;font-family:Rubik,sans-serif">+ הוסף</button>'
+      +'</div>'
+      +'<div id="nb-imgs-'+s.id+'" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px"></div>'
       +'<button id="nb-apply-'+s.id+'" data-sid="'+s.id+'" onclick="nbApplyStage(this.dataset.sid)" '+(st.picked.length+st.custom.length===0?'disabled':'')+' '
-      +'style="width:100%;height:38px;background:var(--red);color:#fff;border:none;border-radius:var(--rs);font-size:13.5px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif;opacity:'+(st.picked.length+st.custom.length===0?'0.4':'1')+'">✓ הוסף שלב '+s.num+' לתדריך</button>';
+      +'style="width:100%;height:38px;background:#FF3D00;color:#fff;border:none;border-radius:var(--rs);font-size:13.5px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif;opacity:'+(st.picked.length+st.custom.length===0?'0.4':'1')+'">✓ הוסף שלב '+s.num+' לתדריך</button>';
   }
 
   return '<div class="acc-section '+openCls+'" id="nb-stage-'+s.id+'">'
@@ -1443,7 +1450,6 @@ function nbPickOpt(sid,idx){
   var st=nbState[sid];
   var pos=st.picked.indexOf(idx);
   if(pos===-1) st.picked.push(idx); else st.picked.splice(pos,1);
-  // Update only THIS option's visual
   var isPicked=st.picked.indexOf(idx)!==-1;
   var uid='nb-opt-'+sid+'-'+idx;
   var row=document.getElementById(uid);
@@ -1452,11 +1458,22 @@ function nbPickOpt(sid,idx){
     row.style.borderColor=isPicked?'var(--ok-b)':'var(--border)';
     var cb=document.getElementById('cb-'+uid);
     if(cb){cb.style.borderColor=isPicked?'var(--ok)':'#ccc';cb.style.background=isPicked?'var(--ok)':'#fff';cb.innerHTML=isPicked?'&#10003;':'';}
+    // Show/hide image button on option
+    var optImgLbl=document.getElementById('nb-opt-img-lbl-'+uid);
+    if(optImgLbl) optImgLbl.style.display=isPicked?'inline-flex':'none';
   }
   var btn=document.getElementById('nb-apply-'+sid);
   if(btn){btn.disabled=st.picked.length+st.custom.length===0;btn.style.opacity=btn.disabled?'0.4':'1';}
 }
 function nbTP(el){var t=el.closest('[data-idx]');if(t)nbPickOpt(t.getAttribute('data-sid'),parseInt(t.getAttribute('data-idx')));}
+function nbRemoveImage(sid,idx){
+  if(nbState[sid] && nbState[sid].images) delete nbState[sid].images[idx];
+  var uid='nb-opt-'+sid+'-'+idx;
+  var preview=document.getElementById('img-preview-'+uid);
+  if(preview) preview.innerHTML='';
+}
+
+
 function nbTogglePick(id,idx){ nbPickOpt(id,idx); }
 
 function nbAddCustom(id){
@@ -1500,6 +1517,7 @@ function nbApplyStage(id){
   var st=nbState[id];
   if(st.picked.length+st.custom.length===0) return;
   st.applied=true;
+  // images already stored in st.images
   nbRender();
   nbUpdateSummary();
 }
@@ -2253,7 +2271,7 @@ document.addEventListener('click', function(e){
 <div style="font-size:20px;font-weight:700;color:var(--navy);margin-bottom:4px">✏️ תדריך חדש</div>
 <div style="font-size:13.5px;color:var(--muted);margin-bottom:1.5rem">בחר שלבים, הוסף ידנית, ולחץ "הוסף" לאישור כל שלב</div>
 
-<div id="nb-stages"></div>
+<div id="nb-stages" style="display:flex;flex-direction:column;gap:4px"></div>
 
 <div id="nb-summary" style="display:none">
   <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-top:1.5rem">
