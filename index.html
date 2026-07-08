@@ -861,6 +861,7 @@ var TOPICS=[
   {id:38,cat:'ops',wave:2,pri:'m',title:'ניתוב והעברת שיחה',desc:'מתי להעביר, מה לתעד, מניעת העברה חוזרת'},
   {id:39,cat:'ops',wave:2,pri:'m',title:'תיאום Callback / מעקב',desc:'מתי לפתוח, SLA, עדכון לקוח, סגירת מעגל'},
   {id:40,cat:'ops',wave:3,pri:'m',title:'תלונות, הסלמות, קושי תקשורתי',desc:'לקוח מתוסכל, בקשת מנהל, מחסום שפה'},
+  {id:41,cat:'ops',wave:1,pri:'hh',title:'דיבאג נטישה',desc:'זיהוי לקוח מאותת נטישה, 3 מסלולי טיפול, תסריטי שיחה והתנגדויות',active:true,dynId:'view-churn-doc'},
 ];
 var PRI={hh:'גבוה מאוד',h:'גבוה',m:'בינוני',l:'נמוך'};
 var CAT={sim:'📶 SIM/eSIM',tech:'🔧 טכני',tech2:'🔧 טכני',billing:'💳 חיובים',plans:'📋 מסלולים',intl:'✈️ חו"ל',ops:'🎧 שיחה'};
@@ -975,7 +976,7 @@ function openArticle(id){
   var body=document.createElement('div');
   body.className='article-body';
   body.style.cssText='padding:16px;width:100%;box-sizing:border-box';
-  body.innerHTML='<div class="info-box">📝 מסמך זה עדיין לא נכתב — הוא בתיעדוף <strong>'+(WAVE[t.wave]||'')+'</strong>. לחץ "תדריך חדש" ליצירתו.</div>'
+  body.innerHTML='<div class="info-box">📝 מסמך זה עדיין לא נכתב — הוא בתיעדוף <strong>'+(WAVE[t.wave]||'')+'</strong>. לחץ "פריט ידע חדש" ליצירתו.</div>'
     +'<div style="background:var(--gray);border:1px solid var(--border);border-radius:var(--r);padding:18px">'
     +'<div class="f-label" style="margin-bottom:10px">מה צריך לכלול לפי Glance AI</div>'
     +'<div class="chk-list">'
@@ -990,7 +991,7 @@ function openArticle(id){
     +'</div></div>';
 
   var btn=document.createElement('button');
-  btn.textContent='✏️ צור תדריך חדש לנושא זה';
+  btn.textContent='✏️ צור פריט ידע חדש לנושא זה';
   btn.style.cssText='margin-top:14px;background:var(--red);color:#fff;border:none;border-radius:var(--rs);padding:10px 18px;font-family:Rubik,sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;width:100%';
   btn.addEventListener('click', function(){
     window.nbLinkToTopicId = t.id;
@@ -1028,11 +1029,11 @@ function nbShowSuccessModal(topic){
 
   var title=document.createElement('div');
   title.style.cssText='font-size:16px;font-weight:600;color:#1F2E3B;margin-bottom:8px';
-  title.textContent='התדריך נוצר בהצלחה!';
+  title.textContent='פריט הידע נוצר בהצלחה!';
 
   var desc=document.createElement('div');
   desc.style.cssText='font-size:14px;color:#6B7280;margin-bottom:20px;line-height:1.6';
-  desc.innerHTML='התדריך <strong style="color:#FF3D00">'+topic.replace(/</g,'&lt;')+'</strong> נוסף לספריית הידע.';
+  desc.innerHTML='פריט הידע <strong style="color:#FF3D00">'+topic.replace(/</g,'&lt;')+'</strong> נוסף לספריית הידע.';
 
   var btn=document.createElement('button');
   btn.style.cssText='background:#FF3D00;color:#fff;border:none;border-radius:8px;padding:10px 28px;font-size:14px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif';
@@ -1070,7 +1071,7 @@ function nbAddToLibrary(docId,topic,cat,wave,linkTopicId){
   var newId=TOPICS.length>0?Math.max.apply(null,TOPICS.map(function(t){return t.id;}))+1:41;
   var waveNum=parseInt(wave)||2;
   var catKey=cat||'tech';
-  TOPICS.push({id:newId,cat:catKey,wave:waveNum,pri:'h',title:topic||'תדריך חדש',desc:'תדריך שנוצר ידנית',active:true,dynId:docId});
+  TOPICS.push({id:newId,cat:catKey,wave:waveNum,pri:'h',title:topic||'פריט ידע חדש',desc:'פריט ידע',active:true,dynId:docId});
   renderLibrary('all');
   renderHomeWaves();
 }
@@ -1107,10 +1108,10 @@ function showDynamicDoc(docId){
     +'<div class="article-head">'
     +'<div class="article-meta"><span class="tb tb-sys">'+catLabel(doc.cat)+'</span><span class="tb tb-opt">נוצר: '+new Date().toLocaleDateString('he-IL')+'</span></div>'
     +'<div class="article-title">'+doc.topic+'</div>'
-    +'<div class="article-sub">תדריך שנוצר ידנית דרך מנהלת הידע</div>'
+    +'<div class="article-sub">פריט ידע דרך מנהלת הידע</div>'
     +'</div>'
     +'<div class="article-body">'
-    +(doc.stages.length?stagesHtml:'<div class="info-box">לא נבחרו שלבים לתדריך זה.</div>')
+    +(doc.stages.length?stagesHtml:'<div class="info-box">לא נבחרו שלבים לפריט הידע זה.</div>')
     +'</div></div>';
 
   document.getElementById('article-content').innerHTML=html;
@@ -1121,12 +1122,12 @@ function showDynamicDoc(docId){
 
   var updateBtn=document.createElement('button');
   updateBtn.style.cssText='flex:1;height:40px;padding:0 22px;background:var(--navy);color:#fff;border:none;border-radius:var(--rs);font-size:13.5px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif';
-  updateBtn.textContent='✏️ עדכן מסמך';
+  updateBtn.textContent='✏️ עדכן פריט ידע';
   updateBtn.addEventListener('click',function(){ nbEditDoc(docId); });
 
   var deleteBtn=document.createElement('button');
   deleteBtn.style.cssText='flex:1;height:40px;padding:0 22px;background:#fff;color:var(--red);border:2px solid var(--red);border-radius:var(--rs);font-size:13.5px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif';
-  deleteBtn.textContent='🗑 מחק מסמך';
+  deleteBtn.textContent='🗑 מחק פריט ידע';
   deleteBtn.addEventListener('click',function(){
     // Build custom confirm modal
     var overlay=document.createElement('div');
@@ -1137,11 +1138,11 @@ function showDynamicDoc(docId){
 
     var title=document.createElement('div');
     title.style.cssText='font-size:16px;font-weight:700;color:var(--navy);margin-bottom:10px';
-    title.textContent='מחיקת תדריך';
+    title.textContent='מחיקת פריט ידע';
 
     var msg=document.createElement('div');
     msg.style.cssText='font-size:14px;color:var(--muted);margin-bottom:24px;line-height:1.6';
-    msg.innerHTML='האם ברצונך למחוק את התדריך<br><strong style="color:var(--navy)">'+doc.topic+'</strong>?';
+    msg.innerHTML='האם ברצונך למחוק את פריט הידע<br><strong style="color:var(--navy)">'+doc.topic+'</strong>?';
 
     var btns=document.createElement('div');
     btns.style.cssText='display:flex;gap:10px';
@@ -1154,7 +1155,7 @@ function showDynamicDoc(docId){
       delete window.dynamicDocs[docId];
       var t=TOPICS.find(function(x){return x.dynId===docId;});
       if(t){
-        if(t.desc==='תדריך שנוצר ידנית'){
+        if(t.desc==='פריט ידע'){
           var idx=TOPICS.indexOf(t);
           if(idx>-1) TOPICS.splice(idx,1);
         } else {
@@ -1283,7 +1284,7 @@ function initObservers(){
 }
 
 var NB_STAGES = [
-  {id:'s1',num:'1',req:true,title:'זיהוי ותיאור התדריך',sub:'נושא, סוג, קטגוריה, גל',type:'fields'},
+  {id:'s1',num:'1',req:true,title:'זיהוי ותיאור פריט הידע',sub:'נושא, סוג, קטגוריה, גל',type:'fields'},
   {id:'s2',num:'2',req:true,title:'שאלות בירור ראשוניות',sub:'מהות, משך, מיקום',options:[
     {text:'מה בדיוק לא עובד?',hint:'→ מכווין למסלול הנכון'},
     {text:'מתי זה התחיל?',hint:'→ נקודתי vs מתמשך'},
@@ -1394,7 +1395,7 @@ function nbRenderStage(s){
   var bodyHtml='';
   if(s.type==='fields'){
     var d=st.s1data;
-    bodyHtml='<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:5px">נושא התדריך</div>'
+    bodyHtml='<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:5px">נושא פריט הידע</div>'
       +'<textarea style="width:100%;border:1.5px solid var(--border);border-radius:var(--rs);padding:8px 11px;font-family:Rubik,sans-serif;font-size:13.5px;color:var(--text);background:var(--gray);outline:none;height:40px;resize:none;direction:rtl" id="nb-s1-topic" placeholder="לדוגמה: הפעלת eSIM – קוד QR">'+(d.topic||'')+'</textarea></div>'
       +'<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:5px">תיאור</div>'
       +'<textarea style="width:100%;border:1.5px solid var(--border);border-radius:var(--rs);padding:8px 11px;font-family:Rubik,sans-serif;font-size:13.5px;color:var(--text);background:var(--gray);outline:none;resize:vertical;min-height:70px;direction:rtl" id="nb-s1-desc" placeholder="במה עוסק, מה פותר, מתי להשתמש…">'+(d.desc||'')+'</textarea></div>'
@@ -1421,7 +1422,7 @@ function nbRenderStage(s){
       }).join('')+'</div></div>'
       +'<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:5px">תגיות לחיפוש</div>'
       +'<textarea style="width:100%;border:1.5px solid var(--border);border-radius:var(--rs);padding:8px 11px;font-family:Rubik,sans-serif;font-size:13.5px;color:var(--text);background:var(--gray);outline:none;height:40px;resize:none;direction:rtl" id="nb-s1-tags" placeholder="לדוגמה: eSIM, QR, הפעלה…">'+(d.tags||'')+'</textarea></div>'
-      +'<button onclick="nbApplyS1()" style="width:100%;height:38px;background:var(--red);color:#fff;border:none;border-radius:var(--rs);font-size:13.5px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif">✓ הוסף שלב 1 לתדריך</button>';
+      +'<button onclick="nbApplyS1()" style="width:100%;height:38px;background:var(--red);color:#fff;border:none;border-radius:var(--rs);font-size:13.5px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif">✓ הוסף שלב 1 לפריט הידע</button>';
   } else {
     var optHtml=s.options.map(function(o,i){
       var isPicked=st.picked.indexOf(i)!==-1;
@@ -1457,7 +1458,7 @@ function nbRenderStage(s){
       +'</div>'
       +'<div id="nb-imgs-'+s.id+'" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px"></div>'
       +'<button id="nb-apply-'+s.id+'" data-sid="'+s.id+'" onclick="nbApplyStage(this.dataset.sid)" '+(st.picked.length+st.custom.length===0?'disabled':'')+' '
-      +'style="width:100%;height:38px;background:#FF3D00;color:#fff;border:none;border-radius:var(--rs);font-size:13.5px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif;opacity:'+(st.picked.length+st.custom.length===0?'0.4':'1')+'">✓ הוסף שלב '+s.num+' לתדריך</button>';
+      +'style="width:100%;height:38px;background:#FF3D00;color:#fff;border:none;border-radius:var(--rs);font-size:13.5px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif;opacity:'+(st.picked.length+st.custom.length===0?'0.4':'1')+'">✓ הוסף שלב '+s.num+' לפריט הידע</button>';
   }
 
   return '<div class="acc-section '+openCls+'" id="nb-stage-'+s.id+'">'
@@ -1684,9 +1685,88 @@ function nbCreateDoc(){
 var nbState={};
 NB_STAGES.forEach(function(s){nbState[s.id]={picked:[],custom:[],applied:false,s1data:{}};});
 
+
+// ── PDF KNOWLEDGE ITEMS ─────────────────────────────────────────────────
+window.dynamicDocs = window.dynamicDocs || {};
+
+// ביטול חוסך נתונים
+window.dynamicDocs['pdf_001'] = {"id": "pdf_001", "topic": "ביטול חוסך נתונים", "cat": "tech", "wave": 1, "docType": "tech", "stages": [{"num": "1", "title": "זיהוי הבעיה", "items": [{"text": "אם גלישה מוגבלת רק באפליקציות מסוימות — הבעיה בהגדרת מכשיר, לא ברשת", "img": null}]}, {"num": "2", "title": "ביטול חוסך נתונים לפי יצרן", "items": [{"text": "Samsung: הגדרות ← חיבורים ← שימוש בנתונים ← חוסך נתונים ← ביטול", "img": null}, {"text": "Xiaomi: הגדרות ← חיבורים ושיתוף ← שימוש בנתונים ← חוסך נתונים ← ביטול", "img": null}, {"text": "iPhone: הגדרות ← סלולר ← אפשרויות נתונים ← מצב נתונים מופחת ← ביטול", "img": null}, {"text": "Google Pixel: הגדרות ← רשת ואינטרנט ← חוסך נתונים ← ביטול", "img": null}]}, {"num": "3", "title": "אפליקציה ספציפית לא גולשת", "items": [{"text": "הגדרות ← אפליקציות ← [בחר אפליקציה] ← שימוש בנתונים ← אפשר נתונים ברקע", "img": null}]}]};
+(function(){
+  var t = TOPICS.find(function(x){ return x.id === 12; });
+  if(t) { t.dynId = 'pdf_001'; t.active = true; }
+})();
+
+// בעיות קליטה בארץ – שיחות וגלישה
+window.dynamicDocs['pdf_002'] = {"id": "pdf_002", "topic": "בעיות קליטה בארץ – שיחות וגלישה", "cat": "tech", "wave": 1, "docType": "tech", "stages": [{"num": "1", "title": "שלב מקדים לנציג", "items": [{"text": "לוודא VoLTE פעיל במנוי", "img": null}, {"text": "לוודא שמצב \"נא לא להפריע\" כבוי", "img": null}, {"text": "iPhone ← לבצע איפוס הגדרות רשת", "img": null}]}, {"num": "2", "title": "שאלות חובה — שלב מברר", "items": [{"text": "האם התקלה בנסיעה או במקום קבוע?", "img": null}, {"text": "מתי התחילה הבעיה?", "img": null}, {"text": "שיחות מתנתקות, איכות ירודה, או קושי להוציא/לקבל?", "img": null}, {"text": "במקום קבוע — זה בכל הבית/משרד או רק מקום מסוים?", "img": null}, {"text": "יש עוד אנשים סביבך שחווים את אותה בעיה?", "img": null}]}, {"num": "3", "title": "תרחיש 1: בנסיעה", "items": [{"text": "מתמשך (מעל שבועיים): תיאום ציפיות — טבעי ברשת סלולרית", "img": null}, {"text": "חדש (עד שבועיים): להעביר לבדיקה עם כתובת מדויקת ← הנדסה", "img": null}]}, {"num": "4", "title": "תרחיש 2: במקום קבוע", "items": [{"text": "ירוק במפת כיסוי: לבדוק אם אתר מופיע כנפול עם צפי לתיקון", "img": null}, {"text": "אדום במפת כיסוי: תיאום ציפיות — אין כיסוי מתוכנן באזור", "img": null}]}]};
+(function(){
+  var t = TOPICS.find(function(x){ return x.id === 14; });
+  if(t) { t.dynId = 'pdf_002'; t.active = true; }
+})();
+
+// הבדל בין VoLTE ל-Wi-Fi Calling
+window.dynamicDocs['pdf_003'] = {"id": "pdf_003", "topic": "הבדל בין VoLTE ל-Wi-Fi Calling", "cat": "tech", "wave": 2, "docType": "tech", "stages": [{"num": "1", "title": "VoLTE — Voice over LTE", "items": [{"text": "עובד דרך רשת סלולרית 4G LTE", "img": null}, {"text": "דורש קליטה סלולרית — לא עובד ללא קליטה", "img": null}, {"text": "מצב אידאלי: כשיש קליטת 4G מלאה", "img": null}, {"text": "הפעלה: גם בקו (CRM) וגם במכשיר", "img": null}]}, {"num": "2", "title": "Wi-Fi Calling", "items": [{"text": "עובד דרך רשת Wi-Fi — לא דורש קליטה סלולרית", "img": null}, {"text": "מצב אידאלי: כשאין קליטה אבל יש Wi-Fi", "img": null}, {"text": "רק במכשירים מסוימים שהספק תומך בהם", "img": null}, {"text": "הפעלה: גם בקו וגם במכשיר", "img": null}]}]};
+(function(){
+  var t = TOPICS.find(function(x){ return x.id === 17; });
+  if(t) { t.dynId = 'pdf_003'; t.active = true; }
+})();
+
+// לקוח לא מוצא רשת בחו"ל
+window.dynamicDocs['pdf_004'] = {"id": "pdf_004", "topic": "לקוח לא מוצא רשת בחו\"ל", "cat": "intl", "wave": 1, "docType": "tech", "stages": [{"num": "1", "title": "בדיקת CRM", "items": [{"text": "האם למנוי שירות נדידה פעיל?", "img": null}, {"text": "אם לא פעיל — להפעיל ולעדכן לקוח", "img": null}]}, {"num": "2", "title": "iPhone — פעולות", "items": [{"text": "נדידת נתונים: הגדרות ← סלולר ← אפשרויות נתונים ← נתונים בנדידה", "img": null}, {"text": "בחירת רשת אוטומטית: הגדרות ← סלולר ← בחירת רשת ← אוטומטי", "img": null}, {"text": "בחירת רשת ידנית מקובץ מפעילים בחו\"ל, לאחר רישום תקין החזר לאוטומטי", "img": null}, {"text": "כיבוי והדלקה — המתן 2 דקות. עדיין לא תקין → מומחה טכני", "img": null}]}, {"num": "3", "title": "Samsung — פעולות", "items": [{"text": "נדידת נתונים: הגדרות ← חיבורים ← רשתות סלולריות ← נדידת נתונים", "img": null}, {"text": "בחירת רשת אוטומטית: הגדרות ← חיבורים ← מפעילי רשת ← אוטומטי", "img": null}, {"text": "בחירה ידנית מקובץ מפעילים, לאחר רישום החזר לאוטומטי", "img": null}]}]};
+(function(){
+  var t = TOPICS.find(function(x){ return x.id === 35; });
+  if(t) { t.dynId = 'pdf_004'; t.active = true; }
+})();
+
+// מדריך איפוס הגדרות רשת
+window.dynamicDocs['pdf_005'] = {"id": "pdf_005", "topic": "מדריך איפוס הגדרות רשת", "cat": "tech", "wave": 2, "docType": "tech", "stages": [{"num": "1", "title": "השלכות — להסביר ללקוח מראש", "items": [{"text": "מחיקת סיסמאות Wi-Fi שמורות", "img": null}, {"text": "מחיקת התקני Bluetooth (אוזניות, רמקול, שעון, מערכת ברכב)", "img": null}, {"text": "עלול למחוק הגדרות APN — לבדוק גלישה מיד אחרי האיפוס", "img": null}]}, {"num": "2", "title": "איפוס לפי סוג מכשיר", "items": [{"text": "Samsung: הגדרות ← ניהול כללי ← אפס ← אפס הגדרות רשת", "img": null}, {"text": "iPhone: הגדרות ← כללי ← העברת תוכן או אפס ← אפס הגדרות רשת", "img": null}, {"text": "Xiaomi: הגדרות ← חיבור ושיתוף ← איפוס Wi-Fi נייד ו-Bluetooth", "img": null}, {"text": "Huawei: הגדרות ← מערכת ← אפס ← אפס הגדרות רשת", "img": null}, {"text": "OnePlus: הגדרות ← מערכת ← אפשרויות איפוס ← אפס הגדרות רשת", "img": null}, {"text": "Google Pixel: הגדרות ← מערכת ← מתקדם ← אפשרויות איפוס ← אפס Wi-Fi ורשת", "img": null}]}]};
+(function(){
+  var t = TOPICS.find(function(x){ return x.id === 20; });
+  if(t) { t.dynId = 'pdf_005'; t.active = true; }
+})();
+
+// תסריטי שיחה למכירות
+window.dynamicDocs['pdf_006'] = {"id": "pdf_006", "topic": "תסריטי שיחה למכירות", "cat": "ops", "wave": 2, "docType": "tech", "stages": [{"num": "1", "title": "התנגדות למחיר", "items": [{"text": "\"אני מבין אותך. מה שאתה מקבל כאן שווה הרבה יותר מהשורה בחשבונית: קליטה, מהירות, שירות אישי, ואחריות מהרגע שאתה מצטרף\"", "img": null}, {"text": "עוגן: \"יש זול — ויש חכם. מה שאתה מקבל פה זה גם שקט נפשי, לא רק סים\"", "img": null}]}, {"num": "2", "title": "תגובות לבעיות כיסוי", "items": [{"text": "\"אנחנו בפריסה מתקדמת ומתרחבת. במקומות שיש קליטת דור 5 — החוויה שלך תהיה ברמה אחרת\"", "img": null}, {"text": "עוגן: \"אתה לא מתחייב לדור 5 בלבד — יש גם קליטה מלאה בדור 4\"", "img": null}]}, {"num": "3", "title": "שיתוף אנטנות", "items": [{"text": "\"שיתוף הרשתות הוא יתרון — אתה מקבל תשתית של רשת גדולה, עם התנאים שאנחנו נותנים\"", "img": null}, {"text": "עוגן: \"הכי טוב משני העולמות — תשתית חזקה, בלי לאבד את היחס האישי\"", "img": null}]}]};
+(function(){
+  var t = TOPICS.find(function(x){ return x.id === 40; });
+  if(t) { t.dynId = 'pdf_006'; t.active = true; }
+})();
+
+// דיבאג תקלות שיחות נכנסות / יוצאות
+window.dynamicDocs['pdf_007'] = {"id": "pdf_007", "topic": "דיבאג תקלות שיחות נכנסות / יוצאות", "cat": "tech", "wave": 1, "docType": "tech", "stages": [{"num": "1", "title": "שלב 1 — בירור ראשוני", "items": [{"text": "האם התקלה בכל השיחות או רק מול מספרים מסוימים?", "img": null}, {"text": "האם בכל מקום או רק אזור מסוים?", "img": null}, {"text": "שיחות יוצאות / נכנסות / שתיהן? מתי התחילה?", "img": null}]}, {"num": "2", "title": "שלב 2 — בדיקות CRM חובה", "items": [{"text": "סטטוס קו — פעיל, לא מושהה", "img": null}, {"text": "חוב או חסימה כספית", "img": null}, {"text": "ניוד — האם הושלם", "img": null}, {"text": "חסימות שירות — שיחות יוצאות/נכנסות", "img": null}, {"text": "VoLTE — מאופשר בקו", "img": null}, {"text": "תקלות מערכת — בדוק תקלות אזוריות", "img": null}]}, {"num": "3", "title": "שלב 3 — בדיקות במכשיר", "items": [{"text": "מצב טיסה — כיבוי והדלקה", "img": null}, {"text": "סוג רשת — 4G/5G (לא 2G/3G)", "img": null}, {"text": "VoLTE: Android: הגדרות ← חיבורים ← שיחות VoLTE | iOS: הגדרות ← סלולר ← VoLTE", "img": null}, {"text": "eSIM — ניהול SIM: ודא פרופיל פעיל, חייג *#06# לבדיקת EID", "img": null}, {"text": "חסימות מקומיות — \"נא לא להפריע\", מספרים חסומים", "img": null}]}]};
+(function(){
+  var t = TOPICS.find(function(x){ return x.id === 15; });
+  if(t) { t.dynId = 'pdf_007'; t.active = true; }
+})();
+
+// קושי בקבלת שיחה ממספר מסוים
+window.dynamicDocs['pdf_008'] = {"id": "pdf_008", "topic": "קושי בקבלת שיחה ממספר מסוים", "cat": "tech", "wave": 2, "docType": "tech", "stages": [{"num": "1", "title": "שלב 1 — בירור", "items": [{"text": "מספר אחד או כמה מספרים?", "img": null}, {"text": "לא מתקבלת כלל, או מצלצל ויורד?", "img": null}, {"text": "קורה בכל מקום ובכל זמן?", "img": null}]}, {"num": "2", "title": "שלב 2 — CRM", "items": [{"text": "קו פעיל, אין חסימת שיחות נכנסות", "img": null}, {"text": "אין הפניית שיחות כללית או למספר שגוי", "img": null}, {"text": "תקלות מערכתיות באזור הלקוח", "img": null}]}, {"num": "3", "title": "שלב 3 — בדיקות מכשיר", "items": [{"text": "חסימה ידנית: הגדרות ← טלפון ← מספרים חסומים ← הסר", "img": null}, {"text": "מצב DND (נא לא להפריע) — לבדוק אם פעיל", "img": null}, {"text": "חסימת מספרים לא מזוהים — לבטל זמנית לבדיקה", "img": null}]}, {"num": "4", "title": "שלב 4 — אפליקציות צד ג'", "items": [{"text": "Truecaller / CallApp — לכבות זמנית ולבדוק", "img": null}, {"text": "אם נפתר — להגדיר מחדש או להחליף", "img": null}]}]};
+(function(){
+  var t = TOPICS.find(function(x){ return x.id === 16; });
+  if(t) { t.dynId = 'pdf_008'; t.active = true; }
+})();
+
+// תקלה בשליחת / קבלת SMS
+window.dynamicDocs['pdf_009'] = {"id": "pdf_009", "topic": "תקלה בשליחת / קבלת SMS", "cat": "tech", "wave": 2, "docType": "tech", "stages": [{"num": "1", "title": "בדיקות ראשוניות", "items": [{"text": "CRM — קו פעיל, אין חסימת הודעות, אין חוב", "img": null}, {"text": "בדיקת קליטה ושיחות — אם אין קליטה → דיבאג קליטה", "img": null}]}, {"num": "2", "title": "Android — בדיקת SMSC", "items": [{"text": "לבדוק אם מרכז שירות הודעות (SMSC) מוגדר", "img": null}, {"text": "אם ריק — לעדכן לערך ברירת המחדל של החברה", "img": null}, {"text": "MMS לא יוצא — לבדוק חבילת גלישה / הגדרות APN", "img": null}]}, {"num": "3", "title": "כל המכשירים", "items": [{"text": "לבצע איפוס הגדרות רשת", "img": null}, {"text": "בדיקה עם SIM חלופי / מכשיר חלופי", "img": null}, {"text": "לא עובד גם שם → להסלים לאנליסט/הנדסה", "img": null}]}]};
+(function(){
+  var t = TOPICS.find(function(x){ return x.id === 18; });
+  if(t) { t.dynId = 'pdf_009'; t.active = true; }
+})();
+
+// תקלת גלישה בחו"ל
+window.dynamicDocs['pdf_010'] = {"id": "pdf_010", "topic": "תקלת גלישה בחו\"ל", "cat": "intl", "wave": 1, "docType": "tech", "stages": [{"num": "1", "title": "בדיקות מערכתיות — CRM + חבילות", "items": [{"text": "בדוק חסימת גלישה", "img": null}, {"text": "בדוק שהלקוח פתוח לנדידה ב-CRM", "img": null}, {"text": "ודא שחבילת חו\"ל תואמת ליעד", "img": null}, {"text": "בדוק תאריכי החבילה ושהלקוח לא סיים אותה", "img": null}]}, {"num": "2", "title": "תרחישי טיפול", "items": [{"text": "ניצל חבילה → הנחה לרכוש חבילה נוספת", "img": null}, {"text": "חבילה לא תואמת → ברר היכן נמצא וכיסוי", "img": null}, {"text": "תקלת תאריכים / חסימה → תקן ב-CRM", "img": null}]}, {"num": "3", "title": "Android — אם עדיין לא גולש", "items": [{"text": "כבה Wi-Fi, הפעל נתונים ניידים ונדידת נתונים", "img": null}, {"text": "ודא מצב רשת אוטומטי (דור 4/5)", "img": null}]}]};
+(function(){
+  var t = TOPICS.find(function(x){ return x.id === 34; });
+  if(t) { t.dynId = 'pdf_010'; t.active = true; }
+})();
+
 document.addEventListener("DOMContentLoaded", function(){
   initObservers();
   nbRender();
+  // Initialize all PDF docs
+  window.dynamicDocs = window.dynamicDocs || {};
+  window.dynamicDocs['view-churn-doc'] = {id:'view-churn-doc',topic:'דיבאג נטישה',cat:'ops',wave:1,docType:'churn',stages:[],_isViewDoc:'churn'};
+  var churnTopic = TOPICS.find(function(x){ return x.id === 29; });
+  if(churnTopic) { churnTopic.dynId = 'view-churn-doc'; churnTopic.active = true; }
   renderHomeWaves();
 });
 
@@ -1792,7 +1872,7 @@ document.addEventListener('change', function(e){
     <div class="snav-title">ראשי</div>
     <div class="snav-item active" id="snav-home" onclick="showView('home')"><span class="snav-icon">🏠</span> דף הבית</div>
     <div class="snav-item" id="snav-library" onclick="showView('library')"><span class="snav-icon">📚</span> ספריית ידע <span class="snav-badge">40</span></div>
-    <div class="snav-item" id="snav-new" onclick="showView('new')"><span class="snav-icon">✏️</span> תדריך חדש</div>
+    <div class="snav-item" id="snav-new" onclick="showView('new')"><span class="snav-icon">✏️</span> פריט ידע חדש</div>
   </div>
   <div class="snav-section">
     <div class="snav-title">קטגוריות</div>
@@ -2395,17 +2475,17 @@ document.addEventListener('change', function(e){
 <div id="view-new" class="view">
 <div style="max-width:680px;margin:0 auto;padding:24px 20px 80px;direction:rtl;font-family:'Rubik',sans-serif">
 
-<div style="font-size:20px;font-weight:700;color:var(--navy);margin-bottom:4px">✏️ תדריך חדש</div>
+<div style="font-size:20px;font-weight:700;color:var(--navy);margin-bottom:4px">✏️ פריט ידע חדש</div>
 <div style="font-size:13.5px;color:var(--muted);margin-bottom:1.5rem">בחר שלבים, הוסף ידנית, ולחץ "הוסף" לאישור כל שלב</div>
 
 <div id="nb-stages" style="display:flex;flex-direction:column;gap:4px"></div>
 
 <div id="nb-summary" style="display:none">
   <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-top:1.5rem">
-    <div style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border)">סיכום התדריך שנבנה</div>
+    <div style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border)">סיכום פריט הידע שנבנה</div>
     <div id="nb-sum-content"></div>
     <div style="display:flex;gap:8px;margin-top:14px">
-    <button onclick="nbCreateDoc()" style="flex:2;height:42px;background:var(--red);color:#fff;border:none;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;font-family:'Rubik',sans-serif">✚ צור תדריך חדש</button>
+    <button onclick="nbCreateDoc()" style="flex:2;height:42px;background:var(--red);color:#fff;border:none;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;font-family:'Rubik',sans-serif">✚ צור פריט ידע חדש</button>
     <button onclick="nbExport()" style="flex:1;height:42px;border:1px solid var(--border);background:var(--gray);border-radius:var(--rs);font-size:13px;color:var(--muted);cursor:pointer;font-family:'Rubik',sans-serif">ייצוא JSON</button>
   </div>
   </div>
