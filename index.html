@@ -1361,6 +1361,8 @@ function nbRender(){
   var el=document.getElementById('nb-stages');
   if(!el) return;
   el.innerHTML=NB_STAGES.map(nbRenderStage).join('');
+  // Update summary
+  nbUpdateSummary();
   // Restore image previews from nbState
   NB_STAGES.forEach(function(s){
     var st=nbState[s.id];
@@ -1474,7 +1476,12 @@ function nbRenderStage(s){
     +'<div style="flex:1;min-width:0"><div class="acc-title">'+s.title+'</div><div style="font-size:12px;color:var(--muted);margin-top:1px">'+s.sub+'</div></div>'
     +'<div style="display:flex;align-items:center;gap:8px;flex-shrink:0">'+tagHtml+'<span class="acc-chev">▼</span></div>'
     +'</div>'
-    +(st.applied && !isOpen ? appliedPreview : '')
+    +(st.applied && !isOpen ? (function(){
+      var previewItems = s.id==='s1'
+        ? (st.s1data&&st.s1data.topic ? '<div style="font-size:12px;color:var(--muted);padding:6px 16px">נושא: '+st.s1data.topic+'</div>' : '')
+        : '<div style="font-size:12px;color:var(--muted);padding:6px 16px">'+(st.picked.length+st.custom.length)+' פריטים נבחרו</div>';
+      return previewItems;
+    })() : '')
     +'<div class="acc-body" style="padding:'+(openCls==='open'?'16px':'0 16px')+'">'+bodyHtml+'</div>'
     +'</div>';
 }
@@ -1516,6 +1523,7 @@ function nbPickOpt(sid,idx){
   }
   var btn=document.getElementById('nb-apply-'+sid);
   if(btn){btn.disabled=st.picked.length+st.custom.length===0;btn.style.opacity=btn.disabled?'0.4':'1';}
+  nbUpdateSummary();
 }
 function nbTP(el){var t=el.closest('[data-idx]');if(t)nbPickOpt(t.getAttribute('data-sid'),parseInt(t.getAttribute('data-idx')));}
 function nbRemoveImage(sid,idx){
@@ -1574,11 +1582,11 @@ function nbApplyStage(id){
 }
 
 function nbUpdateSummary(){
-  var any=NB_STAGES.some(function(s){return nbState[s.id].applied;});
   var box=document.getElementById('nb-summary');
-  if(box) box.style.display=any?'block':'none';
-  if(!any) return;
-  var html=NB_STAGES.filter(function(s){return nbState[s.id].applied;}).map(function(s){
+  var html=NB_STAGES.filter(function(s){
+    var st=nbState[s.id];
+    return st.applied || (s.id==='s1'&&st.s1data&&st.s1data.topic) || (st.picked&&st.picked.length>0) || (st.custom&&st.custom.length>0);
+  }).map(function(s){
     var st=nbState[s.id];
     var def=NB_STAGES.filter(function(x){return x.id===s.id;})[0];
     var items=[];
@@ -2557,7 +2565,7 @@ document.addEventListener('change', function(e){
   <button onclick="nbExport()" style="flex:1;height:42px;border:1px solid var(--border);background:var(--gray);border-radius:var(--rs);font-size:13px;color:var(--muted);cursor:pointer;font-family:'Rubik',sans-serif">ייצוא JSON</button>
 </div>
 
-<div id="nb-summary" style="display:none">
+<div id="nb-summary">
   <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-top:1.5rem">
     <div style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border)">סיכום פריט הידע שנבנה</div>
     <div id="nb-sum-content"></div>
