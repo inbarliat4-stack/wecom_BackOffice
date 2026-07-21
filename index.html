@@ -2552,6 +2552,11 @@ document.addEventListener('change', function(e){
 
 <div id="nb-stages" style="display:flex;flex-direction:column;gap:4px"></div>
 
+<div id="nb-create-bar" style="margin-top:16px;padding:12px;background:var(--white);border:1px solid var(--border);border-radius:var(--r);display:flex;gap:8px">
+  <button onclick="nbCreateDoc()" style="flex:2;height:42px;background:var(--red);color:#fff;border:none;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;font-family:'Rubik',sans-serif">✚ צור פריט ידע</button>
+  <button onclick="nbExport()" style="flex:1;height:42px;border:1px solid var(--border);background:var(--gray);border-radius:var(--rs);font-size:13px;color:var(--muted);cursor:pointer;font-family:'Rubik',sans-serif">ייצוא JSON</button>
+</div>
+
 <div id="nb-summary" style="display:none">
   <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-top:1.5rem">
     <div style="font-size:14px;font-weight:600;color:var(--navy);margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border)">סיכום פריט הידע שנבנה</div>
