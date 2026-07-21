@@ -83,7 +83,11 @@ html{overflow-x:hidden}body{font-family:"Rubik",sans-serif;background:var(--bg);
 .article-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
 .article-sub{font-size:13.5px;color:var(--muted)}
 .article-body{padding:16px 16px}
-.acc-section{border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:4px;background:var(--white);box-shadow:var(--shadow-sm);transition:border-color var(--t),box-shadow var(--t)}
+.acc-section{border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:4px;background:var(--white);box-shadow:var(--shadow-sm);transition:border-color var(--t),box-shadow var(--t),opacity var(--t)}
+.acc-section.dragging{opacity:.35}
+.acc-section.drag-over{border-color:var(--red);box-shadow:0 0 0 2px rgba(255,61,0,.18)}
+.stage-drag-handle{cursor:grab;font-size:15px;line-height:1;color:var(--muted-l);padding:4px 3px;user-select:none;flex-shrink:0;letter-spacing:-2px}
+.stage-drag-handle:active{cursor:grabbing}
 .acc-section.open{border-color:rgba(255,61,0,.2);box-shadow:var(--shadow-md)}
 .acc-section.open .acc-body{max-height:none;overflow:visible}
 .acc-head{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--gray);cursor:pointer;user-select:none;transition:background .2s;border-bottom:1px solid transparent}
@@ -1207,13 +1211,15 @@ function nbEditDoc(docId){
   // Reset form state
   NB_STAGES.forEach(function(s){ nbState[s.id]={picked:[],custom:[],applied:false,s1data:{}}; });
   nbCustomStages=[];
+  nbStageOrder=['s1'];
 
   // Restore s1 data
   nbState['s1'].s1data={topic:doc.topic,cat:doc.cat,wave:String(doc.wave),type:doc.docType};
   nbState['s1'].applied=true;
 
   // Restore stage selections (rebuilding any custom, user-created stages
-  // that don't match one of the fixed NB_STAGES definitions)
+  // that don't match one of the fixed NB_STAGES definitions), preserving
+  // the order the stages were saved in
   doc.stages.forEach(function(savedStage){
     var def=NB_STAGES.filter(function(x){return x.num===savedStage.num;})[0];
     if(!def){
@@ -1222,6 +1228,7 @@ function nbEditDoc(docId){
       nbCustomStages.push(def);
       nbState[def.id]={picked:[],custom:[],applied:false,s1data:{},images:{}};
     }
+    nbStageOrder.push(def.id);
     savedStage.items.forEach(function(item){
       var txt=typeof item==='object'?item.text:item;
       var img=typeof item==='object'?item.img:null;
@@ -1264,11 +1271,12 @@ function catLabel(cat){
 
 function nbExport(){
   var out={};
-  nbGetAllStages().forEach(function(s){
-    if(!nbState[s.id].applied) return;
-    var def=nbGetAllStages().filter(function(x){return x.id===s.id;})[0];
-    var st=nbState[s.id];
-    out['שלב '+def.num+' – '+def.title]=s.id==='s1'?st.s1data:st.picked.map(function(i){return def.options[i].text;}).concat(st.custom);
+  nbGetStageOrder().forEach(function(sid){
+    if(!nbState[sid].applied) return;
+    var def=nbGetAllStages().filter(function(x){return x.id===sid;})[0];
+    if(!def) return;
+    var st=nbState[sid];
+    out['שלב '+def.num+' – '+def.title]=sid==='s1'?st.s1data:st.picked.map(function(i){return def.options[i].text;}).concat(st.custom);
   });
   var a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([JSON.stringify(out,null,2)],{type:'application/json'}));
@@ -1278,6 +1286,7 @@ function nbExport(){
 function nbInit(){
   NB_STAGES.forEach(function(s){nbState[s.id]={picked:[],custom:[],applied:false,s1data:{},images:{}};});
   nbCustomStages=[];
+  nbStageOrder=[];
   nbRender();
 }
 
@@ -1402,6 +1411,61 @@ function nbRemoveCustomStage(id){
   nbRender();
 }
 
+// ── DRAG-TO-REORDER STAGES ───────────────────────────────────────────────
+var nbStageOrder=[];
+var nbDragSid=null;
+
+function nbGetStageOrder(){
+  var allIds=nbGetAllStages().map(function(s){return s.id;});
+  var order=(nbStageOrder||[]).filter(function(id){return allIds.indexOf(id)!==-1;});
+  allIds.forEach(function(id){ if(order.indexOf(id)===-1) order.push(id); });
+  nbStageOrder=order;
+  return order;
+}
+
+function nbStageDragStart(e,sid){
+  nbDragSid=sid;
+  try{ e.dataTransfer.effectAllowed='move'; e.dataTransfer.setData('text/plain',sid); }catch(err){}
+  var section=document.getElementById('nb-stage-'+sid);
+  if(section) section.classList.add('dragging');
+}
+
+function nbStageDragOver(e,sid){
+  e.preventDefault();
+  try{ e.dataTransfer.dropEffect='move'; }catch(err){}
+  if(sid!==nbDragSid){
+    var section=document.getElementById('nb-stage-'+sid);
+    if(section) section.classList.add('drag-over');
+  }
+}
+
+function nbStageDragLeave(e,sid){
+  var section=document.getElementById('nb-stage-'+sid);
+  if(section) section.classList.remove('drag-over');
+}
+
+function nbStageDrop(e,targetSid){
+  e.preventDefault();
+  var section=document.getElementById('nb-stage-'+targetSid);
+  if(section) section.classList.remove('drag-over');
+  if(!nbDragSid || nbDragSid===targetSid){ nbDragSid=null; return; }
+  var order=nbGetStageOrder();
+  var fromIdx=order.indexOf(nbDragSid);
+  var toIdx=order.indexOf(targetSid);
+  if(fromIdx===-1||toIdx===-1){ nbDragSid=null; return; }
+  order.splice(fromIdx,1);
+  order.splice(toIdx,0,nbDragSid);
+  nbStageOrder=order;
+  nbDragSid=null;
+  nbRender();
+}
+
+function nbStageDragEnd(){
+  document.querySelectorAll('.acc-section.dragging').forEach(function(s){s.classList.remove('dragging');});
+  document.querySelectorAll('.acc-section.drag-over').forEach(function(s){s.classList.remove('drag-over');});
+  nbDragSid=null;
+}
+
 function nbRenderAddStageForm(){
   return '<div style="background:var(--white);border:1.5px dashed var(--border-strong);border-radius:var(--r);padding:14px;margin-top:6px">'
     +'<div style="font-size:12.5px;font-weight:700;color:var(--navy);margin-bottom:9px">➕ הוסף שלב חדש משלך</div>'
@@ -1420,7 +1484,10 @@ NB_STAGES.forEach(function(s){nbState[s.id]={picked:[],custom:[],applied:false,s
 function nbRender(){
   var el=document.getElementById('nb-stages');
   if(!el) return;
-  el.innerHTML=nbGetAllStages().map(nbRenderStage).join('')+nbRenderAddStageForm();
+  var order=nbGetStageOrder();
+  var allStages=nbGetAllStages();
+  var orderedStages=order.map(function(id){return allStages.filter(function(s){return s.id===id;})[0];}).filter(Boolean);
+  el.innerHTML=orderedStages.map(nbRenderStage).join('')+nbRenderAddStageForm();
   // Update summary
   nbUpdateSummary();
   nbSaveDraft();
@@ -1534,8 +1601,9 @@ function nbRenderStage(s){
       +'style="width:100%;height:38px;background:#FF3D00;color:#fff;border:none;border-radius:var(--rs);font-size:13.5px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif;opacity:'+(st.picked.length+st.custom.length===0?'0.4':'1')+'">✓ הוסף שלב '+s.num+' לפריט הידע</button>';
   }
 
-  return '<div class="acc-section '+openCls+'" id="nb-stage-'+s.id+'">'
+  return '<div class="acc-section '+openCls+'" id="nb-stage-'+s.id+'" ondragover="nbStageDragOver(event,\''+s.id+'\')" ondragleave="nbStageDragLeave(event,\''+s.id+'\')" ondrop="nbStageDrop(event,\''+s.id+'\')">'
     +'<div class="acc-head" data-sid="'+s.id+'" onclick="nbToggleStage(this.dataset.sid)">'
+    +'<span class="stage-drag-handle" draggable="true" ondragstart="nbStageDragStart(event,\''+s.id+'\')" ondragend="nbStageDragEnd()" onclick="event.stopPropagation()" title="גרור לסידור מחדש">⠿</span>'
     +'<div class="acc-num'+(s.req?' red':'')+'">'+s.num+'</div>'
     +'<div style="flex:1;min-width:0"><div class="acc-title">'+s.title+'</div><div style="font-size:12px;color:var(--muted);margin-top:1px">'+s.sub+'</div></div>'
     +'<div style="display:flex;align-items:center;gap:8px;flex-shrink:0">'+tagHtml
@@ -1689,10 +1757,11 @@ function nbCreateDoc(){
     var docId=window.nbEditingDocId;
     window.nbEditingDocId=null;
     var stages=[];
-    nbGetAllStages().forEach(function(s){
-      var st=nbState[s.id];
-      if(!st.applied||s.id==='s1') return;
-      var def=nbGetAllStages().filter(function(x){return x.id===s.id;})[0];
+    nbGetStageOrder().forEach(function(sid){
+      var st=nbState[sid];
+      if(!st.applied||sid==='s1') return;
+      var def=nbGetAllStages().filter(function(x){return x.id===sid;})[0];
+      if(!def) return;
       var items=st.picked.map(function(i){
         var img2=(st.images&&st.images[i])||null;
         return {text:def.options[i].text,img:img2};
@@ -1713,6 +1782,7 @@ function nbCreateDoc(){
     nbShowSuccessModal(topic+' — עודכן!');
     NB_STAGES.forEach(function(s){nbState[s.id]={picked:[],custom:[],applied:false,s1data:{}};});
     nbCustomStages=[];
+    nbStageOrder=[];
     nbRender();
     var sumEl=document.getElementById('nb-summary');
     if(sumEl) sumEl.style.display='none';
@@ -1741,10 +1811,11 @@ function nbCreateDoc(){
 
   var docId='dyn-'+Date.now();
   var stages=[];
-  nbGetAllStages().forEach(function(s){
-    var st=nbState[s.id];
-    if(!st.applied||s.id==='s1') return;
-    var def=nbGetAllStages().filter(function(x){return x.id===s.id;})[0];
+  nbGetStageOrder().forEach(function(sid){
+    var st=nbState[sid];
+    if(!st.applied||sid==='s1') return;
+    var def=nbGetAllStages().filter(function(x){return x.id===sid;})[0];
+    if(!def) return;
     var items=st.picked.map(function(i){
       var img=(st.images&&st.images[i])||null;
       return {text:def.options[i].text,img:img};
@@ -1766,6 +1837,7 @@ function nbCreateDoc(){
 
   NB_STAGES.forEach(function(s){nbState[s.id]={picked:[],custom:[],applied:false,s1data:{}};});
   nbCustomStages=[];
+  nbStageOrder=[];
   nbRender();
   var sumEl=document.getElementById('nb-summary');
   if(sumEl) sumEl.style.display='none';
@@ -1884,6 +1956,7 @@ function nbSaveDraft(){
       state:nbState,
       custom:nbCustomStages,
       seq:nbCustomStageSeq,
+      order:nbStageOrder,
       editingId:window.nbEditingDocId||null,
       linkTopicId:window.nbLinkToTopicId||null
     }));
@@ -1898,6 +1971,7 @@ function nbLoadDraft(){
     if(d.state) nbState=d.state;
     if(d.custom) nbCustomStages=d.custom;
     if(typeof d.seq==='number') nbCustomStageSeq=d.seq;
+    if(d.order) nbStageOrder=d.order;
     if(d.editingId) window.nbEditingDocId=d.editingId;
     if(d.linkTopicId) window.nbLinkToTopicId=d.linkTopicId;
   }catch(e){ /* localStorage unavailable or corrupt — start fresh */ }
