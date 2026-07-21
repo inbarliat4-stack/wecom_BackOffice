@@ -868,6 +868,11 @@ var CAT={sim:'📶 SIM/eSIM',tech:'🔧 טכני',tech2:'🔧 טכני',billing:
 var WAVE={1:'גל 1 – מיידי',2:'גל 2 – חשוב',3:'גל 3 – משלים'};
 var WCOL={1:'var(--red)',2:'#E06000',3:'#9A7700'};
 
+function setTocActive(el){
+  document.querySelectorAll('.doc-toc-item').forEach(function(i){i.classList.remove('active')});
+  if(el) el.classList.add('active');
+}
+
 function showView(id){
   document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active')});
   document.getElementById('view-'+id).classList.add('active');
