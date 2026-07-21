@@ -1202,15 +1202,22 @@ function nbEditDoc(docId){
 
   // Reset form state
   NB_STAGES.forEach(function(s){ nbState[s.id]={picked:[],custom:[],applied:false,s1data:{}}; });
+  nbCustomStages=[];
 
   // Restore s1 data
   nbState['s1'].s1data={topic:doc.topic,cat:doc.cat,wave:String(doc.wave),type:doc.docType};
   nbState['s1'].applied=true;
 
-  // Restore stage selections
+  // Restore stage selections (rebuilding any custom, user-created stages
+  // that don't match one of the fixed NB_STAGES definitions)
   doc.stages.forEach(function(savedStage){
     var def=NB_STAGES.filter(function(x){return x.num===savedStage.num;})[0];
-    if(!def) return;
+    if(!def){
+      nbCustomStageSeq++;
+      def={id:'cs'+nbCustomStageSeq,num:savedStage.num,req:false,title:savedStage.title,sub:'שלב מותאם אישית',options:[],ph:'הקלד שאלה / פריט...',custom_stage:true};
+      nbCustomStages.push(def);
+      nbState[def.id]={picked:[],custom:[],applied:false,s1data:{},images:{}};
+    }
     savedStage.items.forEach(function(item){
       var txt=typeof item==='object'?item.text:item;
       var img=typeof item==='object'?item.img:null;
@@ -1253,9 +1260,9 @@ function catLabel(cat){
 
 function nbExport(){
   var out={};
-  NB_STAGES.forEach(function(s){
+  nbGetAllStages().forEach(function(s){
     if(!nbState[s.id].applied) return;
-    var def=NB_STAGES.filter(function(x){return x.id===s.id;})[0];
+    var def=nbGetAllStages().filter(function(x){return x.id===s.id;})[0];
     var st=nbState[s.id];
     out['שלב '+def.num+' – '+def.title]=s.id==='s1'?st.s1data:st.picked.map(function(i){return def.options[i].text;}).concat(st.custom);
   });
@@ -1266,6 +1273,7 @@ function nbExport(){
 
 function nbInit(){
   NB_STAGES.forEach(function(s){nbState[s.id]={picked:[],custom:[],applied:false,s1data:{},images:{}};});
+  nbCustomStages=[];
   nbRender();
 }
 
@@ -1354,17 +1362,65 @@ var NB_STAGES = [
   ],ph:'לדוגמה: שליחת סיכום בוואטסאפ'},
 ];
 
+// ── CUSTOM (USER-CREATED) STAGES ────────────────────────────────────────
+// Lets the person building a knowledge item add a brand-new stage from
+// scratch (title + subtitle) and then type its sub-inquiries manually,
+// exactly like the "הוסף ידנית" flow on the built-in stages.
+var nbCustomStages=[];
+var nbCustomStageSeq=0;
+function nbGetAllStages(){ return NB_STAGES.concat(nbCustomStages); }
+
+function nbAddCustomStage(){
+  var titleInp=document.getElementById('nb-newstage-title');
+  var subInp=document.getElementById('nb-newstage-sub');
+  var reqInp=document.getElementById('nb-newstage-req');
+  var title=(titleInp&&titleInp.value.trim())||'';
+  if(!title){ if(titleInp) titleInp.focus(); return; }
+  nbCustomStageSeq++;
+  var id='cs'+nbCustomStageSeq;
+  var num=String(NB_STAGES.length+nbCustomStages.length+1);
+  var sub=(subInp&&subInp.value.trim())||'שלב מותאם אישית';
+  var req=!!(reqInp&&reqInp.checked);
+  var stage={id:id,num:num,req:req,title:title,sub:sub,options:[],ph:'הקלד שאלה / פריט...',custom_stage:true};
+  nbCustomStages.push(stage);
+  nbState[id]={picked:[],custom:[],applied:false,s1data:{},images:{}};
+  titleInp.value='';
+  if(subInp) subInp.value='';
+  if(reqInp) reqInp.checked=false;
+  nbRender();
+  var el=document.getElementById('nb-stage-'+id);
+  if(el){ el.classList.add('open'); el.scrollIntoView({behavior:'smooth',block:'nearest'}); }
+}
+
+function nbRemoveCustomStage(id){
+  nbCustomStages=nbCustomStages.filter(function(s){return s.id!==id;});
+  delete nbState[id];
+  nbRender();
+}
+
+function nbRenderAddStageForm(){
+  return '<div style="background:var(--white);border:1.5px dashed var(--border-strong);border-radius:var(--r);padding:14px;margin-top:6px">'
+    +'<div style="font-size:12.5px;font-weight:700;color:var(--navy);margin-bottom:9px">➕ הוסף שלב חדש משלך</div>'
+    +'<div style="display:flex;flex-direction:column;gap:8px">'
+    +'<input type="text" id="nb-newstage-title" placeholder="שם השלב (לדוגמה: בדיקת חבילת רומינג)" style="height:36px;padding:0 10px;font-size:13px;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--gray);color:var(--text);outline:none;font-family:Rubik,sans-serif;direction:rtl">'
+    +'<input type="text" id="nb-newstage-sub" placeholder="תת-כותרת (אופציונלי)" style="height:34px;padding:0 10px;font-size:12.5px;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--gray);color:var(--text);outline:none;font-family:Rubik,sans-serif;direction:rtl">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;gap:8px">'
+    +'<label style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text-2);cursor:pointer"><input type="checkbox" id="nb-newstage-req" style="accent-color:var(--red);width:14px;height:14px">שלב חובה</label>'
+    +'<button onclick="nbAddCustomStage()" style="height:34px;padding:0 16px;background:var(--navy);color:#fff;border:none;border-radius:var(--rs);font-size:13px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif">✚ צור שלב</button>'
+    +'</div></div></div>';
+}
+
 var nbState={};
 NB_STAGES.forEach(function(s){nbState[s.id]={picked:[],custom:[],applied:false,s1data:{}};});
 
 function nbRender(){
   var el=document.getElementById('nb-stages');
   if(!el) return;
-  el.innerHTML=NB_STAGES.map(nbRenderStage).join('');
+  el.innerHTML=nbGetAllStages().map(nbRenderStage).join('')+nbRenderAddStageForm();
   // Update summary
   nbUpdateSummary();
   // Restore image previews from nbState
-  NB_STAGES.forEach(function(s){
+  nbGetAllStages().forEach(function(s){
     var st=nbState[s.id];
     if(!st||!st.images) return;
     Object.keys(st.images).forEach(function(k){
@@ -1474,7 +1530,9 @@ function nbRenderStage(s){
     +'<div class="acc-head" data-sid="'+s.id+'" onclick="nbToggleStage(this.dataset.sid)">'
     +'<div class="acc-num'+(s.req?' red':'')+'">'+s.num+'</div>'
     +'<div style="flex:1;min-width:0"><div class="acc-title">'+s.title+'</div><div style="font-size:12px;color:var(--muted);margin-top:1px">'+s.sub+'</div></div>'
-    +'<div style="display:flex;align-items:center;gap:8px;flex-shrink:0">'+tagHtml+'<span class="acc-chev">▼</span></div>'
+    +'<div style="display:flex;align-items:center;gap:8px;flex-shrink:0">'+tagHtml
+    +(s.custom_stage?('<span onclick="event.stopPropagation();nbRemoveCustomStage(\''+s.id+'\')" title="מחק שלב" style="font-size:15px;color:var(--muted);cursor:pointer;padding:0 2px">🗑️</span>'):'')
+    +'<span class="acc-chev">▼</span></div>'
     +'</div>'
     +(st.applied && !isOpen ? (function(){
       var previewItems = s.id==='s1'
@@ -1583,12 +1641,12 @@ function nbApplyStage(id){
 
 function nbUpdateSummary(){
   var box=document.getElementById('nb-summary');
-  var html=NB_STAGES.filter(function(s){
+  var html=nbGetAllStages().filter(function(s){
     var st=nbState[s.id];
     return st.applied || (s.id==='s1'&&st.s1data&&st.s1data.topic) || (st.picked&&st.picked.length>0) || (st.custom&&st.custom.length>0);
   }).map(function(s){
     var st=nbState[s.id];
-    var def=NB_STAGES.filter(function(x){return x.id===s.id;})[0];
+    var def=nbGetAllStages().filter(function(x){return x.id===s.id;})[0];
     var items=[];
     if(s.id==='s1'){var d=st.s1data;if(d.topic)items.push('נושא: '+d.topic);if(d.type)items.push('סוג: '+d.type);if(d.cat)items.push('קטגוריה: '+d.cat);if(d.wave)items.push('גל: '+d.wave);if(d.tags)items.push('תגיות: '+d.tags);}
     else{items=st.picked.map(function(i){
@@ -1616,10 +1674,10 @@ function nbCreateDoc(){
     var docId=window.nbEditingDocId;
     window.nbEditingDocId=null;
     var stages=[];
-    NB_STAGES.forEach(function(s){
+    nbGetAllStages().forEach(function(s){
       var st=nbState[s.id];
       if(!st.applied||s.id==='s1') return;
-      var def=NB_STAGES.filter(function(x){return x.id===s.id;})[0];
+      var def=nbGetAllStages().filter(function(x){return x.id===s.id;})[0];
       var items=st.picked.map(function(i){
         var img2=(st.images&&st.images[i])||null;
         return {text:def.options[i].text,img:img2};
@@ -1638,6 +1696,7 @@ function nbCreateDoc(){
     showDynamicDoc(docId);
     nbShowSuccessModal(topic+' — עודכן!');
     NB_STAGES.forEach(function(s){nbState[s.id]={picked:[],custom:[],applied:false,s1data:{}};});
+    nbCustomStages=[];
     nbRender();
     var sumEl=document.getElementById('nb-summary');
     if(sumEl) sumEl.style.display='none';
@@ -1666,10 +1725,10 @@ function nbCreateDoc(){
 
   var docId='dyn-'+Date.now();
   var stages=[];
-  NB_STAGES.forEach(function(s){
+  nbGetAllStages().forEach(function(s){
     var st=nbState[s.id];
     if(!st.applied||s.id==='s1') return;
-    var def=NB_STAGES.filter(function(x){return x.id===s.id;})[0];
+    var def=nbGetAllStages().filter(function(x){return x.id===s.id;})[0];
     var items=st.picked.map(function(i){
       var img=(st.images&&st.images[i])||null;
       return {text:def.options[i].text,img:img};
@@ -1690,6 +1749,7 @@ function nbCreateDoc(){
   nbShowSuccessModal(topic);
 
   NB_STAGES.forEach(function(s){nbState[s.id]={picked:[],custom:[],applied:false,s1data:{}};});
+  nbCustomStages=[];
   nbRender();
   var sumEl=document.getElementById('nb-summary');
   if(sumEl) sumEl.style.display='none';
@@ -1836,7 +1896,7 @@ document.addEventListener('click', function(e){
   var idx = parseInt(opt.getAttribute('data-i'));
   if(!sid || isNaN(idx)) return;
   // Make sure this stage has options (not s1 fields type)
-  var stageDef = NB_STAGES.filter(function(x){return x.id===sid;})[0];
+  var stageDef = nbGetAllStages().filter(function(x){return x.id===sid;})[0];
   if(!stageDef || stageDef.type==='fields') return;
   e.stopPropagation();
   nbPickOpt(sid, idx);
