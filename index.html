@@ -1070,6 +1070,7 @@ function nbAddToLibrary(docId,topic,cat,wave,linkTopicId){
       // Re-render both pages — title unchanged, badge added, onclick updated
       renderLibrary('all');
       renderHomeWaves();
+      nbSaveLibrary();
       return;
     }
   }
@@ -1080,6 +1081,7 @@ function nbAddToLibrary(docId,topic,cat,wave,linkTopicId){
   TOPICS.push({id:newId,cat:catKey,wave:waveNum,pri:'h',title:topic||'פריט ידע חדש',desc:'פריט ידע',active:true,dynId:docId});
   renderLibrary('all');
   renderHomeWaves();
+  nbSaveLibrary();
 }
 
 
@@ -1173,6 +1175,7 @@ function showDynamicDoc(docId){
       renderLibrary('all');
       renderHomeWaves();
       showView('library');
+      nbSaveLibrary();
     });
 
     var noBtn=document.createElement('button');
@@ -1420,6 +1423,7 @@ function nbRender(){
   el.innerHTML=nbGetAllStages().map(nbRenderStage).join('')+nbRenderAddStageForm();
   // Update summary
   nbUpdateSummary();
+  nbSaveDraft();
   // Restore image previews from nbState
   nbGetAllStages().forEach(function(s){
     var st=nbState[s.id];
@@ -1463,10 +1467,10 @@ function nbRenderStage(s){
     var d=st.s1data;
     bodyHtml='<div style="background:var(--white);border:1.5px dashed var(--border-strong);border-radius:var(--r);padding:14px;margin-bottom:10px">'
       +'<div style="font-size:12.5px;font-weight:700;color:var(--navy);margin-bottom:9px">נושא פריט הידע</div>'
-      +'<textarea style="width:100%;border:1.5px solid var(--border);border-radius:var(--rs);padding:8px 11px;font-family:Rubik,sans-serif;font-size:13.5px;color:var(--text);background:var(--input-bg);outline:none;height:40px;resize:none;direction:rtl" id="nb-s1-topic" placeholder="לדוגמה: הפעלת eSIM – קוד QR">'+(d.topic||'')+'</textarea></div>'
+      +'<textarea style="width:100%;border:1.5px solid var(--border);border-radius:var(--rs);padding:8px 11px;font-family:Rubik,sans-serif;font-size:13.5px;color:var(--text);background:var(--input-bg);outline:none;height:40px;resize:none;direction:rtl" id="nb-s1-topic" oninput="nbSyncS1(\'topic\',this.value)" placeholder="לדוגמה: הפעלת eSIM – קוד QR">'+(d.topic||'')+'</textarea></div>'
       +'<div style="background:var(--white);border:1.5px dashed var(--border-strong);border-radius:var(--r);padding:14px;margin-bottom:10px">'
       +'<div style="font-size:12.5px;font-weight:700;color:var(--navy);margin-bottom:9px">תיאור</div>'
-      +'<textarea style="width:100%;border:1.5px solid var(--border);border-radius:var(--rs);padding:8px 11px;font-family:Rubik,sans-serif;font-size:13.5px;color:var(--text);background:var(--input-bg);outline:none;resize:vertical;min-height:70px;direction:rtl" id="nb-s1-desc" placeholder="במה עוסק, מה פותר, מתי להשתמש…">'+(d.desc||'')+'</textarea></div>'
+      +'<textarea style="width:100%;border:1.5px solid var(--border);border-radius:var(--rs);padding:8px 11px;font-family:Rubik,sans-serif;font-size:13.5px;color:var(--text);background:var(--input-bg);outline:none;resize:vertical;min-height:70px;direction:rtl" id="nb-s1-desc" oninput="nbSyncS1(\'desc\',this.value)" placeholder="במה עוסק, מה פותר, מתי להשתמש…">'+(d.desc||'')+'</textarea></div>'
       +'<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:5px">סוג</div>'
       +'<div style="display:flex;flex-direction:column;gap:6px">'
       +[['tech','טכני – דיבאג / תפעול','שלבי תפעול, הסתעפויות'],['service','שירות – שימור / מכירה','תסריטי שיחה, התנגדויות'],['mixed','משולב','שילוב טכני + שירותי']].map(function(r){
@@ -1490,7 +1494,7 @@ function nbRenderStage(s){
       }).join('')+'</div></div>'
       +'<div style="background:var(--white);border:1.5px dashed var(--border-strong);border-radius:var(--r);padding:14px;margin-bottom:14px">'
       +'<div style="font-size:12.5px;font-weight:700;color:var(--navy);margin-bottom:9px">תגיות לחיפוש</div>'
-      +'<textarea style="width:100%;border:1.5px solid var(--border);border-radius:var(--rs);padding:8px 11px;font-family:Rubik,sans-serif;font-size:13.5px;color:var(--text);background:var(--input-bg);outline:none;height:40px;resize:none;direction:rtl" id="nb-s1-tags" placeholder="לדוגמה: eSIM, QR, הפעלה…">'+(d.tags||'')+'</textarea></div>'
+      +'<textarea style="width:100%;border:1.5px solid var(--border);border-radius:var(--rs);padding:8px 11px;font-family:Rubik,sans-serif;font-size:13.5px;color:var(--text);background:var(--input-bg);outline:none;height:40px;resize:none;direction:rtl" id="nb-s1-tags" oninput="nbSyncS1(\'tags\',this.value)" placeholder="לדוגמה: eSIM, QR, הפעלה…">'+(d.tags||'')+'</textarea></div>'
       +'<button onclick="nbApplyS1()" style="width:100%;height:38px;background:var(--red);color:#fff;border:none;border-radius:var(--rs);font-size:13.5px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif">✓ הוסף שלב 1 לפריט הידע</button>';
   } else {
     var optHtml=s.options.map(function(o,i){
@@ -1565,6 +1569,7 @@ function nbSelR(el){
   el.classList.add('sel');
   var inp=el.querySelector('input[type=radio]');
   if(inp) inp.checked=true;
+  nbSaveDraft();
 }
 
 function nbPickOpt(sid,idx){
@@ -1586,6 +1591,7 @@ function nbPickOpt(sid,idx){
   var btn=document.getElementById('nb-apply-'+sid);
   if(btn){btn.disabled=st.picked.length+st.custom.length===0;btn.style.opacity=btn.disabled?'0.4':'1';}
   nbUpdateSummary();
+  nbSaveDraft();
 }
 function nbTP(el){var t=el.closest('[data-idx]');if(t)nbPickOpt(t.getAttribute('data-sid'),parseInt(t.getAttribute('data-idx')));}
 function nbRemoveImage(sid,idx){
@@ -1624,6 +1630,11 @@ function nbEditStage(id){
   if(el){el.classList.add('open');el.scrollIntoView({behavior:'smooth',block:'nearest'});}
 }
 
+function nbSyncS1(field,val){
+  nbState['s1'].s1data[field]=val;
+  nbSaveDraft();
+}
+
 function nbApplyS1(){
   var d=nbState['s1'].s1data;
   d.topic=(document.getElementById('nb-s1-topic')||{}).value||'';
@@ -1660,7 +1671,7 @@ function nbUpdateSummary(){
     return '<div style="margin-bottom:16px">'      +'<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:8px">שלב '+def.num+' – '+def.title+'</div>'      +items.map(function(item){
         var txt=typeof item==='object'?item.text:item;
         var img=typeof item==='object'?item.img:null;
-        return '<div style="background:var(--gray);border:1px solid var(--border);border-radius:var(--rs);padding:8px 10px;margin-bottom:5px">'          +'<div style="display:flex;align-items:flex-start;gap:7px;font-size:13px;color:var(--text)">'          +'<span style="color:var(--red);flex-shrink:0;font-size:10px;margin-top:3px">›</span>'          +'<span>'+txt+'</span></div>'          +(img?'<img src="'+img+'" style="max-height:160px;width:auto;max-width:100%;border-radius:6px;border:1px solid var(--border);margin-top:6px;display:block">':'')          +'</div>';
+        return '<div style="background:var(--input-bg);border:1px solid var(--border);border-radius:var(--rs);padding:8px 10px;margin-bottom:5px">'          +'<div style="display:flex;align-items:flex-start;gap:7px;font-size:13px;color:var(--text)">'          +'<span style="color:var(--red);flex-shrink:0;font-size:10px;margin-top:3px">›</span>'          +'<span>'+txt+'</span></div>'          +(img?'<img src="'+img+'" style="max-height:160px;width:auto;max-width:100%;border-radius:6px;border:1px solid var(--border);margin-top:6px;display:block">':'')          +'</div>';
       }).join('')      +'</div>';
   }).join('');
   var sc=document.getElementById('nb-sum-content');
@@ -1697,6 +1708,7 @@ function nbCreateDoc(){
     // Update TOPICS entry
     var t=TOPICS.find(function(x){return x.dynId===docId;});
     if(t){t.title=topic;t.cat=cat;t.wave=wave;}
+    nbSaveLibrary();
     showDynamicDoc(docId);
     nbShowSuccessModal(topic+' — עודכן!');
     NB_STAGES.forEach(function(s){nbState[s.id]={picked:[],custom:[],applied:false,s1data:{}};});
@@ -1838,7 +1850,65 @@ window.dynamicDocs['pdf_010'] = {"id": "pdf_010", "topic": "תקלת גלישה 
   if(t) { t.dynId = 'pdf_010'; t.active = true; }
 })();
 
+// ── LOCAL PERSISTENCE ────────────────────────────────────────────────────
+// Keeps created knowledge items and the in-progress "פריט ידע חדש" form
+// draft across page refreshes by mirroring them into localStorage.
+var NB_STORAGE_KEYS={docs:'wecom_kb_docs_v1',topics:'wecom_kb_topics_v1',draft:'wecom_kb_draft_v1'};
+
+function nbSaveLibrary(){
+  try{
+    localStorage.setItem(NB_STORAGE_KEYS.docs, JSON.stringify(window.dynamicDocs||{}));
+    localStorage.setItem(NB_STORAGE_KEYS.topics, JSON.stringify(TOPICS||[]));
+  }catch(e){ /* localStorage unavailable — fail silently */ }
+}
+
+function nbLoadLibrary(){
+  try{
+    var docsRaw=localStorage.getItem(NB_STORAGE_KEYS.docs);
+    if(docsRaw){
+      var savedDocs=JSON.parse(docsRaw);
+      window.dynamicDocs=window.dynamicDocs||{};
+      Object.keys(savedDocs).forEach(function(k){ window.dynamicDocs[k]=savedDocs[k]; });
+    }
+    var topicsRaw=localStorage.getItem(NB_STORAGE_KEYS.topics);
+    if(topicsRaw){
+      var savedTopics=JSON.parse(topicsRaw);
+      if(Array.isArray(savedTopics) && savedTopics.length) TOPICS=savedTopics;
+    }
+  }catch(e){ /* localStorage unavailable or corrupt — start fresh */ }
+}
+
+function nbSaveDraft(){
+  try{
+    localStorage.setItem(NB_STORAGE_KEYS.draft, JSON.stringify({
+      state:nbState,
+      custom:nbCustomStages,
+      seq:nbCustomStageSeq,
+      editingId:window.nbEditingDocId||null,
+      linkTopicId:window.nbLinkToTopicId||null
+    }));
+  }catch(e){ /* localStorage unavailable — fail silently */ }
+}
+
+function nbLoadDraft(){
+  try{
+    var raw=localStorage.getItem(NB_STORAGE_KEYS.draft);
+    if(!raw) return;
+    var d=JSON.parse(raw);
+    if(d.state) nbState=d.state;
+    if(d.custom) nbCustomStages=d.custom;
+    if(typeof d.seq==='number') nbCustomStageSeq=d.seq;
+    if(d.editingId) window.nbEditingDocId=d.editingId;
+    if(d.linkTopicId) window.nbLinkToTopicId=d.linkTopicId;
+  }catch(e){ /* localStorage unavailable or corrupt — start fresh */ }
+}
+
+// Safety net: also save right before the tab/page closes or refreshes
+window.addEventListener('beforeunload', nbSaveDraft);
+
 document.addEventListener("DOMContentLoaded", function(){
+  nbLoadLibrary();
+  nbLoadDraft();
   initObservers();
   nbRender();
   // Initialize all PDF docs
