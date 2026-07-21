@@ -16,6 +16,7 @@
   --navy:#1F2E3B;--navy-m:#2E4255;--navy-l:#EEF2F6;
   --white:#FFFFFF;--bg:#F7F8FA;--gray:#F0F2F4;
   --border:#E5E8EC;--border-strong:#C8CDD4;
+  --input-bg:#FAFBFC;
   --text:#1F2E3B;--text-2:#4A5568;--muted:#6B7280;--muted-l:#9AA5B4;
   --ok:#0F7A3E;--ok-bg:#EDFAF3;--ok-b:#A7E3BE;
   --warn:#9A5C00;--warn-bg:#FFF8EE;--warn-b:#F5D8A5;
@@ -1402,8 +1403,8 @@ function nbRenderAddStageForm(){
   return '<div style="background:var(--white);border:1.5px dashed var(--border-strong);border-radius:var(--r);padding:14px;margin-top:6px">'
     +'<div style="font-size:12.5px;font-weight:700;color:var(--navy);margin-bottom:9px">➕ הוסף שלב חדש משלך</div>'
     +'<div style="display:flex;flex-direction:column;gap:8px">'
-    +'<input type="text" id="nb-newstage-title" placeholder="שם השלב (לדוגמה: בדיקת חבילת רומינג)" style="height:36px;padding:0 10px;font-size:13px;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--gray);color:var(--text);outline:none;font-family:Rubik,sans-serif;direction:rtl">'
-    +'<input type="text" id="nb-newstage-sub" placeholder="תת-כותרת (אופציונלי)" style="height:34px;padding:0 10px;font-size:12.5px;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--gray);color:var(--text);outline:none;font-family:Rubik,sans-serif;direction:rtl">'
+    +'<input type="text" id="nb-newstage-title" placeholder="שם השלב (לדוגמה: בדיקת חבילת רומינג)" style="height:36px;padding:0 10px;font-size:13px;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--input-bg);color:var(--text);outline:none;font-family:Rubik,sans-serif;direction:rtl">'
+    +'<input type="text" id="nb-newstage-sub" placeholder="תת-כותרת (אופציונלי)" style="height:34px;padding:0 10px;font-size:12.5px;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--input-bg);color:var(--text);outline:none;font-family:Rubik,sans-serif;direction:rtl">'
     +'<div style="display:flex;align-items:center;justify-content:space-between;gap:8px">'
     +'<label style="display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text-2);cursor:pointer"><input type="checkbox" id="nb-newstage-req" style="accent-color:var(--red);width:14px;height:14px">שלב חובה</label>'
     +'<button onclick="nbAddCustomStage()" style="height:34px;padding:0 16px;background:var(--navy);color:#fff;border:none;border-radius:var(--rs);font-size:13px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif">✚ צור שלב</button>'
@@ -1460,10 +1461,12 @@ function nbRenderStage(s){
   var bodyHtml='';
   if(s.type==='fields'){
     var d=st.s1data;
-    bodyHtml='<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:5px">נושא פריט הידע</div>'
-      +'<textarea style="width:100%;border:1.5px solid var(--border);border-radius:var(--rs);padding:8px 11px;font-family:Rubik,sans-serif;font-size:13.5px;color:var(--text);background:var(--gray);outline:none;height:40px;resize:none;direction:rtl" id="nb-s1-topic" placeholder="לדוגמה: הפעלת eSIM – קוד QR">'+(d.topic||'')+'</textarea></div>'
-      +'<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:5px">תיאור</div>'
-      +'<textarea style="width:100%;border:1.5px solid var(--border);border-radius:var(--rs);padding:8px 11px;font-family:Rubik,sans-serif;font-size:13.5px;color:var(--text);background:var(--gray);outline:none;resize:vertical;min-height:70px;direction:rtl" id="nb-s1-desc" placeholder="במה עוסק, מה פותר, מתי להשתמש…">'+(d.desc||'')+'</textarea></div>'
+    bodyHtml='<div style="background:var(--white);border:1.5px dashed var(--border-strong);border-radius:var(--r);padding:14px;margin-bottom:10px">'
+      +'<div style="font-size:12.5px;font-weight:700;color:var(--navy);margin-bottom:9px">נושא פריט הידע</div>'
+      +'<textarea style="width:100%;border:1.5px solid var(--border);border-radius:var(--rs);padding:8px 11px;font-family:Rubik,sans-serif;font-size:13.5px;color:var(--text);background:var(--input-bg);outline:none;height:40px;resize:none;direction:rtl" id="nb-s1-topic" placeholder="לדוגמה: הפעלת eSIM – קוד QR">'+(d.topic||'')+'</textarea></div>'
+      +'<div style="background:var(--white);border:1.5px dashed var(--border-strong);border-radius:var(--r);padding:14px;margin-bottom:10px">'
+      +'<div style="font-size:12.5px;font-weight:700;color:var(--navy);margin-bottom:9px">תיאור</div>'
+      +'<textarea style="width:100%;border:1.5px solid var(--border);border-radius:var(--rs);padding:8px 11px;font-family:Rubik,sans-serif;font-size:13.5px;color:var(--text);background:var(--input-bg);outline:none;resize:vertical;min-height:70px;direction:rtl" id="nb-s1-desc" placeholder="במה עוסק, מה פותר, מתי להשתמש…">'+(d.desc||'')+'</textarea></div>'
       +'<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:5px">סוג</div>'
       +'<div style="display:flex;flex-direction:column;gap:6px">'
       +[['tech','טכני – דיבאג / תפעול','שלבי תפעול, הסתעפויות'],['service','שירות – שימור / מכירה','תסריטי שיחה, התנגדויות'],['mixed','משולב','שילוב טכני + שירותי']].map(function(r){
@@ -1485,14 +1488,15 @@ function nbRenderStage(s){
           +'<input type="radio" name="nb-dwave" '+(d.wave===r[0]?'checked':'')+' style="flex-shrink:0;width:14px;height:14px;margin-top:3px;accent-color:var(--red)">'
           +'<div><div style="font-size:13px;font-weight:500;color:var(--text)">'+r[1]+'</div><div style="font-size:11.5px;color:var(--muted)">'+r[2]+'</div></div></label>';
       }).join('')+'</div></div>'
-      +'<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:5px">תגיות לחיפוש</div>'
-      +'<textarea style="width:100%;border:1.5px solid var(--border);border-radius:var(--rs);padding:8px 11px;font-family:Rubik,sans-serif;font-size:13.5px;color:var(--text);background:var(--gray);outline:none;height:40px;resize:none;direction:rtl" id="nb-s1-tags" placeholder="לדוגמה: eSIM, QR, הפעלה…">'+(d.tags||'')+'</textarea></div>'
+      +'<div style="background:var(--white);border:1.5px dashed var(--border-strong);border-radius:var(--r);padding:14px;margin-bottom:14px">'
+      +'<div style="font-size:12.5px;font-weight:700;color:var(--navy);margin-bottom:9px">תגיות לחיפוש</div>'
+      +'<textarea style="width:100%;border:1.5px solid var(--border);border-radius:var(--rs);padding:8px 11px;font-family:Rubik,sans-serif;font-size:13.5px;color:var(--text);background:var(--input-bg);outline:none;height:40px;resize:none;direction:rtl" id="nb-s1-tags" placeholder="לדוגמה: eSIM, QR, הפעלה…">'+(d.tags||'')+'</textarea></div>'
       +'<button onclick="nbApplyS1()" style="width:100%;height:38px;background:var(--red);color:#fff;border:none;border-radius:var(--rs);font-size:13.5px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif">✓ הוסף שלב 1 לפריט הידע</button>';
   } else {
     var optHtml=s.options.map(function(o,i){
       var isPicked=st.picked.indexOf(i)!==-1;
       var uid='nb-opt-'+s.id+'-'+i;
-      return '<div id="'+uid+'" class="nb-opt" data-s="'+s.id+'" data-i="'+i+'" style="display:flex;flex-direction:column;background:'+(isPicked?'var(--ok-bg)':'var(--gray)')+';border:1px solid '+(isPicked?'var(--ok-b)':'var(--border)')+';border-radius:var(--rs);padding:8px 11px;cursor:pointer;user-select:none;margin-bottom:5px">'
+      return '<div id="'+uid+'" class="nb-opt" data-s="'+s.id+'" data-i="'+i+'" style="display:flex;flex-direction:column;background:'+(isPicked?'var(--ok-bg)':'var(--input-bg)')+';border:1px solid '+(isPicked?'var(--ok-b)':'var(--border)')+';border-radius:var(--rs);padding:8px 11px;cursor:pointer;user-select:none;margin-bottom:5px">'
         +'<div style="display:flex;align-items:flex-start;gap:9px">'
         +'<div id="cb-'+uid+'" style="flex-shrink:0;width:16px;height:16px;margin-top:1px;border-radius:3px;border:2px solid '+(isPicked?'var(--ok)':'#ccc')+';background:'+(isPicked?'var(--ok)':'#fff')+';display:flex;align-items:center;justify-content:center;pointer-events:none">'+(isPicked?'&#10003;':'')+'</div>'
         +'<div style="pointer-events:none;flex:1"><div style="font-size:13px;color:var(--text);line-height:1.45">'+o.text+'</div>'+(o.hint?'<div style="font-size:11.5px;color:var(--muted);margin-top:2px">'+o.hint+'</div>':'')+'</div>'
@@ -1516,7 +1520,7 @@ function nbRenderStage(s){
       +'<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:7px;margin-top:'+(st.custom.length?'4':'0')+'px">הוסף ידנית</div>'
       +'<div style="display:flex;gap:8px;margin-bottom:12px" id="nb-cr-'+s.id+'">'
       +'<input type="text" id="nb-inp-'+s.id+'" data-sid="'+s.id+'" placeholder="'+s.ph+'" onkeydown="if(event.keyCode===13)nbAddCustom(this.dataset.sid)" '
-      +'style="flex:1;font-size:13px;height:34px;padding:0 10px;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--gray);color:var(--text);outline:none;font-family:Rubik,sans-serif;direction:rtl">'
+      +'style="flex:1;font-size:13px;height:34px;padding:0 10px;border:1.5px solid var(--border);border-radius:var(--rs);background:var(--input-bg);color:var(--text);outline:none;font-family:Rubik,sans-serif;direction:rtl">'
       +'<label id="nb-img-lbl-'+s.id+'" style="height:34px;padding:0 12px;font-size:12.5px;font-weight:500;background:var(--gray);border:1.5px solid var(--border);border-radius:var(--rs);color:var(--muted);cursor:pointer;white-space:nowrap;font-family:Rubik,sans-serif;display:inline-flex;align-items:center;gap:5px">'
       +'📎 תמונה<input type="file" accept="image/*" style="display:none" data-sid="'+s.id+'"></label>'
       +'<button data-sid="'+s.id+'" onclick="nbAddCustom(this.dataset.sid)" style="height:34px;padding:0 12px;font-size:12.5px;font-weight:500;background:var(--gray);border:1.5px solid var(--border);border-radius:var(--rs);color:var(--muted);cursor:pointer;white-space:nowrap;font-family:Rubik,sans-serif">+ הוסף</button>'
@@ -1571,7 +1575,7 @@ function nbPickOpt(sid,idx){
   var uid='nb-opt-'+sid+'-'+idx;
   var row=document.getElementById(uid);
   if(row){
-    row.style.background=isPicked?'var(--ok-bg)':'var(--gray)';
+    row.style.background=isPicked?'var(--ok-bg)':'var(--input-bg)';
     row.style.borderColor=isPicked?'var(--ok-b)':'var(--border)';
     var cb=document.getElementById('cb-'+uid);
     if(cb){cb.style.borderColor=isPicked?'var(--ok)':'#ccc';cb.style.background=isPicked?'var(--ok)':'#fff';cb.innerHTML=isPicked?'&#10003;':'';}
