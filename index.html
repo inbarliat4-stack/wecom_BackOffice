@@ -1078,6 +1078,8 @@ function nbAddToLibrary(docId,topic,cat,wave,linkTopicId){
 
 
 function showDynamicDoc(docId){
+  if(docId==='view-churn-doc'){showView('churn');return;}
+  if(docId==='view-browsing-doc'){showView('browsing');return;}
   var doc=window.dynamicDocs[docId];
   if(!doc) return;
 
@@ -2253,6 +2255,7 @@ document.addEventListener('change', function(e){
 <div id="view-churn" class="view">
   <div style="max-width:960px;margin:0 auto;padding:16px 8px 80px">
     <div class="article-back" onclick="showView('home')" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);cursor:pointer;margin-bottom:20px;transition:color .15s">← חזרה לדף הבית</div>
+    <div style="display:grid;grid-template-columns:1fr 240px;gap:20px;align-items:start">
     <div id="panel-retain" class="doc-panel-inner">
       <div class="article-header">
         <div class="doc-meta">
@@ -2321,7 +2324,7 @@ document.addEventListener('change', function(e){
         <hr class="divider">
 
         <!-- REASON 1 -->
-        <div class="scenario-card">
+        <div class="scenario-card fade-in" id="cr1">
           <div class="scenario-header">
             <div class="scenario-icon">📡</div>
             <div>
@@ -2367,7 +2370,7 @@ document.addEventListener('change', function(e){
         </div>
 
         <!-- REASON 2 -->
-        <div class="scenario-card">
+        <div class="scenario-card fade-in" id="cr2">
           <div class="scenario-header">
             <div class="scenario-icon">💰</div>
             <div>
@@ -2404,7 +2407,7 @@ document.addEventListener('change', function(e){
         </div>
 
         <!-- REASON 3 -->
-        <div class="scenario-card">
+        <div class="scenario-card fade-in" id="cr3">
           <div class="scenario-header">
             <div class="scenario-icon">😤</div>
             <div>
@@ -2468,6 +2471,28 @@ document.addEventListener('change', function(e){
 
       </div><!-- /article-body -->
     </div><!-- /panel-retain -->
+
+    <!-- SIDEBAR TOC -->
+    <aside class="doc-sidebar">
+      <div class="doc-toc">
+        <div class="doc-toc-title">תוכן עניינים</div>
+        <a class="doc-toc-item active" href="#cr0" onclick="setTocActive(this)">🔍 זיהוי סימני אזהרה</a>
+        <a class="doc-toc-item" href="#cr0" onclick="setTocActive(this)">💬 פתיחת שיחה</a>
+        <a class="doc-toc-item" href="#cr1" onclick="setTocActive(this)">📡 סיבה 1 – טכני / קליטה</a>
+        <a class="doc-toc-item" href="#cr2" onclick="setTocActive(this)">💰 סיבה 2 – מחיר</a>
+        <a class="doc-toc-item" href="#cr3" onclick="setTocActive(this)">😤 סיבה 3 – שירות</a>
+        <a class="doc-toc-item" href="#cr4" onclick="setTocActive(this)">🏁 סגירת שיחה</a>
+        <a class="doc-toc-item" href="#cr5" onclick="setTocActive(this)">⭐ עקרונות-על</a>
+      </div>
+      <div class="doc-toc">
+        <div class="doc-toc-title">מסמכים קשורים</div>
+        <a class="doc-toc-item" onclick="showView('browsing')"><div style="font-size:14px">🌐</div><span>איטיות / חוסר גלישה</span></a>
+        <a class="doc-toc-item" href="#"><div style="font-size:14px">📞</div><span>Wi-Fi Calling – הגדרה</span></a>
+        <a class="doc-toc-item" href="#"><div style="font-size:14px">💳</div><span>מדיניות זיכויים והטבות</span></a>
+      </div>
+    </aside>
+
+    </div><!-- /doc-layout -->
   </div>
 </div>
 
