@@ -947,8 +947,10 @@ function filterWave(w){showView('library')}
 function cardHTML(t){
   var pc={hh:'pri-hh',h:'pri-h',m:'pri-m',l:'pri-l'}[t.pri];
   var activeBadge=t.active?'<span class="cat-tag" style="background:#EDFAF3;color:#1A7A4A;border:1px solid #B7E8CE">✓ פעיל</span>':'';
+  var delBtn='<span onclick="event.stopPropagation();nbConfirmDeleteTopic('+t.id+')" title="מחק פריט ידע" style="position:absolute;top:8px;left:8px;width:19px;height:19px;display:flex;align-items:center;justify-content:center;border-radius:5px;font-size:10px;color:var(--muted);cursor:pointer;background:var(--white);border:1px solid var(--border)">🗑️</span>';
   return '<div class="topic-card fade-in" style="'+(t.active?'border-color:#B7E8CE;':'')+'" onclick="nbOpenTopic('+t.id+')">' 
     +(t.active?'<div style="position:absolute;top:0;right:0;width:3px;height:100%;background:#1A7A4A"></div>':'')
+    +delBtn
     +'<div class="tc-num">#'+t.id+' · '+(CAT[t.cat]||'📄 כללי')+'</div>'
     +'<div class="tc-title">'+t.title+'</div>'
     +'<div class="tc-desc">'+t.desc+'</div>'
@@ -1143,59 +1145,7 @@ function showDynamicDoc(docId){
   var deleteBtn=document.createElement('button');
   deleteBtn.style.cssText='flex:1;height:40px;padding:0 22px;background:#fff;color:var(--red);border:2px solid var(--red);border-radius:var(--rs);font-size:13.5px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif';
   deleteBtn.textContent='🗑 מחק פריט ידע';
-  deleteBtn.addEventListener('click',function(){
-    // Build custom confirm modal
-    var overlay=document.createElement('div');
-    overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;display:flex;align-items:center;justify-content:center';
-
-    var modal=document.createElement('div');
-    modal.style.cssText='background:#fff;border-radius:16px;padding:28px 24px;max-width:320px;width:90%;font-family:Rubik,sans-serif;direction:rtl;text-align:center';
-
-    var title=document.createElement('div');
-    title.style.cssText='font-size:16px;font-weight:700;color:var(--navy);margin-bottom:10px';
-    title.textContent='מחיקת פריט ידע';
-
-    var msg=document.createElement('div');
-    msg.style.cssText='font-size:14px;color:var(--muted);margin-bottom:24px;line-height:1.6';
-    msg.innerHTML='האם ברצונך למחוק את פריט הידע<br><strong style="color:var(--navy)">'+doc.topic+'</strong>?';
-
-    var btns=document.createElement('div');
-    btns.style.cssText='display:flex;gap:10px';
-
-    var yesBtn=document.createElement('button');
-    yesBtn.style.cssText='flex:1;height:40px;background:var(--red);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif';
-    yesBtn.textContent='כן, מחק';
-    yesBtn.addEventListener('click',function(){
-      overlay.remove();
-      delete window.dynamicDocs[docId];
-      var t=TOPICS.find(function(x){return x.dynId===docId;});
-      if(t){
-        if(t.desc==='פריט ידע'){
-          var idx=TOPICS.indexOf(t);
-          if(idx>-1) TOPICS.splice(idx,1);
-        } else {
-          t.dynId=null;t.active=false;
-        }
-      }
-      renderLibrary('all');
-      renderHomeWaves();
-      showView('library');
-      nbSaveLibrary();
-    });
-
-    var noBtn=document.createElement('button');
-    noBtn.style.cssText='flex:1;height:40px;background:#fff;color:var(--navy);border:2px solid var(--border);border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif';
-    noBtn.textContent='לא, ביטול';
-    noBtn.addEventListener('click',function(){ overlay.remove(); });
-
-    btns.appendChild(yesBtn);
-    btns.appendChild(noBtn);
-    modal.appendChild(title);
-    modal.appendChild(msg);
-    modal.appendChild(btns);
-    overlay.appendChild(modal);
-    document.body.appendChild(overlay);
-  });
+  deleteBtn.addEventListener('click',function(){ nbConfirmDeleteDoc(docId,doc.topic); });
 
   btnRow.appendChild(updateBtn);
   btnRow.appendChild(deleteBtn);
@@ -1205,7 +1155,89 @@ function showDynamicDoc(docId){
   document.querySelector('#view-article .article-back').setAttribute('onclick',"showView('library')");
 }
 
+function nbConfirmDelete(topicTitle,onConfirm){
+  // Build custom confirm modal
+  var overlay=document.createElement('div');
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;display:flex;align-items:center;justify-content:center';
+
+  var modal=document.createElement('div');
+  modal.style.cssText='background:#fff;border-radius:16px;padding:28px 24px;max-width:320px;width:90%;font-family:Rubik,sans-serif;direction:rtl;text-align:center';
+
+  var title=document.createElement('div');
+  title.style.cssText='font-size:16px;font-weight:700;color:var(--navy);margin-bottom:10px';
+  title.textContent='מחיקת פריט ידע';
+
+  var msg=document.createElement('div');
+  msg.style.cssText='font-size:14px;color:var(--muted);margin-bottom:24px;line-height:1.6';
+  msg.innerHTML='האם ברצונך למחוק את פריט הידע<br><strong style="color:var(--navy)">'+topicTitle+'</strong>?';
+
+  var btns=document.createElement('div');
+  btns.style.cssText='display:flex;gap:10px';
+
+  var yesBtn=document.createElement('button');
+  yesBtn.style.cssText='flex:1;height:40px;background:var(--red);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif';
+  yesBtn.textContent='כן, מחק';
+  yesBtn.addEventListener('click',function(){ overlay.remove(); onConfirm(); });
+
+  var noBtn=document.createElement('button');
+  noBtn.style.cssText='flex:1;height:40px;background:#fff;color:var(--navy);border:2px solid var(--border);border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif';
+  noBtn.textContent='לא, ביטול';
+  noBtn.addEventListener('click',function(){ overlay.remove(); });
+
+  btns.appendChild(yesBtn);
+  btns.appendChild(noBtn);
+  modal.appendChild(title);
+  modal.appendChild(msg);
+  modal.appendChild(btns);
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+}
+
+function nbConfirmDeleteDoc(docId,topicTitle){
+  nbConfirmDelete(topicTitle,function(){
+    delete window.dynamicDocs[docId];
+    var t=TOPICS.find(function(x){return x.dynId===docId;});
+    if(t){
+      if(t.desc==='פריט ידע'){
+        var idx=TOPICS.indexOf(t);
+        if(idx>-1) TOPICS.splice(idx,1);
+      } else {
+        t.dynId=null;t.active=false;
+      }
+    }
+    renderLibrary('all');
+    renderHomeWaves();
+    showView('library');
+    nbSaveLibrary();
+  });
+}
+
+// Handles delete clicks from any card — active items with a real doc behind
+// them go through nbConfirmDeleteDoc; placeholder (non-active) topics that
+// have no content yet are simply removed from the list.
+function nbConfirmDeleteTopic(topicId){
+  var t=TOPICS.find(function(x){return x.id===topicId;});
+  if(!t) return;
+  if(t.dynId){ nbConfirmDeleteDoc(t.dynId,t.title); return; }
+  nbConfirmDelete(t.title,function(){
+    var idx=TOPICS.indexOf(t);
+    if(idx>-1) TOPICS.splice(idx,1);
+    renderLibrary('all');
+    renderHomeWaves();
+    nbSaveLibrary();
+  });
+}
+
 function nbEditDoc(docId){
+  try{
+    nbEditDocImpl(docId);
+  }catch(e){
+    console.error('nbEditDoc failed:', e);
+    alert('אירעה שגיאה בפתיחת פריט הידע לעריכה: '+e.message+'\n\nנסה לרענן את הדף (ייתכן שנטענת גרסה ישנה מהמטמון של הדפדפן).');
+  }
+}
+
+function nbEditDocImpl(docId){
   var doc=window.dynamicDocs[docId];
   if(!doc) return;
 
@@ -1813,6 +1845,15 @@ function nbUpdateSummary(){
 }
 
 function nbCreateDoc(){
+  try{
+    nbCreateDocImpl();
+  }catch(e){
+    console.error('nbCreateDoc failed:', e);
+    alert('אירעה שגיאה בשמירה: '+e.message+'\n\nהשינויים לא נשמרו. נסה שוב, ואם זה חוזר — רענן את הדף (ייתכן שנטענת גרסה ישנה מהמטמון של הדפדפן).');
+  }
+}
+
+function nbCreateDocImpl(){
   var topic=(nbState['s1'].s1data.topic||'').trim();
   var cat=nbState['s1'].s1data.cat||'tech';
   var wave=parseInt(nbState['s1'].s1data.wave||'2');
@@ -2835,7 +2876,6 @@ document.addEventListener('change', function(e){
 <div id="nb-stages" style="display:flex;flex-direction:column;gap:4px"></div>
 
 <div id="nb-create-bar" style="margin-top:16px;padding:12px;background:var(--white);border:1px solid var(--border);border-radius:var(--r);display:flex;gap:8px">
-  <button onclick="nbCreateDoc()" style="flex:2;height:42px;background:var(--red);color:#fff;border:none;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;font-family:'Rubik',sans-serif">✚ צור פריט ידע</button>
   <button onclick="nbExport()" style="flex:1;height:42px;border:1px solid var(--border);background:var(--gray);border-radius:var(--rs);font-size:13px;color:var(--muted);cursor:pointer;font-family:'Rubik',sans-serif">ייצוא JSON</button>
 </div>
 
