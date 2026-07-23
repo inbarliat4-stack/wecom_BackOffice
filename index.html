@@ -91,8 +91,8 @@ html{overflow-x:hidden}body{font-family:"Rubik",sans-serif;background:var(--bg);
 .stage-drag-handle:active{cursor:grabbing;background:var(--input-bg)}
 .acc-section.open{border-color:rgba(255,61,0,.2);box-shadow:var(--shadow-md)}
 .acc-section.open .acc-body{max-height:none;overflow:visible}
-.acc-head{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--gray);cursor:pointer;user-select:none;transition:background .2s;border-bottom:1px solid transparent}
-.acc-section.open .acc-head{background:#EEF2F6;border-bottom-color:#D0DCE8}
+.acc-head{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--white);cursor:pointer;user-select:none;transition:background .2s,border-color .2s;border-bottom:1px solid var(--border-strong)}
+.acc-section.open .acc-head{background:var(--white);border-bottom-color:var(--border-strong)}
 .acc-head:hover{background:#E5E8EB}
 .acc-num{width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .acc-num.red{background:var(--red)}
@@ -881,13 +881,14 @@ function setTocActive(el){
 
 function showView(id){
   document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active')});
-  document.getElementById('view-'+id).classList.add('active');
+  var target=document.getElementById('view-'+id);
+  if(!target) return;
+  target.classList.add('active');
   document.querySelectorAll('.snav-item').forEach(function(i){i.classList.remove('active')});
   var sm=document.getElementById('snav-'+id);
   if(sm) sm.classList.add('active');
-  ['home','library','new'].forEach(function(t){var b=document.getElementById('mob-'+t);if(b)b.classList.toggle('active',t===id||(id==='browsing'&&t==='home')||(id==='churn'&&t==='home')||(id==='article'&&t==='library'))});
+  ['library','new'].forEach(function(t){var b=document.getElementById('mob-'+t);if(b)b.classList.toggle('active',t===id||(id==='browsing'&&t==='library')||(id==='churn'&&t==='library')||(id==='article'&&t==='library'))});
   if(id==='library') renderLibrary('all');
-  if(id==='home') renderHomeWaves();
   if(id==='new'&&!nbState['s1'].applied) nbRender();
   window.scrollTo(0,0);
   setTimeout(function(){document.querySelectorAll('#view-'+id+' .fade-in:not(.visible)').forEach(function(el,i){setTimeout(function(){el.classList.add('visible')},i*55)})},80);
@@ -1193,22 +1194,41 @@ function nbConfirmDelete(topicTitle,onConfirm){
   document.body.appendChild(overlay);
 }
 
+// ── TRASH (soft delete) ──────────────────────────────────────────────────
+// Deleted items are snapshotted here instead of being destroyed, so they
+// can be restored later. Persisted alongside the rest of the library.
+var nbTrash=[];
+
+function nbUpdateTrashBadge(){
+  var badge=document.getElementById('nb-trash-count-nav');
+  if(!badge) return;
+  if(nbTrash.length){ badge.textContent=nbTrash.length; badge.style.display='inline-block'; }
+  else{ badge.style.display='none'; }
+}
+
 function nbConfirmDeleteDoc(docId,topicTitle){
   nbConfirmDelete(topicTitle,function(){
-    delete window.dynamicDocs[docId];
+    var doc=window.dynamicDocs[docId];
     var t=TOPICS.find(function(x){return x.dynId===docId;});
-    if(t){
-      if(t.desc==='פריט ידע'){
-        var idx=TOPICS.indexOf(t);
-        if(idx>-1) TOPICS.splice(idx,1);
-      } else {
-        t.dynId=null;t.active=false;
-      }
-    }
+    nbTrash.push({
+      trashId:'trash-'+Date.now()+'-'+Math.floor(Math.random()*10000),
+      type:'doc',
+      docId:docId,
+      doc:doc?JSON.parse(JSON.stringify(doc)):null,
+      topicSnapshot:t?JSON.parse(JSON.stringify(t)):null,
+      wasPlaceholderTopic:false,
+      title:topicTitle,
+      deletedAt:Date.now()
+    });
+    delete window.dynamicDocs[docId];
+    // Deleting the form/content NEVER removes its card from the library —
+    // it only turns the card back into a non-active placeholder.
+    if(t){ t.dynId=null; t.active=false; }
     renderLibrary('all');
     renderHomeWaves();
     showView('library');
     nbSaveLibrary();
+    nbUpdateTrashBadge();
   });
 }
 
@@ -1220,12 +1240,101 @@ function nbConfirmDeleteTopic(topicId){
   if(!t) return;
   if(t.dynId){ nbConfirmDeleteDoc(t.dynId,t.title); return; }
   nbConfirmDelete(t.title,function(){
+    nbTrash.push({
+      trashId:'trash-'+Date.now()+'-'+Math.floor(Math.random()*10000),
+      type:'topic',
+      doc:null,
+      topicSnapshot:JSON.parse(JSON.stringify(t)),
+      wasPlaceholderTopic:true,
+      title:t.title,
+      deletedAt:Date.now()
+    });
     var idx=TOPICS.indexOf(t);
     if(idx>-1) TOPICS.splice(idx,1);
     renderLibrary('all');
     renderHomeWaves();
     nbSaveLibrary();
+    nbUpdateTrashBadge();
   });
+}
+
+function nbRestoreFromTrash(trashId){
+  var idx=nbTrash.findIndex(function(x){return x.trashId===trashId;});
+  if(idx===-1) return;
+  var entry=nbTrash[idx];
+  if(entry.type==='doc'&&entry.doc){
+    window.dynamicDocs=window.dynamicDocs||{};
+    window.dynamicDocs[entry.docId]=entry.doc;
+    if(entry.wasPlaceholderTopic&&entry.topicSnapshot){
+      // Topic entry was fully removed — recreate it (only if not already re-added)
+      if(!TOPICS.some(function(x){return x.id===entry.topicSnapshot.id;})) TOPICS.push(entry.topicSnapshot);
+    } else if(entry.topicSnapshot){
+      var t=TOPICS.find(function(x){return x.id===entry.topicSnapshot.id;});
+      if(t){ t.dynId=entry.docId; t.active=true; }
+    }
+  } else if(entry.type==='topic'&&entry.topicSnapshot){
+    if(!TOPICS.some(function(x){return x.id===entry.topicSnapshot.id;})) TOPICS.push(entry.topicSnapshot);
+  }
+  nbTrash.splice(idx,1);
+  renderLibrary('all');
+  renderHomeWaves();
+  nbSaveLibrary();
+  nbUpdateTrashBadge();
+  nbOpenTrash();
+}
+
+function nbPermanentlyDeleteFromTrash(trashId){
+  var idx=nbTrash.findIndex(function(x){return x.trashId===trashId;});
+  if(idx===-1) return;
+  nbTrash.splice(idx,1);
+  nbSaveLibrary();
+  nbUpdateTrashBadge();
+  nbOpenTrash();
+}
+
+function nbOpenTrash(){
+  var existing=document.getElementById('nb-trash-overlay');
+  if(existing) existing.remove();
+
+  var overlay=document.createElement('div');
+  overlay.id='nb-trash-overlay';
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
+
+  var modal=document.createElement('div');
+  modal.style.cssText='background:#fff;border-radius:16px;padding:22px;max-width:480px;width:100%;max-height:80vh;overflow-y:auto;font-family:Rubik,sans-serif;direction:rtl';
+
+  var head=document.createElement('div');
+  head.style.cssText='display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border)';
+  head.innerHTML='<div style="font-size:16px;font-weight:700;color:var(--navy)">🗑️ סל מיחזור</div>';
+
+  var closeBtn=document.createElement('button');
+  closeBtn.textContent='✕';
+  closeBtn.style.cssText='background:none;border:none;font-size:16px;color:var(--muted);cursor:pointer;padding:4px 8px';
+  closeBtn.addEventListener('click',function(){ overlay.remove(); });
+  head.appendChild(closeBtn);
+
+  var list=document.createElement('div');
+  if(!nbTrash.length){
+    list.innerHTML='<div style="text-align:center;color:var(--muted);font-size:13.5px;padding:30px 10px">סל המיחזור ריק</div>';
+  } else {
+    list.innerHTML=nbTrash.slice().reverse().map(function(entry){
+      var d=new Date(entry.deletedAt);
+      var dateStr=d.toLocaleDateString('he-IL')+' '+d.toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'});
+      return '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 4px;border-bottom:1px solid var(--border)">'
+        +'<div style="min-width:0"><div style="font-size:13.5px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+entry.title+'</div>'
+        +'<div style="font-size:11.5px;color:var(--muted);margin-top:2px">נמחק ב-'+dateStr+'</div></div>'
+        +'<div style="display:flex;gap:6px;flex-shrink:0">'
+        +'<button onclick="nbRestoreFromTrash(\''+entry.trashId+'\')" style="height:32px;padding:0 12px;background:var(--navy);color:#fff;border:none;border-radius:7px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif">↩️ שחזר</button>'
+        +'<button onclick="nbPermanentlyDeleteFromTrash(\''+entry.trashId+'\')" style="height:32px;padding:0 12px;background:#fff;color:var(--red);border:1.5px solid var(--red);border-radius:7px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif">מחק לצמיתות</button>'
+        +'</div></div>';
+    }).join('');
+  }
+
+  modal.appendChild(head);
+  modal.appendChild(list);
+  overlay.appendChild(modal);
+  overlay.addEventListener('click',function(e){ if(e.target===overlay) overlay.remove(); });
+  document.body.appendChild(overlay);
 }
 
 function nbEditDoc(docId){
@@ -1346,7 +1455,6 @@ function initObservers(){
     });
   },{threshold:0.05});
   document.querySelectorAll('.view').forEach(function(v){obs.observe(v)});
-  setTimeout(function(){document.querySelectorAll('#view-home .fade-in').forEach(function(el,i){setTimeout(function(){el.classList.add('visible')},i*60)})},200);
 }
 
 var NB_STAGES = [
@@ -2032,12 +2140,13 @@ window.dynamicDocs['pdf_010'] = {"id": "pdf_010", "topic": "תקלת גלישה 
 // ── LOCAL PERSISTENCE ────────────────────────────────────────────────────
 // Keeps created knowledge items and the in-progress "פריט ידע חדש" form
 // draft across page refreshes by mirroring them into localStorage.
-var NB_STORAGE_KEYS={docs:'wecom_kb_docs_v1',topics:'wecom_kb_topics_v1',draft:'wecom_kb_draft_v1'};
+var NB_STORAGE_KEYS={docs:'wecom_kb_docs_v1',topics:'wecom_kb_topics_v1',draft:'wecom_kb_draft_v1',trash:'wecom_kb_trash_v1'};
 
 function nbSaveLibrary(){
   try{
     localStorage.setItem(NB_STORAGE_KEYS.docs, JSON.stringify(window.dynamicDocs||{}));
     localStorage.setItem(NB_STORAGE_KEYS.topics, JSON.stringify(TOPICS||[]));
+    localStorage.setItem(NB_STORAGE_KEYS.trash, JSON.stringify(nbTrash||[]));
   }catch(e){ /* localStorage unavailable — fail silently */ }
 }
 
@@ -2053,6 +2162,11 @@ function nbLoadLibrary(){
     if(topicsRaw){
       var savedTopics=JSON.parse(topicsRaw);
       if(Array.isArray(savedTopics) && savedTopics.length) TOPICS=savedTopics;
+    }
+    var trashRaw=localStorage.getItem(NB_STORAGE_KEYS.trash);
+    if(trashRaw){
+      var savedTrash=JSON.parse(trashRaw);
+      if(Array.isArray(savedTrash)) nbTrash=savedTrash;
     }
   }catch(e){ /* localStorage unavailable or corrupt — start fresh */ }
 }
@@ -2090,6 +2204,7 @@ window.addEventListener('beforeunload', nbSaveDraft);
 document.addEventListener("DOMContentLoaded", function(){
   nbLoadLibrary();
   nbLoadDraft();
+  nbUpdateTrashBadge();
   initObservers();
   nbRender();
   // Initialize all PDF docs
@@ -2139,7 +2254,7 @@ document.addEventListener("DOMContentLoaded", function(){
 })();
   var churnTopic = TOPICS.find(function(x){ return x.id === 29; });
   if(churnTopic) { churnTopic.dynId = 'view-churn-doc'; churnTopic.active = true; }
-  renderHomeWaves();
+  renderLibrary('all');
 });
 
 // Single delegated listener for option clicks
@@ -2242,9 +2357,9 @@ document.addEventListener('change', function(e){
 <nav class="sidebar-nav">
   <div class="snav-section">
     <div class="snav-title">ראשי</div>
-    <div class="snav-item active" id="snav-home" onclick="showView('home')"><span class="snav-icon">🏠</span> דף הבית</div>
-    <div class="snav-item" id="snav-library" onclick="showView('library')"><span class="snav-icon">📚</span> ספריית ידע <span class="snav-badge">40</span></div>
+    <div class="snav-item active" id="snav-library" onclick="showView('library')"><span class="snav-icon">📚</span> ספריית ידע <span class="snav-badge">40</span></div>
     <div class="snav-item" id="snav-new" onclick="showView('new')"><span class="snav-icon">✏️</span> פריט ידע חדש</div>
+    <div class="snav-item" id="snav-trash" onclick="nbOpenTrash()"><span class="snav-icon">🗑️</span> סל מיחזור <span class="snav-badge" id="nb-trash-count-nav" style="display:none"></span></div>
   </div>
   <div class="snav-section">
     <div class="snav-title">קטגוריות</div>
@@ -2264,21 +2379,8 @@ document.addEventListener('change', function(e){
 </nav>
 <main class="content">
 
-<!-- HOME -->
-<div id="view-home" class="view active">
-  <div class="page-header"><div class="page-title">שלום 👋 מה טיפול היום?</div><div class="page-sub">מבוסס על ניתוח 15,316 שיחות לקוחות — Glance AI</div></div>
-  <div class="stats-row">
-    <div class="stat"><div class="stat-num">15,316</div><div class="stat-label">שיחות שנותחו</div></div>
-    <div class="stat"><div class="stat-num">40</div><div class="stat-label">נושאי ידע</div></div>
-    <div class="stat"><div class="stat-num">13</div><div class="stat-label">גל 1 – מיידי</div></div>
-    
-  </div>
-  <div id="home-waves"></div>
-
-</div>
-
 <!-- LIBRARY -->
-<div id="view-library" class="view">
+<div id="view-library" class="view active">
   <div class="page-header"><div class="page-title">📚 ספריית ידע – 40 נושאים</div><div class="page-sub">מסודר לפי גלי כתיבה ושכיחות | לחץ על נושא לפתיחת תדריך</div></div>
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px" id="lib-filters">
     <button class="filter-btn active" onclick="filterLibrary('all',this)">הכל</button>
@@ -2301,7 +2403,7 @@ document.addEventListener('change', function(e){
 <!-- BROWSING DOC -->
 <div id="view-browsing" class="view">
   <div style="max-width:960px;margin:0 auto;padding:16px 8px 80px">
-    <div class="article-back" onclick="showView('home')" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);cursor:pointer;margin-bottom:20px;transition:color .15s">← חזרה לדף הבית</div>
+    <div class="article-back" onclick="showView('library')" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);cursor:pointer;margin-bottom:20px;transition:color .15s">← חזרה לספרייה</div>
     <div id="panel-tech" class="doc-panel-inner">
       <div class="article-header">
         <div class="doc-meta">
@@ -2624,7 +2726,7 @@ document.addEventListener('change', function(e){
 <!-- CHURN DOC -->
 <div id="view-churn" class="view">
   <div style="max-width:960px;margin:0 auto;padding:16px 8px 80px">
-    <div class="article-back" onclick="showView('home')" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);cursor:pointer;margin-bottom:20px;transition:color .15s">← חזרה לדף הבית</div>
+    <div class="article-back" onclick="showView('library')" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);cursor:pointer;margin-bottom:20px;transition:color .15s">← חזרה לספרייה</div>
     <div style="display:grid;grid-template-columns:1fr 240px;gap:20px;align-items:start">
     <div id="panel-retain" class="doc-panel-inner">
       <div class="article-header">
@@ -2895,7 +2997,7 @@ document.addEventListener('change', function(e){
 
 </main>
 </div>
-<nav class="mob-nav"><div class="mob-nav-inner"><button class="mob-btn active" id="mob-home" onclick="showView('home')"><span class="mob-icon">🏠</span><span>בית</span></button><button class="mob-btn" id="mob-library" onclick="showView('library')"><span class="mob-icon">📚</span><span>ספרייה</span></button><button class="mob-btn" id="mob-new" onclick="showView('new')"><span class="mob-icon">✏️</span><span>חדש</span></button></div></nav>
+<nav class="mob-nav"><div class="mob-nav-inner"><button class="mob-btn active" id="mob-library" onclick="showView('library')"><span class="mob-icon">📚</span><span>ספרייה</span></button><button class="mob-btn" id="mob-new" onclick="showView('new')"><span class="mob-icon">✏️</span><span>חדש</span></button><button class="mob-btn" id="mob-trash" onclick="nbOpenTrash()"><span class="mob-icon">🗑️</span><span>מיחזור</span></button></div></nav>
 </div>
 
 </body>
