@@ -1422,7 +1422,14 @@ var nbStageOrder=[];
 
 function nbGetStageOrder(){
   var allIds=nbGetAllStages().map(function(s){return s.id;});
-  var order=(nbStageOrder||[]).filter(function(id){return allIds.indexOf(id)!==-1;});
+  var seen={};
+  // De-dupe defensively: a stale/corrupted saved order (e.g. from an older
+  // version of this file, or a previous bug) must never render a stage twice.
+  var order=(nbStageOrder||[]).filter(function(id){
+    if(seen[id]||allIds.indexOf(id)===-1) return false;
+    seen[id]=true;
+    return true;
+  });
   allIds.forEach(function(id){ if(order.indexOf(id)===-1) order.push(id); });
   nbStageOrder=order;
   return order;
