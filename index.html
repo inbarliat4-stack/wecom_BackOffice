@@ -83,11 +83,12 @@ html{overflow-x:hidden}body{font-family:"Rubik",sans-serif;background:var(--bg);
 .article-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
 .article-sub{font-size:13.5px;color:var(--muted)}
 .article-body{padding:16px 16px}
-.acc-section{border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:4px;background:var(--white);box-shadow:var(--shadow-sm);transition:border-color var(--t),box-shadow var(--t),opacity var(--t)}
-.acc-section.dragging{opacity:.35}
-.acc-section.drag-over{border-color:var(--red);box-shadow:0 0 0 2px rgba(255,61,0,.18)}
-.stage-drag-handle{cursor:grab;font-size:15px;line-height:1;color:var(--muted-l);padding:4px 3px;user-select:none;flex-shrink:0;letter-spacing:-2px}
-.stage-drag-handle:active{cursor:grabbing}
+.acc-section{border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:4px;background:var(--white);box-shadow:var(--shadow-sm);transition:border-color var(--t),box-shadow var(--t)}
+.acc-section.dragging{box-shadow:var(--shadow-lg);opacity:.95}
+.stage-drag-placeholder{border:2px dashed var(--red-m);border-radius:var(--r);background:var(--red-l);margin-bottom:4px;box-sizing:border-box}
+.stage-drag-handle{cursor:grab;display:flex;align-items:center;justify-content:center;color:var(--muted-l);padding:8px 6px;user-select:none;flex-shrink:0;touch-action:none;border-radius:6px;transition:background .15s,color .15s}
+.stage-drag-handle:hover{background:var(--input-bg);color:var(--text-2)}
+.stage-drag-handle:active{cursor:grabbing;background:var(--input-bg)}
 .acc-section.open{border-color:rgba(255,61,0,.2);box-shadow:var(--shadow-md)}
 .acc-section.open .acc-body{max-height:none;overflow:visible}
 .acc-head{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--gray);cursor:pointer;user-select:none;transition:background .2s;border-bottom:1px solid transparent}
@@ -1221,10 +1222,12 @@ function nbEditDoc(docId){
   // that don't match one of the fixed NB_STAGES definitions), preserving
   // the order the stages were saved in
   doc.stages.forEach(function(savedStage){
-    var def=NB_STAGES.filter(function(x){return x.num===savedStage.num;})[0];
+    var def=savedStage.id ? NB_STAGES.filter(function(x){return x.id===savedStage.id;})[0] : null;
+    if(!def) def=NB_STAGES.filter(function(x){return x.num===savedStage.num;})[0];
     if(!def){
       nbCustomStageSeq++;
-      def={id:'cs'+nbCustomStageSeq,num:savedStage.num,req:false,title:savedStage.title,sub:'שלב מותאם אישית',options:[],ph:'הקלד שאלה / פריט...',custom_stage:true};
+      var newId=savedStage.id||('cs'+nbCustomStageSeq);
+      def={id:newId,num:savedStage.num,req:false,title:savedStage.title,sub:'שלב מותאם אישית',options:[],ph:'הקלד שאלה / פריט...',custom_stage:true};
       nbCustomStages.push(def);
       nbState[def.id]={picked:[],custom:[],applied:false,s1data:{},images:{}};
     }
@@ -1276,7 +1279,7 @@ function nbExport(){
     var def=nbGetAllStages().filter(function(x){return x.id===sid;})[0];
     if(!def) return;
     var st=nbState[sid];
-    out['שלב '+def.num+' – '+def.title]=sid==='s1'?st.s1data:st.picked.map(function(i){return def.options[i].text;}).concat(st.custom);
+    out['שלב '+nbDisplayNum(sid)+' – '+def.title]=sid==='s1'?st.s1data:st.picked.map(function(i){return def.options[i].text;}).concat(st.custom);
   });
   var a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([JSON.stringify(out,null,2)],{type:'application/json'}));
@@ -1413,7 +1416,6 @@ function nbRemoveCustomStage(id){
 
 // ── DRAG-TO-REORDER STAGES ───────────────────────────────────────────────
 var nbStageOrder=[];
-var nbDragSid=null;
 
 function nbGetStageOrder(){
   var allIds=nbGetAllStages().map(function(s){return s.id;});
@@ -1423,47 +1425,86 @@ function nbGetStageOrder(){
   return order;
 }
 
-function nbStageDragStart(e,sid){
-  nbDragSid=sid;
-  try{ e.dataTransfer.effectAllowed='move'; e.dataTransfer.setData('text/plain',sid); }catch(err){}
-  var section=document.getElementById('nb-stage-'+sid);
-  if(section) section.classList.add('dragging');
+// Renumbers stages according to their current drag order. Stage 1 (the
+// identification fields) is always "1"; the rest are numbered 2..N by
+// their position among each other, regardless of where s1 physically sits.
+function nbDisplayNum(sid){
+  if(sid==='s1') return '1';
+  var contentOrder=nbGetStageOrder().filter(function(id){return id!=='s1';});
+  var idx=contentOrder.indexOf(sid);
+  return String(idx>=0?idx+2:'?');
 }
 
-function nbStageDragOver(e,sid){
+// Pointer-based drag (works with mouse AND touch, unlike native HTML5 DnD)
+var nbDragState=null;
+
+function nbStageHandlePointerDown(e,sid){
   e.preventDefault();
-  try{ e.dataTransfer.dropEffect='move'; }catch(err){}
-  if(sid!==nbDragSid){
-    var section=document.getElementById('nb-stage-'+sid);
-    if(section) section.classList.add('drag-over');
+  var section=document.getElementById('nb-stage-'+sid);
+  var container=document.getElementById('nb-stages');
+  if(!section||!container) return;
+  try{ e.target.setPointerCapture(e.pointerId); }catch(err){}
+  var rect=section.getBoundingClientRect();
+  var placeholder=document.createElement('div');
+  placeholder.className='stage-drag-placeholder';
+  placeholder.style.height=rect.height+'px';
+  section.parentNode.insertBefore(placeholder,section);
+  section.style.position='fixed';
+  section.style.zIndex='999';
+  section.style.width=rect.width+'px';
+  section.style.left=rect.left+'px';
+  section.style.top=rect.top+'px';
+  section.style.pointerEvents='none';
+  section.classList.add('dragging');
+  document.body.style.userSelect='none';
+  nbDragState={sid:sid,section:section,placeholder:placeholder,container:container,offsetY:e.clientY-rect.top,offsetX:e.clientX-rect.left};
+  document.addEventListener('pointermove',nbStageHandlePointerMove);
+  document.addEventListener('pointerup',nbStageHandlePointerUp);
+  document.addEventListener('pointercancel',nbStageHandlePointerUp);
+}
+
+function nbStageHandlePointerMove(e){
+  var d=nbDragState;
+  if(!d) return;
+  d.section.style.top=(e.clientY-d.offsetY)+'px';
+  d.section.style.left=(e.clientX-d.offsetX)+'px';
+  var siblings=Array.prototype.slice.call(d.container.querySelectorAll('.acc-section')).filter(function(el){return el!==d.section;});
+  var placed=false;
+  for(var i=0;i<siblings.length;i++){
+    var sRect=siblings[i].getBoundingClientRect();
+    var sMid=sRect.top+sRect.height/2;
+    if(e.clientY<sMid){
+      siblings[i].parentNode.insertBefore(d.placeholder,siblings[i]);
+      placed=true;
+      break;
+    }
+  }
+  if(!placed && siblings.length){
+    var last=siblings[siblings.length-1];
+    last.parentNode.insertBefore(d.placeholder,last.nextSibling);
   }
 }
 
-function nbStageDragLeave(e,sid){
-  var section=document.getElementById('nb-stage-'+sid);
-  if(section) section.classList.remove('drag-over');
-}
-
-function nbStageDrop(e,targetSid){
-  e.preventDefault();
-  var section=document.getElementById('nb-stage-'+targetSid);
-  if(section) section.classList.remove('drag-over');
-  if(!nbDragSid || nbDragSid===targetSid){ nbDragSid=null; return; }
-  var order=nbGetStageOrder();
-  var fromIdx=order.indexOf(nbDragSid);
-  var toIdx=order.indexOf(targetSid);
-  if(fromIdx===-1||toIdx===-1){ nbDragSid=null; return; }
-  order.splice(fromIdx,1);
-  order.splice(toIdx,0,nbDragSid);
-  nbStageOrder=order;
-  nbDragSid=null;
+function nbStageHandlePointerUp(){
+  var d=nbDragState;
+  document.removeEventListener('pointermove',nbStageHandlePointerMove);
+  document.removeEventListener('pointerup',nbStageHandlePointerUp);
+  document.removeEventListener('pointercancel',nbStageHandlePointerUp);
+  document.body.style.userSelect='';
+  if(!d) return;
+  d.placeholder.parentNode.insertBefore(d.section,d.placeholder);
+  d.placeholder.remove();
+  d.section.style.position='';
+  d.section.style.zIndex='';
+  d.section.style.width='';
+  d.section.style.left='';
+  d.section.style.top='';
+  d.section.style.pointerEvents='';
+  d.section.classList.remove('dragging');
+  var newOrder=Array.prototype.map.call(d.container.querySelectorAll('.acc-section'),function(el){return el.id.replace('nb-stage-','');});
+  nbStageOrder=newOrder;
+  nbDragState=null;
   nbRender();
-}
-
-function nbStageDragEnd(){
-  document.querySelectorAll('.acc-section.dragging').forEach(function(s){s.classList.remove('dragging');});
-  document.querySelectorAll('.acc-section.drag-over').forEach(function(s){s.classList.remove('drag-over');});
-  nbDragSid=null;
 }
 
 function nbRenderAddStageForm(){
@@ -1598,13 +1639,13 @@ function nbRenderStage(s){
       +'</div>'
       +'<div id="nb-imgs-'+s.id+'" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px"></div>'
       +'<button id="nb-apply-'+s.id+'" data-sid="'+s.id+'" onclick="nbApplyStage(this.dataset.sid)" '+(st.picked.length+st.custom.length===0?'disabled':'')+' '
-      +'style="width:100%;height:38px;background:#FF3D00;color:#fff;border:none;border-radius:var(--rs);font-size:13.5px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif;opacity:'+(st.picked.length+st.custom.length===0?'0.4':'1')+'">✓ הוסף שלב '+s.num+' לפריט הידע</button>';
+      +'style="width:100%;height:38px;background:#FF3D00;color:#fff;border:none;border-radius:var(--rs);font-size:13.5px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif;opacity:'+(st.picked.length+st.custom.length===0?'0.4':'1')+'">✓ הוסף שלב '+nbDisplayNum(s.id)+' לפריט הידע</button>';
   }
 
-  return '<div class="acc-section '+openCls+'" id="nb-stage-'+s.id+'" ondragover="nbStageDragOver(event,\''+s.id+'\')" ondragleave="nbStageDragLeave(event,\''+s.id+'\')" ondrop="nbStageDrop(event,\''+s.id+'\')">'
+  return '<div class="acc-section '+openCls+'" id="nb-stage-'+s.id+'">'
     +'<div class="acc-head" data-sid="'+s.id+'" onclick="nbToggleStage(this.dataset.sid)">'
-    +'<span class="stage-drag-handle" draggable="true" ondragstart="nbStageDragStart(event,\''+s.id+'\')" ondragend="nbStageDragEnd()" onclick="event.stopPropagation()" title="גרור לסידור מחדש">⠿</span>'
-    +'<div class="acc-num'+(s.req?' red':'')+'">'+s.num+'</div>'
+    +'<span class="stage-drag-handle" onpointerdown="nbStageHandlePointerDown(event,\''+s.id+'\')" onclick="event.stopPropagation()" title="גרור לסידור מחדש"><svg width="12" height="18" viewBox="0 0 12 18" fill="none"><circle cx="3" cy="3" r="1.6" fill="currentColor"/><circle cx="9" cy="3" r="1.6" fill="currentColor"/><circle cx="3" cy="9" r="1.6" fill="currentColor"/><circle cx="9" cy="9" r="1.6" fill="currentColor"/><circle cx="3" cy="15" r="1.6" fill="currentColor"/><circle cx="9" cy="15" r="1.6" fill="currentColor"/></svg></span>'
+    +'<div class="acc-num'+(s.req?' red':'')+'">'+nbDisplayNum(s.id)+'</div>'
     +'<div style="flex:1;min-width:0"><div class="acc-title">'+s.title+'</div><div style="font-size:12px;color:var(--muted);margin-top:1px">'+s.sub+'</div></div>'
     +'<div style="display:flex;align-items:center;gap:8px;flex-shrink:0">'+tagHtml
     +(s.custom_stage?('<span onclick="event.stopPropagation();nbRemoveCustomStage(\''+s.id+'\')" title="מחק שלב" style="font-size:15px;color:var(--muted);cursor:pointer;padding:0 2px">🗑️</span>'):'')
@@ -1724,19 +1765,22 @@ function nbApplyStage(id){
 
 function nbUpdateSummary(){
   var box=document.getElementById('nb-summary');
-  var html=nbGetAllStages().filter(function(s){
+  var allStages=nbGetAllStages();
+  var order=nbGetStageOrder();
+  var orderedStages=order.map(function(id){return allStages.filter(function(s){return s.id===id;})[0];}).filter(Boolean);
+  var html=orderedStages.filter(function(s){
     var st=nbState[s.id];
     return st.applied || (s.id==='s1'&&st.s1data&&st.s1data.topic) || (st.picked&&st.picked.length>0) || (st.custom&&st.custom.length>0);
   }).map(function(s){
     var st=nbState[s.id];
-    var def=nbGetAllStages().filter(function(x){return x.id===s.id;})[0];
+    var def=s;
     var items=[];
     if(s.id==='s1'){var d=st.s1data;if(d.topic)items.push('נושא: '+d.topic);if(d.type)items.push('סוג: '+d.type);if(d.cat)items.push('קטגוריה: '+d.cat);if(d.wave)items.push('גל: '+d.wave);if(d.tags)items.push('תגיות: '+d.tags);}
     else{items=st.picked.map(function(i){
         var img=(st.images&&st.images[i])||null;
         return {text:def.options[i].text,img:img};
       }).concat(st.custom.map(function(t){return {text:'[ידני] '+t,img:null};}));}
-    return '<div style="margin-bottom:16px">'      +'<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:8px">שלב '+def.num+' – '+def.title+'</div>'      +items.map(function(item){
+    return '<div style="margin-bottom:16px">'      +'<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:8px">שלב '+nbDisplayNum(s.id)+' – '+def.title+'</div>'      +items.map(function(item){
         var txt=typeof item==='object'?item.text:item;
         var img=typeof item==='object'?item.img:null;
         return '<div style="background:var(--input-bg);border:1px solid var(--border);border-radius:var(--rs);padding:8px 10px;margin-bottom:5px">'          +'<div style="display:flex;align-items:flex-start;gap:7px;font-size:13px;color:var(--text)">'          +'<span style="color:var(--red);flex-shrink:0;font-size:10px;margin-top:3px">›</span>'          +'<span>'+txt+'</span></div>'          +(img?'<img src="'+img+'" style="max-height:160px;width:auto;max-width:100%;border-radius:6px;border:1px solid var(--border);margin-top:6px;display:block">':'')          +'</div>';
@@ -1744,6 +1788,7 @@ function nbUpdateSummary(){
   }).join('');
   var sc=document.getElementById('nb-sum-content');
   if(sc) sc.innerHTML=html;
+  if(box) box.style.display=html?'':'none';
 }
 
 function nbCreateDoc(){
@@ -1768,7 +1813,7 @@ function nbCreateDoc(){
       }).concat(st.custom.map(function(t){return {text:t,img:null};}));
       var stageImgs2=[];
       if(st.images) Object.keys(st.images).forEach(function(k){if(isNaN(parseInt(k)))stageImgs2.push(st.images[k]);});
-      if(items.length) stages.push({num:def.num,title:def.title,items:items,images:stageImgs2});
+      if(items.length) stages.push({num:nbDisplayNum(sid),id:def.id,title:def.title,items:items,images:stageImgs2});
     });
     window.dynamicDocs[docId].topic=topic;
     window.dynamicDocs[docId].cat=cat;
@@ -1822,7 +1867,7 @@ function nbCreateDoc(){
     }).concat(st.custom.map(function(t){return {text:t,img:null};}));
     var stageImgs=[];
     if(st.images) Object.keys(st.images).forEach(function(k){if(isNaN(parseInt(k)))stageImgs.push(st.images[k]);});
-    if(items.length) stages.push({num:def.num,title:def.title,items:items,images:stageImgs});
+    if(items.length) stages.push({num:nbDisplayNum(sid),id:def.id,title:def.title,items:items,images:stageImgs});
   });
 
   window.dynamicDocs=window.dynamicDocs||{};
