@@ -1222,8 +1222,11 @@ function nbEditDoc(docId){
   // that don't match one of the fixed NB_STAGES definitions), preserving
   // the order the stages were saved in
   doc.stages.forEach(function(savedStage){
+    // Only a stable stage id is trustworthy for matching. "num" alone is NOT
+    // reliable: built-in knowledge items number their own content stages
+    // starting at "1", which would otherwise collide with Stage 1's num
+    // ("1") and duplicate the identification-fields stage on every edit.
     var def=savedStage.id ? NB_STAGES.filter(function(x){return x.id===savedStage.id;})[0] : null;
-    if(!def) def=NB_STAGES.filter(function(x){return x.num===savedStage.num;})[0];
     if(!def){
       nbCustomStageSeq++;
       var newId=savedStage.id||('cs'+nbCustomStageSeq);
@@ -1279,7 +1282,7 @@ function nbExport(){
     var def=nbGetAllStages().filter(function(x){return x.id===sid;})[0];
     if(!def) return;
     var st=nbState[sid];
-    out['שלב '+nbDisplayNum(sid)+' – '+def.title]=sid==='s1'?st.s1data:st.picked.map(function(i){return def.options[i].text;}).concat(st.custom);
+    out['שלב '+nbContentNum(sid)+' – '+def.title]=sid==='s1'?st.s1data:st.picked.map(function(i){return def.options[i].text;}).concat(st.custom);
   });
   var a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([JSON.stringify(out,null,2)],{type:'application/json'}));
@@ -1428,11 +1431,22 @@ function nbGetStageOrder(){
 // Renumbers stages according to their current drag order. Stage 1 (the
 // identification fields) is always "1"; the rest are numbered 2..N by
 // their position among each other, regardless of where s1 physically sits.
+// Used for the BUILDER's own UI (badges, apply button, summary headings).
 function nbDisplayNum(sid){
   if(sid==='s1') return '1';
   var contentOrder=nbGetStageOrder().filter(function(id){return id!=='s1';});
   var idx=contentOrder.indexOf(sid);
   return String(idx>=0?idx+2:'?');
+}
+
+// Numbers only the CONTENT stages, 1..N with no gap. Stage 1 is never a
+// step in the finished document (it's just identifying metadata), so the
+// saved/exported document should start its step numbering at 1 — not 2 —
+// or it looks like the first step is missing.
+function nbContentNum(sid){
+  var contentOrder=nbGetStageOrder().filter(function(id){return id!=='s1';});
+  var idx=contentOrder.indexOf(sid);
+  return String(idx>=0?idx+1:'?');
 }
 
 // Pointer-based drag (works with mouse AND touch, unlike native HTML5 DnD)
@@ -1813,7 +1827,7 @@ function nbCreateDoc(){
       }).concat(st.custom.map(function(t){return {text:t,img:null};}));
       var stageImgs2=[];
       if(st.images) Object.keys(st.images).forEach(function(k){if(isNaN(parseInt(k)))stageImgs2.push(st.images[k]);});
-      if(items.length) stages.push({num:nbDisplayNum(sid),id:def.id,title:def.title,items:items,images:stageImgs2});
+      if(items.length) stages.push({num:nbContentNum(sid),id:def.id,title:def.title,items:items,images:stageImgs2});
     });
     window.dynamicDocs[docId].topic=topic;
     window.dynamicDocs[docId].cat=cat;
@@ -1867,7 +1881,7 @@ function nbCreateDoc(){
     }).concat(st.custom.map(function(t){return {text:t,img:null};}));
     var stageImgs=[];
     if(st.images) Object.keys(st.images).forEach(function(k){if(isNaN(parseInt(k)))stageImgs.push(st.images[k]);});
-    if(items.length) stages.push({num:nbDisplayNum(sid),id:def.id,title:def.title,items:items,images:stageImgs});
+    if(items.length) stages.push({num:nbContentNum(sid),id:def.id,title:def.title,items:items,images:stageImgs});
   });
 
   window.dynamicDocs=window.dynamicDocs||{};
