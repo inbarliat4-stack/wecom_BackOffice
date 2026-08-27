@@ -844,7 +844,7 @@ var TOPICS=[
   {id:10,cat:'sim',wave:2,pri:'m',title:'קווים שנרכשו ולא הופעלו',desc:'בדיקת סטטוס, הדרכת הפעלה, סגירת טיפול'},
   {id:11,cat:'tech',wave:1,pri:'hh',title:'אין גלישה סלולרית',desc:'אבחון, חבילה וקו, נתונים, APN, איפוס, הסלמה',active:true},
   {id:12,cat:'tech',wave:1,pri:'h',title:'גלישה איטית / ניתוקים',desc:'אזור, דור רשת, עומס, מכשיר, שיפור',active:true},
-  {id:13,cat:'tech',wave:1,pri:'h',title:'הגדרת APN במכשיר',desc:'בחו"ל: ערך APN נדרש, איפוס לברירת מחדל, לפי יצרן'},
+  {id:13,cat:'intl',wave:1,pri:'h',title:'הגדרת APN במכשיר',desc:'בחו"ל: ערך APN נדרש, איפוס לברירת מחדל, לפי יצרן'},
   {id:14,cat:'tech',wave:1,pri:'h',title:'אין קליטה / אין שירות',desc:'רשת, SIM, מצב טיסה, אזור גיאוגרפי, איפוס'},
   {id:15,cat:'tech',wave:1,pri:'h',title:'לא מצליח להוציא/לקבל שיחות',desc:'חסימות, חוב, VoLTE, קליטה, מצב קו'},
   {id:16,cat:'tech',wave:2,pri:'m',title:'שיחות מתנתקות / שמע ירוד',desc:'אזור, מכשיר, VoLTE, קליטה, SIM'},
@@ -890,7 +890,7 @@ var TOPICS=[
 var NB_SEED_MAX_TOPIC_ID = Math.max.apply(null, TOPICS.map(function(t){return t.id;}));
 // Bump this whenever the hardcoded TOPICS/dynamicDocs seed content changes in
 // the code, so a browser with older saved data doesn't keep masking it.
-var NB_SEED_VERSION = 21;
+var NB_SEED_VERSION = 22;
 var PRI={hh:'גבוה מאוד',h:'גבוה',m:'בינוני',l:'נמוך'};
 var SIM_ICON='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-left:1px"><path d="M16 2H8a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8l-6-6z"/><path d="M16 2v6h6"/><rect x="9.3" y="12" width="5.4" height="3.4" rx="0.9"/></svg>';
 var CAT={sim:SIM_ICON+' SIM/eSIM',tech:'🔧 טכני',tech2:'🔧 טכני',billing:'💳 חיובים',plans:'📋 מסלולים',intl:'✈️ חו"ל',ops:'🎧 שיחה'};
@@ -2628,11 +2628,11 @@ document.addEventListener('change', function(e){
   <div class="snav-section">
     <div class="snav-title">קטגוריות</div>
     <div class="snav-item" onclick="filterCategory('sim')"><span class="snav-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto"><path d="M16 2H8a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8l-6-6z"/><path d="M16 2v6h6"/><rect x="9.3" y="12" width="5.4" height="3.4" rx="0.9"/></svg></span> SIM / eSIM <span class="snav-badge">10</span></div>
-    <div class="snav-item" onclick="filterCategory('tech')"><span class="snav-icon">🔧</span> תמיכה טכנית <span class="snav-badge">10</span></div>
+    <div class="snav-item" onclick="filterCategory('tech')"><span class="snav-icon">🔧</span> תמיכה טכנית <span class="snav-badge">9</span></div>
     <div class="snav-item" onclick="filterCategory('billing')"><span class="snav-icon">💳</span> חיובים <span class="snav-badge">6</span></div>
     <div class="snav-item" onclick="filterCategory('plans')"><span class="snav-icon">📋</span> מסלולים <span class="snav-badge">7</span></div>
-    <div class="snav-item" onclick="filterCategory('intl')"><span class="snav-icon">✈️</span> חו"ל ונדידה <span class="snav-badge">3</span></div>
-    <div class="snav-item" onclick="filterCategory('ops')"><span class="snav-icon">🎧</span> טיפול בשיחה <span class="snav-badge">4</span></div>
+    <div class="snav-item" onclick="filterCategory('intl')"><span class="snav-icon">✈️</span> חו"ל ונדידה <span class="snav-badge">14</span></div>
+    <div class="snav-item" onclick="filterCategory('ops')"><span class="snav-icon">🎧</span> טיפול בשיחה <span class="snav-badge">5</span></div>
   </div>
 </nav>
 <main class="content">
