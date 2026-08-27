@@ -890,7 +890,7 @@ var TOPICS=[
 var NB_SEED_MAX_TOPIC_ID = Math.max.apply(null, TOPICS.map(function(t){return t.id;}));
 // Bump this whenever the hardcoded TOPICS/dynamicDocs seed content changes in
 // the code, so a browser with older saved data doesn't keep masking it.
-var NB_SEED_VERSION = 22;
+var NB_SEED_VERSION = 24;
 var PRI={hh:'גבוה מאוד',h:'גבוה',m:'בינוני',l:'נמוך'};
 var SIM_ICON='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;margin-left:1px"><path d="M16 2H8a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8l-6-6z"/><path d="M16 2v6h6"/><rect x="9.3" y="12" width="5.4" height="3.4" rx="0.9"/></svg>';
 var CAT={sim:SIM_ICON+' SIM/eSIM',tech:'🔧 טכני',tech2:'🔧 טכני',billing:'💳 חיובים',plans:'📋 מסלולים',intl:'✈️ חו"ל',ops:'🎧 שיחה'};
@@ -1038,19 +1038,7 @@ function openArticle(id){
   var body=document.createElement('div');
   body.className='article-body';
   body.style.cssText='padding:16px;width:100%;box-sizing:border-box';
-  body.innerHTML='<div class="info-box">📝 מסמך זה עדיין לא נכתב. לחץ "פריט ידע חדש" ליצירתו.</div>'
-    +'<div style="background:var(--gray);border:1px solid var(--border);border-radius:var(--r);padding:18px">'
-    +'<div class="f-label" style="margin-bottom:10px">מה צריך לכלול לפי Glance AI</div>'
-    +'<div class="chk-list">'
-    +'<div class="chk-item"><span>📋</span><div><div class="chk-text">מתי להשתמש — סימני זיהוי בשיחה</div></div></div>'
-    +'<div class="chk-item"><span>❓</span><div><div class="chk-text">3–6 שאלות אבחון לפני פעולה</div></div></div>'
-    +'<div class="chk-item"><span>🖥</span><div><div class="chk-text">בדיקות מערכות — קו, חוב, SIM, מסלול</div></div></div>'
-    +'<div class="chk-item"><span>📝</span><div><div class="chk-text">צעדי טיפול לפי סדר</div></div></div>'
-    +'<div class="chk-item"><span>💬</span><div><div class="chk-text">ניסוח מומלץ ללקוח</div></div></div>'
-    +'<div class="chk-item"><span>⚑</span><div><div class="chk-text">מתי להסלים ולמי</div></div></div>'
-    +'<div class="chk-item"><span>⚠️</span><div><div class="chk-text">טעויות נפוצות להימנע</div></div></div>'
-    +'<div class="chk-item"><span>✅</span><div><div class="chk-text">סגירת שיחה ותיעוד</div></div></div>'
-    +'</div></div>';
+  body.innerHTML='<div class="info-box">📝 מסמך זה עדיין לא נכתב. לחץ "פריט ידע חדש" ליצירתו.</div>';
 
   var btn=document.createElement('button');
   btn.textContent='✏️ צור פריט ידע חדש לנושא זה';
@@ -1062,7 +1050,7 @@ function openArticle(id){
     nbState['s1'].applied = false; // user must confirm s1
     showView('new');
   });
-  body.querySelector('div[style]').appendChild(btn);
+  body.appendChild(btn);
 
   box.appendChild(head);
   box.appendChild(body);
@@ -1126,7 +1114,7 @@ function nbAddToLibrary(docId,topic,cat,wave,linkTopicId){
       // Re-render both pages — title unchanged, badge added, onclick updated
       renderLibrary('all');
       renderHomeWaves();
-      nbSaveLibrary();
+      nbSaveLibrary('נוצר: '+topic);
       return;
     }
   }
@@ -1137,7 +1125,7 @@ function nbAddToLibrary(docId,topic,cat,wave,linkTopicId){
   TOPICS.push({id:newId,cat:catKey,wave:waveNum,pri:'h',title:topic||'פריט ידע חדש',desc:'פריט ידע',active:true,dynId:docId});
   renderLibrary('all');
   renderHomeWaves();
-  nbSaveLibrary();
+  nbSaveLibrary('נוצר: '+(topic||'פריט ידע חדש'));
 }
 
 
@@ -1330,6 +1318,43 @@ function nbCloseLightbox(){
   document.body.style.overflow='';
 }
 
+function nbConfirmGeneric(title,messageHtml,confirmText,confirmColor,onConfirm){
+  var overlay=document.createElement('div');
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;display:flex;align-items:center;justify-content:center';
+
+  var modal=document.createElement('div');
+  modal.style.cssText='background:#fff;border-radius:16px;padding:28px 24px;max-width:340px;width:90%;font-family:Rubik,sans-serif;direction:rtl;text-align:center';
+
+  var titleEl=document.createElement('div');
+  titleEl.style.cssText='font-size:16px;font-weight:700;color:var(--navy);margin-bottom:10px';
+  titleEl.textContent=title;
+
+  var msg=document.createElement('div');
+  msg.style.cssText='font-size:14px;color:var(--muted);margin-bottom:24px;line-height:1.6';
+  msg.innerHTML=messageHtml;
+
+  var btns=document.createElement('div');
+  btns.style.cssText='display:flex;gap:10px';
+
+  var yesBtn=document.createElement('button');
+  yesBtn.style.cssText='flex:1;height:40px;background:'+confirmColor+';color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif';
+  yesBtn.textContent=confirmText;
+  yesBtn.addEventListener('click',function(){ overlay.remove(); onConfirm(); });
+
+  var noBtn=document.createElement('button');
+  noBtn.style.cssText='flex:1;height:40px;background:#fff;color:var(--navy);border:2px solid var(--border);border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif';
+  noBtn.textContent='ביטול';
+  noBtn.addEventListener('click',function(){ overlay.remove(); });
+
+  btns.appendChild(yesBtn);
+  btns.appendChild(noBtn);
+  modal.appendChild(titleEl);
+  modal.appendChild(msg);
+  modal.appendChild(btns);
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+}
+
 function nbConfirmDelete(topicTitle,onConfirm){
   // Build custom confirm modal
   var overlay=document.createElement('div');
@@ -1404,7 +1429,7 @@ function nbConfirmDeleteDoc(docId,topicTitle){
     renderLibrary('all');
     renderHomeWaves();
     showView('library');
-    nbSaveLibrary();
+    nbSaveLibrary('נמחק: '+topicTitle);
     nbUpdateTrashBadge();
   });
 }
@@ -1430,7 +1455,7 @@ function nbConfirmDeleteTopic(topicId){
     if(idx>-1) TOPICS.splice(idx,1);
     renderLibrary('all');
     renderHomeWaves();
-    nbSaveLibrary();
+    nbSaveLibrary('נמחק: '+t.title);
     nbUpdateTrashBadge();
   });
 }
@@ -1458,7 +1483,7 @@ function nbRestoreFromTrash(trashId){
   nbTrash.splice(idx,1);
   renderLibrary('all');
   renderHomeWaves();
-  nbSaveLibrary();
+  nbSaveLibrary('שוחזר מסל מיחזור: '+entry.title);
   nbUpdateTrashBadge();
   nbOpenTrash();
 }
@@ -1467,7 +1492,7 @@ function nbPermanentlyDeleteFromTrash(trashId){
   var idx=nbTrash.findIndex(function(x){return x.trashId===trashId;});
   if(idx===-1) return;
   nbTrash.splice(idx,1);
-  nbSaveLibrary();
+  nbSaveLibrary('נמחק לצמיתות מסל המיחזור');
   nbUpdateTrashBadge();
   nbOpenTrash();
 }
@@ -1487,11 +1512,21 @@ function nbOpenTrash(){
   head.style.cssText='display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border)';
   head.innerHTML='<div style="font-size:16px;font-weight:700;color:var(--navy)">🗑️ סל מיחזור</div>';
 
+  var headBtns=document.createElement('div');
+  headBtns.style.cssText='display:flex;align-items:center;gap:4px';
+
+  var historyBtn=document.createElement('button');
+  historyBtn.textContent='🕓 היסטוריה';
+  historyBtn.style.cssText='background:none;border:1px solid var(--border);border-radius:20px;font-size:11.5px;color:var(--muted);cursor:pointer;padding:5px 10px;font-family:Rubik,sans-serif';
+  historyBtn.addEventListener('click',function(){ overlay.remove(); nbOpenHistory(); });
+  headBtns.appendChild(historyBtn);
+
   var closeBtn=document.createElement('button');
   closeBtn.textContent='✕';
   closeBtn.style.cssText='background:none;border:none;font-size:16px;color:var(--muted);cursor:pointer;padding:4px 8px';
   closeBtn.addEventListener('click',function(){ overlay.remove(); });
-  head.appendChild(closeBtn);
+  headBtns.appendChild(closeBtn);
+  head.appendChild(headBtns);
 
   var list=document.createElement('div');
   if(!nbTrash.length){
@@ -2165,7 +2200,7 @@ function nbCreateDocImpl(){
     window.dynamicDocs[docId].stages=stages;
     // Update TOPICS entry (or entries — a doc can be linked from more than one card)
     TOPICS.filter(function(x){return x.dynId===docId;}).forEach(function(t){t.title=topic;t.cat=cat;t.wave=wave;});
-    nbSaveLibrary();
+    nbSaveLibrary('עודכן: '+topic);
     showDynamicDoc(docId);
     nbShowSuccessModal(topic+' — עודכן!');
     NB_STAGES.forEach(function(s){nbState[s.id]={picked:[],custom:[],applied:false,s1data:{}};});
@@ -2379,15 +2414,121 @@ window.dynamicDocs['pdf_021'] = {"id": "pdf_021", "topic": "העברה למומ�
 // ── LOCAL PERSISTENCE ────────────────────────────────────────────────────
 // Keeps created knowledge items and the in-progress "פריט ידע חדש" form
 // draft across page refreshes by mirroring them into localStorage.
-var NB_STORAGE_KEYS={docs:'wecom_kb_docs_v1',topics:'wecom_kb_topics_v1',draft:'wecom_kb_draft_v1',trash:'wecom_kb_trash_v1',seedVersion:'wecom_kb_seed_version_v1'};
+var NB_STORAGE_KEYS={docs:'wecom_kb_docs_v1',topics:'wecom_kb_topics_v1',draft:'wecom_kb_draft_v1',trash:'wecom_kb_trash_v1',seedVersion:'wecom_kb_seed_version_v1',history:'wecom_kb_history_v1'};
+var NB_HISTORY_MAX=25;
 
-function nbSaveLibrary(){
+function nbSaveLibrary(historyLabel){
   try{
     localStorage.setItem(NB_STORAGE_KEYS.docs, JSON.stringify(window.dynamicDocs||{}));
     localStorage.setItem(NB_STORAGE_KEYS.topics, JSON.stringify(TOPICS||[]));
     localStorage.setItem(NB_STORAGE_KEYS.trash, JSON.stringify(nbTrash||[]));
     localStorage.setItem(NB_STORAGE_KEYS.seedVersion, String(NB_SEED_VERSION));
   }catch(e){ /* localStorage unavailable — fail silently */ }
+  nbSnapshotHistory(historyLabel);
+  nbUpdateHistoryBadge();
+}
+
+// ── VERSION HISTORY ──────────────────────────────────────────────────────
+// Every time the library is saved, a snapshot of the full state (topics +
+// docs) is kept so unwanted changes can be found and reverted later. Rolling
+// window — oldest snapshots drop off once the cap is reached.
+function nbSnapshotHistory(label){
+  try{
+    var raw=localStorage.getItem(NB_STORAGE_KEYS.history);
+    var history=raw?JSON.parse(raw):[];
+    history.push({
+      id:'hist-'+Date.now()+'-'+Math.floor(Math.random()*10000),
+      ts:Date.now(),
+      label:label||'עדכון בספרייה',
+      topics:JSON.parse(JSON.stringify(TOPICS||[])),
+      docs:JSON.parse(JSON.stringify(window.dynamicDocs||{}))
+    });
+    if(history.length>NB_HISTORY_MAX) history=history.slice(history.length-NB_HISTORY_MAX);
+    localStorage.setItem(NB_STORAGE_KEYS.history, JSON.stringify(history));
+  }catch(e){ /* storage full or unavailable — skip this snapshot silently */ }
+}
+
+function nbGetHistory(){
+  try{
+    var raw=localStorage.getItem(NB_STORAGE_KEYS.history);
+    return raw?JSON.parse(raw):[];
+  }catch(e){ return []; }
+}
+
+function nbUpdateHistoryBadge(){
+  var badge=document.getElementById('nb-history-count-nav');
+  if(!badge) return;
+  var n=nbGetHistory().length;
+  if(n){ badge.textContent=n; badge.style.display='inline-block'; }
+  else{ badge.style.display='none'; }
+}
+
+function nbRestoreHistorySnapshot(histId){
+  var history=nbGetHistory();
+  var snap=history.find(function(h){return h.id===histId;});
+  if(!snap) return;
+  var dateStr=new Date(snap.ts).toLocaleDateString('he-IL')+' '+new Date(snap.ts).toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'});
+  nbConfirmGeneric(
+    'שחזור גרסה',
+    'לשחזר את הספרייה למצב שהיה ב-<strong style="color:var(--navy)">'+dateStr+'</strong>?<br><span style="font-size:12px;color:var(--muted)">כל שינוי שנעשה אחרי הגרסה הזו יוחלף (אך יישמר כגרסה משלו, כך שגם את זה ניתן יהיה לבטל).</span>',
+    'שחזר',
+    'var(--navy)',
+    function(){
+      TOPICS=JSON.parse(JSON.stringify(snap.topics));
+      window.dynamicDocs=JSON.parse(JSON.stringify(snap.docs));
+      renderLibrary('all');
+      renderHomeWaves();
+      showView('library');
+      nbSaveLibrary('שוחזר לגרסה מתאריך '+dateStr);
+      nbUpdateTrashBadge();
+      nbUpdateHistoryBadge();
+      nbOpenHistory();
+    }
+  );
+}
+
+function nbOpenHistory(){
+  var existing=document.getElementById('nb-history-overlay');
+  if(existing) existing.remove();
+
+  var overlay=document.createElement('div');
+  overlay.id='nb-history-overlay';
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
+
+  var modal=document.createElement('div');
+  modal.style.cssText='background:#fff;border-radius:16px;padding:22px;max-width:480px;width:100%;max-height:80vh;overflow-y:auto;font-family:Rubik,sans-serif;direction:rtl';
+
+  var head=document.createElement('div');
+  head.style.cssText='display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border)';
+  head.innerHTML='<div style="font-size:16px;font-weight:700;color:var(--navy)">🕓 היסטוריית גרסאות</div>';
+
+  var closeBtn=document.createElement('button');
+  closeBtn.textContent='✕';
+  closeBtn.style.cssText='background:none;border:none;font-size:16px;color:var(--muted);cursor:pointer;padding:4px 8px';
+  closeBtn.addEventListener('click',function(){ overlay.remove(); });
+  head.appendChild(closeBtn);
+
+  var list=document.createElement('div');
+  var history=nbGetHistory();
+  if(!history.length){
+    list.innerHTML='<div style="text-align:center;color:var(--muted);font-size:13.5px;padding:30px 10px">אין עדיין גרסאות שמורות</div>';
+  } else {
+    list.innerHTML=history.slice().reverse().map(function(snap){
+      var d=new Date(snap.ts);
+      var dateStr=d.toLocaleDateString('he-IL')+' '+d.toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'});
+      return '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 4px;border-bottom:1px solid var(--border)">'
+        +'<div style="min-width:0"><div style="font-size:13.5px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+snap.label+'</div>'
+        +'<div style="font-size:11.5px;color:var(--muted);margin-top:2px">'+dateStr+'</div></div>'
+        +'<button onclick="nbRestoreHistorySnapshot(\''+snap.id+'\')" style="height:32px;padding:0 14px;background:var(--navy);color:#fff;border:none;border-radius:7px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:Rubik,sans-serif;flex-shrink:0">↩️ שחזר</button>'
+        +'</div>';
+    }).join('');
+  }
+
+  modal.appendChild(head);
+  modal.appendChild(list);
+  overlay.appendChild(modal);
+  overlay.addEventListener('click',function(e){ if(e.target===overlay) overlay.remove(); });
+  document.body.appendChild(overlay);
 }
 
 function nbLoadLibrary(){
@@ -2465,6 +2606,7 @@ document.addEventListener("DOMContentLoaded", function(){
   nbLoadLibrary();
   nbLoadDraft();
   nbUpdateTrashBadge();
+  nbUpdateHistoryBadge();
   initObservers();
   nbRender();
   // Initialize all PDF docs
@@ -2624,6 +2766,7 @@ document.addEventListener('change', function(e){
     <div class="snav-item active" id="snav-library" onclick="showView('library')"><span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></span> ספריית ידע <span class="snav-badge">51</span></div>
     <div class="snav-item" id="snav-new" onclick="showView('new')"><span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span> פריט ידע חדש</div>
     <div class="snav-item" id="snav-trash" onclick="nbOpenTrash()"><span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg></span> סל מיחזור <span class="snav-badge" id="nb-trash-count-nav" style="display:none"></span></div>
+    <div class="snav-item" id="snav-history" onclick="nbOpenHistory()"><span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 3"/></svg></span> היסטוריית גרסאות <span class="snav-badge" id="nb-history-count-nav" style="display:none"></span></div>
   </div>
   <div class="snav-section">
     <div class="snav-title">קטגוריות</div>
